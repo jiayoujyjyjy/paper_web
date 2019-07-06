@@ -9,24 +9,17 @@
             v-model="dateValue"
             type="datetimerange"
             size="small"
+            :picker-options="pickerOptions"
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期">
           </el-date-picker>
         </div>
-        <div>
-          <el-button type="text" size="small">今天</el-button>
-          <span class="dividingLine">|</span>
-          <el-button type="text" size="small">昨日</el-button>
-          <span class="dividingLine">|</span>
-          <el-button type="text" size="small">本周</el-button>
-          <span class="dividingLine">|</span>
-          <el-button type="text" size="small">本月</el-button>
-        </div>
+        <p></p>
       </div>
 
       <div>
-        <div style="display: -webkit-flex;display: flex;flex-wrap: nowrap;margin-left:20px;">
+        <!-- <div style="display: -webkit-flex;display: flex;flex-wrap: nowrap;margin-left:20px;">
           <span style="display:block;margin-top:5px;margin-right:5px;">场地</span>
           <el-popover
             placement="bottom"
@@ -56,12 +49,12 @@
             </div>
             <el-input slot="reference" size="small" suffix-icon="el-icon-arrow-down" v-model="poploca"></el-input>
           </el-popover>
-        </div>
-        <div>
+        </div> -->
+        <!-- <div>
           <el-button type="text" size="small" @click="addGroup">添加分组</el-button>
           <span class="dividingLine">|</span>
           <el-button type="text" size="small" @click="editGroup">编辑分组</el-button>
-        </div>
+        </div> -->
       </div>
       <div style="display: -webkit-flex;display: flex;flex-wrap: nowrap;margin-left:20px;">
         <span style="display:block;margin-top:5px;width:80px;margin-right:5px;">设备编码</span>
@@ -138,8 +131,8 @@
 
       <el-pagination
         @current-change="handlePaginationChange"
-        :current-page="currentPage"
-        :page-size="pagesize"
+        :current-page="param.currentPage"
+        :page-size="param.pagesize"
         layout="total, prev, pager, next, jumper"
         :total="eltotal">
       </el-pagination>
@@ -194,18 +187,53 @@
 </template>
 
 <script>
+import { back } from 'api'
+import { sessionSetStore } from '@/components/config/Utils'
 import echarts from 'echarts'
 import $ from 'jquery'
 import Routers from '@/router'
 export default {
   data () {
     return {
+      param: {
+        'currentPage': 1,
+        'pagesize': 8,
+        'currentPage_DiaDev': 1,
+        'pagesize_DiaDev': 8
+      },
       currentPage: 1,
       pagesize: 10,
       eltotal: 20,
       dialogEditVisible: false,
       dialogTitle: '',
       dateValue: '',
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一天',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 1)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近一周',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近一月',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+            picker.$emit('pick', [start, end])
+          }
+        }]
+      },
       popoverInput: '',
       poploca: '全部',
       checkedAll_loca: true,
@@ -262,17 +290,14 @@ export default {
         adIncome: '',
         totalIncome: ''
       }],
-      incomeCharts: {
-        xdata: ['02-21', '02-22', '02-23', '02-24', '02-25', '02-26', '02-27'],
-        ydata1: [2, 5, 6, 2, 5, 8, 3],
-        ydata2: [0, 0, 0, 0, 0, 0, 0]
-      },
-      dealNumCharts: {
-        xdata: ['02-21', '02-22', '02-23', '02-24', '02-25', '02-26', '02-27'],
-        ydata1: [1, 2, 4, 1, 3, 5, 3],
-        ydata2: [0, 0, 0, 0, 0, 0, 0]
-      }
+      chartsDataResult: [],
+      deviceNameDataResult: [],
+      dateDataResult: []
     }
+  },
+  created: function () {
+    this.pageQueSelInit()
+    this.backQueDeviceStatis()
   },
   mounted: function () {
     var windowHeight = $(window).height()
@@ -280,7 +305,10 @@ export default {
     $('.deviceInfoPage').height(mainHeight)
     $('.el-table').height(mainHeight - 150)
     this.dataprocessing()
-    this.loaddiagram(this.incomeCharts)
+  },
+  // 注销window.onresize事件
+  destroyed () {
+    window.onresize = null
   },
   methods: {
     // 相关数据处理
@@ -340,15 +368,29 @@ export default {
     // 总收益、交易笔数图表切换
     changeRadio: function () {
       if (this.isIncome) {
-        this.loaddiagram(this.incomeCharts)
         console.log('收益')
+        this.chartsDataResult.forEach(item => {
+          item.data = item.incomeData
+        })
+        this.loaddiagram()
       } else {
-        this.loaddiagram(this.dealNumCharts)
         console.log('交易笔数')
+        this.chartsDataResult.forEach(item => {
+          item.data = item.orderData
+        })
+        this.loaddiagram()
       }
     },
     searchBt: function () {
-      console.log(this.GMTToStr(this.dateValue[0]))
+      console.log(this.dateValue)
+      if (this.dateValue) {
+        this.param.beginDate = this.GMTToStr(this.dateValue[0])
+        this.param.endDate = this.GMTToStr(this.dateValue[1])
+      } else {
+        this.pageQueSelInit()
+      }
+      this.param.deviceId = this.input_devId
+      this.backQueDeviceStatis()
     },
     resetBt: function () {
       Routers.push({ path: '/home/blank' })
@@ -398,23 +440,25 @@ export default {
         console.log('修改')
       }
     },
+    // 每次切换页码之前清空table数据
     handlePaginationChange: function (value) {
       console.log(value)
+      this.param.currentPage = value
+      // 分页查询请求可选项置空函数
+      this.pageQueSelInit()
+      this.backQueDeviceStatis()
     },
     // 加载图表
-    loaddiagram: function (data) {
-      let xdata = data.xdata
-      let ydata1 = data.ydata1
-      let ydata2 = data.ydata2
+    loaddiagram: function () {
+      console.log(123)
       var diagramContainer = document.getElementById('diagram')
       var myChart = echarts.init(diagramContainer)
+      console.log(this.deviceNameDataResult)
+      console.log(this.dateDataResult)
+      console.log(this.chartsDataResult)
       // 指定图表的配置项和数据
       // 折线图
       var option = {
-        // title: {
-        //   text: '总收益',
-        //   x: 'center'
-        // },
         tooltip: {
           trigger: 'axis',
           axisPoniter: {
@@ -428,40 +472,15 @@ export default {
             end: 100
           }
         ],
-        color: ['#303133', '#c23531'],
         legend: {
           left: 'left',
-          data: ['1号机', '2号机']
+          data: this.deviceNameDataResult
         },
         xAxis: {
-          data: xdata
+          data: this.dateDataResult
         },
         yAxis: {},
-        series: [{
-          name: '1号机',
-          type: 'line',
-          smooth: true,
-          itemStyle: {
-            normal: {
-              lineStyle: {
-                color: '#303133'
-              }
-            }
-          },
-          data: ydata1
-        }, {
-          name: '2号机',
-          type: 'line',
-          smooth: true,
-          itemStyle: {
-            normal: {
-              lineStyle: {
-                color: '#c23531'
-              }
-            }
-          },
-          data: ydata2
-        }]
+        series: this.chartsDataResult
       }
       // 使用刚指定的配置项和数据显示图表。
       myChart.setOption(option)
@@ -470,11 +489,97 @@ export default {
         myChart.resize()
       }
     },
-    //
-    // *******************   API调用   *********************
-    //
+    /*
+      *
+      *******************   API调用   *********************
+      *
+    */
+    // 设备统计
+    backQueDeviceStatis: function () {
+      sessionSetStore('backName', '设备统计')
+      back.queDeviceStatis(this.param).then(function (response) {
+        console.log(response)
+        // 设备详情数据存储
+        this.eltotal = response.data.total
+        let tableDataAlter = []
+        if (response.data.records) {
+          for (let i = 0; i < response.data.records.length; i++) {
+            let obj = {}
+            obj.name = response.data.records[i].deviceName
+            obj.deviceId = response.data.records[i].deviceId
+            obj.location = response.data.records[i].siteName
+            obj.onlineIncome = response.data.records[i].onlineIncome
+            obj.tradNum = response.data.records[i].orderNum
+            obj.adIncome = response.data.records[i].advertIncome
+            obj.totalIncome = response.data.records[i].totalIncome
+            obj.stateNum = response.data.records[i].state
+            if (obj.stateNum === 0) {
+              obj.state = '离线'
+            } else if (obj.stateNum === 1) {
+              obj.state = '在线'
+            }
+            tableDataAlter.push(obj)
+          }
+        }
+        this.tableData = tableDataAlter
+        // 设备图表数据存储
+        this.chartsDataResult = this.merge(response.deviceStatisTrendList)
+        this.chartsDataResult.forEach(item => {
+          this.deviceNameDataResult.push(item.name)
+        })
+        if (this.chartsDataResult) this.dateDataResult = this.chartsDataResult[0].date
+        this.loaddiagram() // 必须等待back数据获取后再加载图表
+      }.bind(this))
+        .catch(function (error) {
+          console.log(error)
+        })
+    },
+    // 分页查询请求可选项置空函数
+    pageQueSelInit: function () {
+      this.param.deviceId = ''
+      this.param.siteId = ''
+      this.param.beginDate = ''
+      this.param.endDate = ''
+      this.param.queryType = ''
+    },
     backDelGroup: function () {
       console.log('删除产品')
+    },
+    // 数组对象合并
+    merge: function (list) {
+      let idArr = []
+      for (let i = 0; i < list.length; i++) {
+        if (idArr.indexOf(list[i].deviceId) === -1) {
+          idArr.push(list[i].deviceId)
+        }
+      }
+      let result = []
+      for (let i = 0; i < idArr.length; i++) {
+        let obj = {}
+        let orderData = []
+        let incomeData = []
+        let deviceNameData = []
+        let dateData = []
+        for (let j = 0; j < list.length; j++) {
+          if (idArr[i] === list[j].deviceId) {
+            orderData.push(list[j].orderNum)
+            incomeData.push(list[j].totalIncome)
+            deviceNameData.push(list[j].deviceName)
+            dateData.push(list[j].date)
+          }
+        }
+        obj.deviceId = idArr[i]
+        obj.name = deviceNameData[i]
+        obj.type = 'line'
+        obj.smooth = true
+        obj.date = dateData
+        obj.orderData = orderData
+        obj.incomeData = incomeData
+        obj.data = incomeData // 默认显示incomeData
+        result.push(obj)
+      }
+      console.log(result)
+      return result
     }
   }
 }

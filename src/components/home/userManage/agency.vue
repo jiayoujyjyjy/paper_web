@@ -1,63 +1,68 @@
 <template>
   <div class="agencyPage">
-    <div class="selectionOperation">勾选操作：
+    <div class="selectionOperation">
       <el-button type="primary" size="small" @click="addBt">新增</el-button>
-      <el-button size="small" type="primary" style="margin-left:20px;" @click="delBt">删除</el-button>
     </div>
-    <el-table
-      :header-cell-style="{'font-size':'14px'}"
-      :data="tableData"
-      stripe
-      border
-      style="width: 100%;font-size:12px;"
-      @selection-change="handleSelectionChange">
-      <el-table-column
-        type="selection"
-        min-width="10%">
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="name"
-        label="用户名"
-        min-width="15%">
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="phone"
-        label="手机号"
-        min-width="25%">
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="password"
-        label="密码"
-        min-width="20%">
-      </el-table-column>
-      <el-table-column
-        align="center"
-        label="状态"
-        min-width="10%">
-        <template slot-scope="scope">
-          <el-switch
-            v-model="scope.row.state"
-            @change="changeswitch(scope.$index, scope.row)">
-          </el-switch>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="操作"
-        align="center"
-        min-width="20%">
-        <template slot-scope="scope">
-          <el-button type="text" size="small" icon="el-icon-edit" @click="editBt(scope.$index, scope.row)">编辑</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <div class="tableDiv">
+      <el-table
+        :header-cell-style="{'font-size':'14px'}"
+        :data="tableData"
+        stripe
+        border
+        style="width: 100%;font-size:12px;"
+        @selection-change="handleSelectionChange"
+        >
+        <el-table-column
+          align="center"
+          prop="username"
+          label="用户"
+          min-width="15%">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="nickname"
+          label="昵称"
+          min-width="15%">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="phone"
+          label="手机号"
+          min-width="25%">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="roleType"
+          label="角色类型"
+          min-width="25%">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          label="状态"
+          min-width="10%">
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.state"
+              @change="changeswitch(scope.$index, scope.row)">
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="操作"
+          align="center"
+          min-width="20%">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" icon="el-icon-edit" @click="editBt(scope.$index, scope.row)">编辑</el-button>
+            <el-button size="small" type="text" icon="el-icon-delete" @click="delBt(scope.$index, scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
 
     <el-pagination
       @current-change="handlePaginationChange"
-      :current-page="currentPage"
-      :page-size="pagesize"
+      :current-page="param.currentPage"
+      :page-size="param.pagesize"
       layout="total, prev, pager, next, jumper"
       :total="eltotal">
     </el-pagination>
@@ -69,49 +74,59 @@
       width="20%"
       center>
       <el-form :model="editform" class="form" label-width="80px" :rules="rulesLogin" ref="editform">
-        <el-form-item label="用户名">
-          <el-input v-model="editform.name"></el-input>
+        <el-form-item label="用户" prop="username">
+          <el-input v-model="editform.username" placeholder="请填写用户名"></el-input>
+        </el-form-item>
+        <el-form-item label="昵称" prop="nickname">
+          <el-input v-model="editform.nickname" placeholder="请填写昵称"></el-input>
         </el-form-item>
         <el-form-item label="手机" prop="phone">
-          <el-input v-model="editform.phone"></el-input>
+          <el-input v-model="editform.phone" placeholder="请填写手机号"></el-input>
+        </el-form-item>
+        <el-form-item label="角色" prop="roleType">
+          <el-select v-model="editform.roleType" placeholder="请选择角色类型">
+            <el-option label="管理员" value="0"></el-option>
+            <el-option label="业务员" value="1"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input v-model="editform.password"></el-input>
-          <el-button style="margin-top:20px;" type="primary" plain @click="dialogPwdMod">{{dialogBtnName}}</el-button>
+          <el-input v-model="editform.password" placeholder="请填写密码"></el-input>
+          <!-- <el-button style="margin-top:20px;" type="primary" plain @click="dialogPwdMod">{{dialogBtnName}}</el-button> -->
         </el-form-item>
       </el-form>
 
       <span slot="footer">
         <el-button @click="dialogEditVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editConfirm">确 定</el-button>
+        <el-button type="primary" @click="editConfirm('editform')">确 定</el-button>
       </span>
     </el-dialog>
 
-    <!--删除对话框-->
-    <el-dialog
-      title="提示"
-      :visible.sync="dialogDelVisible"
-      width="20%"
-      center>
-      <span>确定删除【{{selectedAgency}}】的信息吗？</span>
-      <span slot="footer">
-        <el-button @click="dialogDelVisible = false">取 消</el-button>
-        <el-button type="primary" @click="delConfirm">确 定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
 <script>
+import { back } from 'api'
+import { sessionGetStore, sessionSetStore } from '@/components/config/Utils'
 import $ from 'jquery'
+
 export default {
   data () {
-    // 校验密码
-    var checkPassword = (rule, value, callback) => {
+    // 校验用户
+    var checkUsername = (rule, value, callback) => {
       if (value === '') {
-        return callback(new Error('密码不能为空'))
+        return callback(new Error('用户名不能为空'))
       } else if (value.length > 20) {
-        callback(new Error('密码长度不超过20位'))
+        callback(new Error('用户名长度不超过20位'))
+      } else {
+        callback()
+      }
+    }
+    // 校验昵称
+    var checkNickname = (rule, value, callback) => {
+      if (value === '') {
+        return callback(new Error('昵称不能为空'))
+      } else if (value.length > 20) {
+        callback(new Error('用户名长度不超过20位'))
       } else {
         callback()
       }
@@ -126,115 +141,169 @@ export default {
         callback()
       }
     }
+    // 校验角色类型
+    var checkRoleType = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('角色不能为空'))
+      } else {
+        callback()
+      }
+    }
+    // 校验密码
+    var checkPassword = (rule, value, callback) => {
+      if (value === '') {
+        return callback(new Error('密码不能为空'))
+      } else if (value.length > 20) {
+        callback(new Error('密码长度不超过20位'))
+      } else {
+        callback()
+      }
+    }
     return {
+      param: {
+        'currentPage': 1,
+        'pagesize': 8,
+        'currentPage_DiaDev': 1,
+        'pagesize_DiaDev': 8
+      },
       currentPage: 1,
       pagesize: 10,
       eltotal: 20,
       selectedAgency: '',
       dialogEditVisible: false,
-      dialogDelVisible: false,
+      isEditOrAdd: null, // 0-编辑 1-新增
       dialogTitle: '',
       currentPwd: '',
       dialogBtnName: '',
       multipleSelection: [],
       editform: {
-        name: '',
+        username: '',
+        nickname: '',
+        id: '',
         phone: '',
+        roleType: '',
         password: ''
       },
-      tableData: [{
-        name: '代理1',
-        phone: '13588767140',
-        password: '******',
-        pwd: '123456',
-        state: true
-      }, {
-        name: '代理2',
-        phone: '13588767140',
-        password: '******',
-        pwd: '654321',
-        state: true
-      }, {
-        name: '代理3',
-        phone: '13588767140',
-        password: '******',
-        pwd: 'abcdef',
-        state: false
-      }, {
-        name: '代理4',
-        phone: '13588767140',
-        password: '******',
-        pwd: 'fedcba',
-        state: true
-      }],
+      tableData: [],
       // 表单校验
       rulesLogin: {
+        username: [
+          { required: true, validator: checkUsername, trigger: 'blur' }
+        ],
+        nickname: [
+          { required: true, validator: checkNickname, trigger: 'blur' }
+        ],
         phone: [
-          { validator: checkPhone, trigger: 'blur' }
+          { required: true, validator: checkPhone, trigger: 'blur' }
+        ],
+        roleType: [
+          { required: true, validator: checkRoleType, trigger: 'blur' }
         ],
         password: [
-          { validator: checkPassword, trigger: 'blur' }
+          { required: true, validator: checkPassword, trigger: 'blur' }
         ]
       }
     }
   },
+  created: async function () {
+    // session获取登录者关键参数
+    this.param.id = sessionGetStore('managerId')
+    // await this.backQueManagerInfo()
+    // this.param.nickname = this.editform.nickname
+    // this.param.roleType = Number(this.editform.roleType)
+    // 传递 '' 代表非必传字段,在yapi上测试跑要传 ' '，注意中间有无空格
+    // 分页查询请求可选项置空函数
+    this.pageQueSelInit()
+    this.backQueManagerPage()
+  },
   mounted: function () {
     var windowHeight = $(window).height()
-    console.log(windowHeight)
-    var mainHeight = windowHeight - 180
+    var mainHeight = windowHeight - 60 - 20 - 40 - 60
+    console.log(mainHeight)
     $('.agencyPage').height(mainHeight)
-    $('.el-table').height(mainHeight - 90)
+    $('.tableDiv').height(mainHeight - 32 - 40 - 32 - 20 + 60 + 10)
   },
   methods: {
     // 编辑代理人信息对话框
-    editBt: function (index, row) {
+    editBt: async function (index, row) {
+      console.log(index, row)
+      // 1.查看管理员详情
       this.dialogTitle = '编辑信息'
+      this.isEditOrAdd = 0
+      this.param.id = row.id
+      await this.backQueManagerInfo()
       this.dialogBtnName = '显示密码'
-      if (this.editform.name !== '' || this.editform.phone !== '' || this.editform.password !== '') {
+      if (this.$refs.editform !== undefined) {
         this.$refs.editform.clearValidate()
-      }
-      this.editform = {
-        name: this.tableData[index].name,
-        phone: this.tableData[index].phone,
-        password: '******'
       }
       this.currentPwd = this.tableData[index].pwd
       this.dialogEditVisible = true
     },
     // 删除代理人信息对话框
-    delBt: function () {
-      if (this.multipleSelection.length !== 0) {
-        this.$confirm('您确定删除所选代理人信息吗?', '删除代理人', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.backDel()
-        }).catch(() => {
-        })
-      } else {
-        this.$message.error('请至少选择一个条目')
-      }
+    delBt: function (index, row) {
+      console.log(index, row)
+      this.$confirm('确定删除该账号吗?', '删除该账号', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.param.id = row.id
+        this.backDelManager()
+      }).catch(() => {
+      })
     },
     // 新增代理人信息对话框
     addBt: function () {
-      this.dialogTitle = '新增代理'
+      this.dialogTitle = '新增用户'
+      this.isEditOrAdd = 1
       this.dialogBtnName = '生成密码'
-      if (this.editform.name !== '' || this.editform.phone !== '' || this.editform.password !== '') {
-        this.$refs.editform.clearValidate()
-      }
+      // if (this.editform.username !== '' || this.editform.phone !== '' || this.editform.password !== '') {
+      //   this.$refs.editform.clearValidate()
+      // }
       this.editform = {
-        name: '',
+        username: '',
+        nickname: '',
+        id: '',
         phone: '',
+        roleType: '',
         password: ''
+      }
+      if (this.$refs.editform !== undefined) {
+        this.$refs.editform.clearValidate()
       }
       this.dialogEditVisible = true
     },
     // 对话框修改确认
-    editConfirm: function () {
-    },
-    // 对话框删除确认
-    delConfirm: function () {
+    editConfirm: function (formName) {
+      console.log(this.editform)
+      if (this.isEditOrAdd === 0) {
+        if (this.editform.password === '******') { // 6个*与7个*
+          this.editform.password = '无效'
+        }
+      }
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          console.log('正确提交')
+          console.log(this.editform)
+          this.param.id = this.editform.id
+          this.param.username = this.editform.username
+          this.param.nickname = this.editform.nickname
+          this.param.phone = this.editform.phone
+          this.param.password = this.editform.password
+          if (this.param.password === '无效') {
+            this.param.password = sessionGetStore('password')
+          }
+          this.param.roleType = this.editform.roleType
+          if (this.isEditOrAdd === 0) {
+            this.backUpdateManager()
+          } else {
+            this.backAddManager()
+          }
+          this.dialogEditVisible = false
+        } else {
+          console.log('错误提交')
+        }
+      })
     },
     dialogPwdMod: function () {
       let str = ''
@@ -263,18 +332,140 @@ export default {
       this.multipleSelection = val
       console.log(this.multipleSelection)
     },
+    // 每次切换页码之前清空table数据
     handlePaginationChange: function (value) {
       console.log(value)
+      this.param.currentPage = value
+      // 分页查询请求可选项置空函数
+      this.pageQueSelInit()
+      this.backQueManagerPage()
     },
     // 启用/禁用代理人
     changeswitch: function (index, row) {
       console.log('启用或禁用')
+      console.log(row)
+      this.param.id = row.id
+      this.param.isValid = row.state === true ? 1 : 0
+      this.backUpdateStatus()
+    },
+    /*
+      *
+      *******************   API调用   *********************
+      *
+    */
+    // 管理员分页查询
+    backQueManagerPage: function () {
+      sessionSetStore('backName', '管理员分页查询')
+      back.queManagerPage(this.param).then(function (response) {
+        console.log(response)
+        this.eltotal = response.data.total
+        if (response.data.records) {
+          this.tableData = []
+          for (let i = 0; i < response.data.records.length; i++) {
+            let obj = {}
+            obj.id = response.data.records[i].id
+            obj.username = response.data.records[i].username
+            obj.nickname = response.data.records[i].nickname
+            obj.phone = response.data.records[i].phone
+            obj.roleType = response.data.records[i].roleType === 0 ? '管理员' : '业务员'
+            obj.state = response.data.records[i].isValid !== 0 // 牛逼啊，state只能用true false来标识
+            this.tableData.push(obj)
+          }
+        } else {
+          this.tableData = []
+        }
+      }.bind(this))
+        .catch(function (error) {
+          console.log(error)
+        })
+    },
+    // 新增管理员
+    backAddManager: function () {
+      sessionSetStore('backName', '新增管理员')
+      back.addManager(this.param).then(function (response) {
+        console.log(response)
+        // 不传选传项
+        this.param.nickname = ''
+        this.param.roleType = ''
+        this.backQueManagerPage()
+      }.bind(this))
+        .catch(function (error) {
+          console.log(error)
+        })
+    },
+    // 修改管理员
+    backUpdateManager: function () {
+      sessionSetStore('backName', '修改管理员')
+      back.updateManager(this.param).then(function (response) {
+        console.log(response)
+        // 不传选传项
+        this.param.nickname = ''
+        this.param.roleType = ''
+        this.backQueManagerPage()
+      }.bind(this))
+        .catch(function (error) {
+          console.log(error)
+        })
+    },
+    // 查看管理员详情
+    backQueManagerInfo: function () {
+      sessionSetStore('backName', '查看管理员详情')
+      return new Promise(function (resolve, reject) {
+        back.queManagerInfo(this.param).then(function (response) {
+          console.log(response)
+          let obj = {}
+          obj.id = response.data.id
+          obj.username = response.data.username
+          obj.nickname = response.data.nickname
+          obj.phone = response.data.phone
+          obj.roleType = response.data.roleType.toString()
+          obj.password = '******'
+          this.editform = obj
+          resolve()
+        }.bind(this))
+          .catch(function (error) {
+            console.log(error)
+            reject()
+          })
+      }.bind(this))
+    },
+    // 删除管理员
+    backDelManager: function () {
+      sessionSetStore('backName', '删除管理员')
+      back.delManager(this.param).then(function (response) {
+        console.log(response)
+        this.backQueManagerPage()
+      }.bind(this))
+        .catch(function (error) {
+          console.log(error)
+        })
+    },
+    // 修改账号状态
+    backUpdateStatus: function () {
+      sessionSetStore('backName', '修改账号状态')
+      back.updateStatus(this.param).then(function (response) {
+        console.log(response)
+        this.backQueManagerPage()
+      }.bind(this))
+        .catch(function (error) {
+          console.log(error)
+        })
     },
     //
-    // *******************   API调用   *********************
+    // *******************   辅助函数   *********************
     //
-    backDel: function () {
-      console.log('删除设备')
+    // 分页查询请求可选项置空函数
+    pageQueSelInit: function () {
+      this.param.nickname = ''
+      this.param.roleType = ''
+    },
+    // 可关闭式通知提示，titlePara为标题，messagePara为通知内容
+    notificationInfo: function (titlePara, messagePara) {
+      const h = this.$createElement
+      this.$notify({
+        title: titlePara,
+        message: h('i', {style: 'color: teal'}, `${messagePara}`)
+      })
     }
   }
 }

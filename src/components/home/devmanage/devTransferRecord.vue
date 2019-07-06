@@ -4,47 +4,54 @@
       <el-select v-model="selectedValue" placeholder="请选择需要查询的设备编号" @change="searchDev">
         <el-option
           v-for="item in devDeviceIdList"
-          :key="item.value"
+          :key="item.value + randomValue"
           :label="item.label"
           :value="item.value">
         </el-option>
       </el-select>
     </div>
-    <el-table
-      :header-cell-style="{'font-size':'14px'}"
-      :data="tableData"
-      border
-      style="width: 100%;font-size:12px;">
-      <el-table-column
-        align="center"
-        prop="deviceId"
-        label="设备编号"
-        min-width="20%">
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="date"
-        label="转移时间"
-        min-width="20%">
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="beforeloca"
-        label="原投放地址"
-        min-width="30%">
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="afterloca"
-        label="转移投放地址"
-        min-width="30%">
-      </el-table-column>
-    </el-table>
-
+    <div class="tableDiv">
+      <el-table
+        :header-cell-style="{'font-size':'14px'}"
+        :data="tableData"
+        border
+        style="width: 100%;font-size:12px;">
+        <el-table-column
+          align="center"
+          prop="deviceId"
+          label="设备编号"
+          min-width="20%">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="type"
+          label="操作类型"
+          min-width="20%">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="createTime"
+          label="转移时间"
+          min-width="20%">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="oldSite"
+          label="原投放地址"
+          min-width="30%">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="newSite"
+          label="转移投放地址"
+          min-width="30%">
+        </el-table-column>
+      </el-table>
+    </div>
     <el-pagination
       @current-change="handlePaginationChange"
-      :current-page="currentPage"
-      :page-size="pagesize"
+      :current-page="param.currentPage"
+      :page-size="param.pagesize"
       layout="total, prev, pager, next, jumper"
       :total="eltotal">
     </el-pagination>
@@ -52,54 +59,129 @@
 </template>
 
 <script>
+import { back } from 'api'
+import { sessionGetStore, sessionSetStore } from '@/components/config/Utils'
+import { character } from '@/components/config/Character'
 import $ from 'jquery'
 export default {
   data () {
     return {
+      param: {
+        'currentPage': 1,
+        'pagesize': 8,
+        'currentPage_DiaDev': 1,
+        'pagesize_DiaDev': 8
+      },
       selectedValue: '',
       total: 6,
       online: 3,
       currentPage: 1,
       pagesize: 10,
       eltotal: 20,
-      devDeviceIdList: [{
-        value: '139761',
-        label: '139761'
-      }, {
-        value: '139762',
-        label: '139762'
-      }, {
-        value: '139763',
-        label: '139763'
-      }, {
-        value: '139764',
-        label: '139764'
-      }, {
-        value: '139765',
-        label: '139765'
-      }, {
-        value: '139766',
-        label: '139766'
-      }],
+      devDeviceIdList: [],
+      randomValue: character.randomWord(true, 9, 12),
       // 表格数据
       tableData: [{
         deviceId: '139761',
-        date: '2017-11-25 16:27:08',
-        beforeloca: '江泰国际广场4楼',
-        afterloca: '江泰国际广场2楼'
+        type: '注册', // 操作类型 1-注册 2-转移 3-解绑
+        createTime: '2017-11-25 16:27:08',
+        oldSite: '江泰国际广场4楼',
+        newSite: '江泰国际广场2楼'
       }]
     }
   },
+  created: function () {
+    // session获取登录者关键参数
+    this.param.managerId = sessionGetStore('managerId')
+    this.pageQueSelInit()
+    this.backQueDevOperRecodPage()
+  },
   mounted: function () {
     var windowHeight = $(window).height()
-    $('.el-table').height(windowHeight - 280)
+    var mainHeight = windowHeight - 60 - 20 - 40 - 20 - 40
+    $('.devTransferRecordPage').height(mainHeight)
+    $('.tableDiv').height(mainHeight - 32 - 40 - 32 - 20 + 13)
   },
   methods: {
     searchDev: function (val) {
       console.log(val)
+      this.param.devId = val
+      this.backQueDevOperRecodPage()
     },
+    // 每次切换页码之前清空table数据
     handlePaginationChange: function (value) {
       console.log(value)
+      this.param.currentPage = value
+      // 分页查询请求可选项置空函数
+      this.pageQueSelInit()
+      this.backQueDevOperRecodPage()
+    },
+    /*
+      *
+      *******************   API调用   *********************
+      *
+    */
+    // 设备操作记录分页查询
+    backQueDevOperRecodPage: function () {
+      sessionSetStore('backName', '设备操作记录分页查询')
+      back.queDevOperRecordPage(this.param).then(function (response) {
+        console.log(response)
+        this.eltotal = response.data.total
+        if (response.data.records) {
+          this.tableData = []
+          for (let i = 0; i < response.data.records.length; i++) {
+            let obj = {}
+            obj.id = response.data.records[i].id
+            obj.deviceId = response.data.records[i].deviceId
+            obj.typeNum = response.data.records[i].type
+            if (obj.typeNum === 1) {
+              obj.type = '注册'
+            } else if (obj.typeNum === 2) {
+              obj.type = '转移'
+            } else if (obj.typeNum === 3) {
+              obj.type = '解绑'
+            }
+            obj.oldSite = response.data.records[i].oldSite
+            obj.newSite = response.data.records[i].newSite
+            obj.createTime = response.data.records[i].createTime
+            this.tableData.push(obj)
+            // 存储设备编码列表
+            let devObj = {}
+            devObj.value = response.data.records[i].deviceId
+            this.devDeviceIdList[i] = devObj
+          }
+        } else {
+          this.tableData = []
+          this.devDeviceIdList = []
+        }
+      }.bind(this))
+        .catch((error) => {
+          console.log(error)
+        })
+    },
+    //
+    // *******************   辅助函数   *********************
+    //
+    // 分页查询请求可选项置空函数
+    pageQueSelInit: function () {
+      this.param.devId = ''
+      this.param.operationType = '2'
+      this.param.deviceId = ''
+      this.param.siteId = ''
+      this.param.managerId = ''
+      this.param.userId = ''
+      this.param.state = ''
+      this.param.site = ''
+      this.param.id = ''
+      this.param.paperId = ''
+    },
+    // 可关闭式通知提示，titlePara为标题，messagePara为通知内容
+    notificationInfo: function (titlePara, messagePara) {
+      const h = this.$createElement
+      this.$notify({
+        title: titlePara,
+        message: h('i', {style: 'color: teal'}, `${messagePara}`)
+      })
     }
   }
 }
@@ -107,6 +189,8 @@ export default {
 
 <style scoped>
 .devTransferRecordPage {
+  padding: 20px;
+  background-color: white;
   width: 100%;
 }
 .select {

@@ -1,1 +1,1 @@
-export const backbasurl = 'http://wx.swehongshi.com/charging'
+export const backbasurl = 'https://wxmp.thingcom.com'

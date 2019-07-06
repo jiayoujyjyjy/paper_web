@@ -64,7 +64,7 @@
           <img style="width:45px;height:45px;float:left" src="/static/user.png" />
           <el-dropdown @command="handleCommand">
             <span class="el-dropdown-link">
-              {{userName}}<i class="el-icon-arrow-down el-icon--right"></i>
+              {{username}}<i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="a">退出系统</el-dropdown-item>
@@ -81,6 +81,7 @@
 </template>
 
 <script>
+import { back } from 'api'
 import $ from 'jquery'
 import Routers from '@/router'
 import { sessionSetStore, sessionGetStore } from '@/components/config/Utils'
@@ -88,6 +89,9 @@ export default {
   name: 'home',
   data () {
     return {
+      param: {
+        'id': ''
+      },
       // userAuth: 1, // 当前用户的角色权限
       superAdminAuth: 0, // 0超级管理员 1一级管理员 2客户 3转换的角色
       clientAuth: 2,
@@ -120,18 +124,19 @@ export default {
         index: '4-2',
         value: '订单管理'
       }],
+      userInfo: {}, // 管理员详情信息
       homeImgSrc: '/static/home_active.png',
       devImgSrc: '/static/devmanage.png',
       dataImgSrc: '/static/data.png',
       operationImgSrc: '/static/operation.png',
       agencyImgSrc: '/static/agency.png'
-      // userName: 'admin'
+      // username: 'admin'
     }
   },
   // vuex数据绑定
   computed: {
-    userName () {
-      return this.$store.state.userName
+    username () {
+      return this.userInfo.nickname
     },
     userAuth () {
       return this.$store.state.userAuth
@@ -152,8 +157,11 @@ export default {
         this.changeMenuImg(false, false)
       }
     }
-    // var userName = sessionGetStore('userName')
-    // this.$store.commit('setUserName', userName)
+    // session获取登录者关键参数
+    this.param.id = sessionGetStore('managerId')
+    this.backQueManagerInfo()
+    // var username = sessionGetStore('username')
+    // this.$store.commit('setUserName', username)
     // var userAuth = sessionGetStore('userAuth')
     // this.$store.commit('setUserAuth', userAuth)
     // var userId = sessionGetStore('userId')
@@ -181,6 +189,10 @@ export default {
     //   console.log(document.body.clientWidth)
     //   _this.caculateContainer()
     // }
+  },
+  // 注销window.onresize事件
+  destroyed () {
+    window.onresize = null
   },
   methods: {
     // 计算元素高度
@@ -301,6 +313,33 @@ export default {
         title: titlePara,
         message: h('i', {style: 'color: teal'}, `${messagePara}`)
       })
+    },
+    /*
+      *
+      *******************   API调用   *********************
+      *
+    */
+    // 查看管理员详情
+    backQueManagerInfo: function () {
+      return new Promise(function (resolve, reject) {
+        sessionSetStore('backName', '查看管理员详情')
+        back.queManagerInfo(this.param).then(function (response) {
+          console.log(response)
+          let obj = {}
+          obj.id = response.data.id
+          obj.username = response.data.username
+          obj.nickname = response.data.nickname
+          obj.name = response.data.name
+          obj.phone = response.data.phone
+          obj.roleType = response.data.roleType
+          this.userInfo = obj
+          resolve()
+        }.bind(this))
+          .catch(function (error) {
+            console.log(error)
+            reject()
+          })
+      }.bind(this))
     }
   }
 }

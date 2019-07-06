@@ -2,8 +2,9 @@
   <div class="userBase">
     <el-header>
       <el-tabs v-model="usermanage_activeName" @tab-click="handleClick">
-          <el-tab-pane label="代理管理" name="first"></el-tab-pane>
-          <el-tab-pane label="管理员管理" name="second"></el-tab-pane>
+          <el-tab-pane label="用户管理" name="first"></el-tab-pane>
+          <!-- <el-tab-pane label="代理管理" name="first"></el-tab-pane>
+          <el-tab-pane label="管理员管理" name="second"></el-tab-pane> -->
       </el-tabs>
     </el-header>
     <el-container class="userBasemain">
@@ -14,7 +15,6 @@
 
 <script>
 import { sessionGetStore, sessionSetStore } from '@/components/config/Utils'
-import $ from 'jquery'
 import Routers from '@/router'
 export default {
   name: 'userBase',
@@ -31,9 +31,6 @@ export default {
     console.log(this.usermanage_activeName)
   },
   mounted: function () {
-    var windowHeight = $(window).height()
-    var mainHeight = windowHeight - 80
-    $('.userBase').height(mainHeight)
   },
   methods: {
     handleClick: function (tab) {
@@ -64,6 +61,6 @@ export default {
 }
 .userBasemain {
   width: 100%;
-  padding: 0 20px;
+  /* padding: 0 20px; */
 }
 </style>

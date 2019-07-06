@@ -7,8 +7,10 @@
 <script>
 export default {
   name: 'App',
+  created: function () {
+  },
   mounted: function () {
-    console.log = function () {}
+    // console.log = function () {}
   }
 }
 </script>

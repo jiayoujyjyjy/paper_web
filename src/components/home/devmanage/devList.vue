@@ -1,38 +1,22 @@
 <template>
   <div class="devListPage">
     <div class="select">
-      <el-select v-model="selectedValue" multiple placeholder="请选择需要查询的设备编号">
-        <el-option
-          v-for="item in devDeviceIdList"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
-        </el-option>
-      </el-select>
+      <el-input v-model="input_devMac" placeholder="请输入设备编号" @keyup.enter.native="searchDev"></el-input>
       <el-button size="small" type="primary" style="margin-left:20px;" @click="searchDev">搜索</el-button>
     </div>
     <div class="flexbox">
-      <div>勾选操作：
-        <el-button size="small" type="primary" @click="unbind">批量解绑</el-button>
-        <el-button size="small" type="primary" style="margin-left:20px;" @click="transfer">设备转移</el-button>
-        <el-button size="small" type="primary" style="margin-left:20px;" @click="addBt">设备添加</el-button>
-      </div>
       <div class="box2">
         <el-button size="small" type="primary" style="margin-left:20px;" @click="upload" v-show="false">导入备注信息</el-button>
         共<p style="font-size:20px;display:inline-block;color: #007aff">{{total}}</p>台设备，在线<p style="font-size:20px;color:#007aff;display:inline-block;">{{online}}</p>台
       </div>
     </div>
-    <div class="tablediv">
+    <div class="tableDiv">
       <el-table
         :header-cell-style="{'font-size':'14px'}"
         :data="tableData"
         border
         style="width: 100%;font-size:12px;"
         @selection-change="handleSelectionChange">
-        <el-table-column
-          type="selection"
-          min-width="10%">
-        </el-table-column>
         <el-table-column
           label="操作"
           align="center"
@@ -49,8 +33,8 @@
         </el-table-column>
         <el-table-column
           align="center"
-          prop="msg"
-          label="备注"
+          prop="devName"
+          label="设备名称"
           min-width="20%">
         </el-table-column>
         <el-table-column
@@ -70,11 +54,9 @@
           align="center"
           prop="location"
           label="场地"
-          min-width="20%"
-          :filters="filter_Location"
-          :filter-method="filterLoca">
+          min-width="20%">
         </el-table-column>
-        <el-table-column
+        <!-- <el-table-column
           align="center"
           label="开锁控制"
           min-width="10%">
@@ -84,14 +66,14 @@
               @change="changeswitch(scope.$index, scope.row)">
             </el-switch>
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
     </div>
 
     <el-pagination
       @current-change="handlePaginationChange"
-      :current-page="currentPage"
-      :page-size="pagesize"
+      :current-page="param.currentPage"
+      :page-size="param.pagesize"
       layout="total, prev, pager, next, jumper"
       :total="eltotal">
     </el-pagination>
@@ -135,34 +117,16 @@
         <el-form-item label="设备编号">
           <el-input v-model="editform.deviceId" :disabled="isedit"></el-input>
         </el-form-item>
-        <el-form-item label="投放地址">
-          <el-input v-model="editform.location" :disabled="isedit"></el-input>
-        </el-form-item>
-        <el-form-item label="地址详情">
-          <el-input v-model="editform.locaDetail" :disabled="isedit"></el-input>
-        </el-form-item>
-        <el-form-item label="状态"  v-show="isedit">
-          <el-input v-model="editform.state" disabled></el-input>
+        <el-form-item label="设备名称">
+          <el-input v-model="editform.devName"></el-input>
         </el-form-item>
         <!-- 分组这里最终提交的时候要考虑分组是新建的情况 -->
-        <el-form-item label="分组" v-show="isadd">
-          <el-autocomplete
-            class="inline-input"
-            suffix-icon="el-icon-arrow-down"
-            v-model="editform.group"
-            :fetch-suggestions="querySearchGroup"
-            placeholder="请选择或输入新建分组"
-            >
-          </el-autocomplete>
-        </el-form-item>
-        <el-form-item label="备注">
-          <el-input
-            type="textarea"
-            :rows="2"
-            :maxlength="20"
-            placeholder="请输入备注内容，不超过20个字"
-            v-model="editform.msg">
-          </el-input>
+        <el-form-item label="设备转移" v-show="isadd">
+          <el-cascader
+            :options="devSiteOptions"
+            v-model="selectedSite"
+            @change="siteChangeHandle">
+          </el-cascader>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -175,11 +139,20 @@
 </template>
 
 <script>
+import { back } from 'api'
+import { sessionGetStore, sessionSetStore } from '@/components/config/Utils'
 import $ from 'jquery'
 export default {
   data () {
     return {
+      param: {
+        'currentPage': 1,
+        'pagesize': 8,
+        'currentPage_DiaDev': 1,
+        'pagesize_DiaDev': 8
+      },
       selectedValue: [],
+      input_devMac: '', // 输入设备编号
       total: 6,
       online: 3,
       currentPage: 1,
@@ -205,6 +178,29 @@ export default {
       }, {
         value: '丽水金汇广场'
       }],
+      selectedSite: [],
+      // 设备转移场地
+      devSiteOptions: [{
+        label: '孵化器',
+        value: 'fuhuaqi',
+        children: [{
+          label: '1幢',
+          value: 'buildingOne'
+        }, {
+          label: '2幢',
+          value: 'buildingTwo'
+        }]
+      }, {
+        label: '杭电',
+        value: 'hdu',
+        children: [{
+          label: '11号楼',
+          value: '11lou'
+        }, {
+          label: '22号楼',
+          value: '22lou'
+        }]
+      }],
       devDeviceIdList: [{
         value: '139761',
         label: '139761'
@@ -227,7 +223,7 @@ export default {
       // 表格数据
       tableData: [{
         deviceId: '139761',
-        msg: '备注',
+        devName: '名称1',
         state: '在线',
         location: '江泰国际广场2楼',
         unlock: true,
@@ -235,7 +231,7 @@ export default {
         group: ''
       }, {
         deviceId: '139761',
-        msg: '备注',
+        devName: '名称2',
         state: '离线',
         location: '江泰国际广场3楼',
         unlock: false,
@@ -243,7 +239,7 @@ export default {
         group: ''
       }, {
         deviceId: '139761',
-        msg: '备注',
+        devName: '名称5',
         state: '在线',
         location: '江泰国际广场2楼',
         unlock: true,
@@ -251,7 +247,7 @@ export default {
         group: ''
       }, {
         deviceId: '139761',
-        msg: '备注',
+        devName: '名称4',
         state: '在线',
         location: '江泰国际广场3楼',
         unlock: true,
@@ -259,13 +255,6 @@ export default {
         group: ''
       }],
       multipleSelection: [],
-      filter_Location: [{
-        text: '江泰国际广场2楼',
-        value: '江泰国际广场2楼'
-      }, {
-        text: '江泰国际广场3楼',
-        value: '江泰国际广场3楼'
-      }],
       filter_state: [{
         text: '在线',
         value: '在线'
@@ -282,15 +271,24 @@ export default {
         deviceId: '',
         location: '',
         locaDetail: '',
+        devName: '名称1',
         state: 0,
         group: '',
         msg: ''
       }
     }
   },
+  created: function () {
+    // session获取登录者关键参数
+    this.param.managerId = sessionGetStore('managerId')
+    this.param.devId = ''
+    this.backQueDevPage()
+  },
   mounted: function () {
     var windowHeight = $(window).height()
-    $('.tablediv').height(windowHeight - 360)
+    var mainHeight = windowHeight - 60 - 20 - 40 - 20 - 40
+    $('.devListPage').height(mainHeight)
+    $('.tableDiv').height(mainHeight - 32 - 40 - 32 - 20 - 50 + 40)
   },
   beforeDestroy: function () {
     // 停止定时器
@@ -302,8 +300,11 @@ export default {
       window.clearInterval(this.timer)
       this.timer = window.setInterval(this.backOnlineQue, 3000)
     },
+    // 根据设备编号查找
     searchDev: function () {
-      console.log(this.selectedValue)
+      console.log(this.input_devMac)
+      this.param.devId = this.input_devMac
+      this.backQueDevPage()
     },
     // 解绑设备
     unbind: function () {
@@ -336,46 +337,52 @@ export default {
     editBt: function (index, row) {
       this.editDialogTitle = '设备信息'
       this.isedit = true
-      this.isadd = false
-      this.editform = {
-        deviceId: this.tableData[index].deviceId,
-        location: this.tableData[index].location,
-        locaDetail: this.tableData[index].locaDetail,
-        state: this.tableData[index].state,
-        group: '',
-        msg: this.tableData[index].msg
-      }
-      this.editDialogVisible = true
-    },
-    // 新增设备按钮
-    addBt: function () {
-      this.editDialogTitle = '新增设备'
-      this.isedit = false
       this.isadd = true
-      this.editform = {
-        deviceId: '',
-        location: '',
-        locaDetail: '',
-        state: 0,
-        group: '',
-        msg: ''
-      }
+      this.param.deviceId = this.tableData[index].deviceId
+      // 查看设备详情
+      this.backQueDevInfo()
+      // this.editform = {
+      //   deviceId: this.tableData[index].deviceId,
+      //   devName: this.tableData[index].devName
+      // }
       this.editDialogVisible = true
     },
+    // 设备场地转移
+    siteChangeHandle: function (value) {
+      console.log(value)
+      console.log(this.selectedSite)
+    },
+    // // 新增设备按钮
+    // addBt: function () {
+    //   this.editDialogTitle = '新增设备'
+    //   this.isedit = false
+    //   this.isadd = true
+    //   this.editform = {
+    //     deviceId: '',
+    //     location: '',
+    //     locaDetail: '',
+    //     state: 0,
+    //     group: '',
+    //     msg: ''
+    //   }
+    //   this.editDialogVisible = true
+    // },
     sendOrder: function (index, row) {
     },
     changeswitch: function (index, row) {
       console.log('开锁控制')
     },
+    // 每次切换页码之前清空table数据
     handlePaginationChange: function (value) {
       console.log(value)
+      this.param.currentPage = value
+      // 分页查询请求可选项置空函数
+      this.pageQueSelInit()
+      this.backQueDevPage()
     },
     handleSelectionChange: function (val) {
       this.multipleSelection = val
       console.log(this.multipleSelection)
-    },
-    filterLoca: function (value, row) {
-      return row.location === value
     },
     filterState: function (value, row) {
       return row.state === value
@@ -410,18 +417,105 @@ export default {
     // 添加/编辑对话框确认操作
     editDialogConfirm: function () {
       if (this.editDialogTitle === '新增设备') {
+        // 1.新增设备
         console.log('新增设备')
         console.log(this.editform)
       } else {
+        // 2.更改设备
         console.log('设备信息')
         console.log(this.editform)
+        this.param.deviceId = this.editform.deviceId
+        this.param.deviceName = this.editform.devName
+        this.param.siteId = this.selectedSite[1]
+        this.backUpdateDevice()
+        this.editDialogVisible = false
       }
     },
-    //
-    // *******************   API调用   *********************
-    //
-    backDevlistQue: function () {
-      // this.queryLoop()
+    /*
+      *
+      *******************   API调用   *********************
+      *
+    */
+    // 设备分页查询
+    backQueDevPage: function () {
+      // degugger
+      sessionSetStore('backName', '设备分页查询')
+      back.queDevPage(this.param).then(function (response) {
+        console.log(response)
+        this.total = response.sumNum
+        this.online = response.onlineNum
+        this.eltotal = response.data.total
+        if (response.data.records) {
+          this.tableData = []
+          for (let i = 0; i < response.data.records.length; i++) {
+            let obj = {}
+            obj.deviceId = response.data.records[i].id
+            obj.devName = response.data.records[i].name
+            obj.location = response.data.records[i].site
+            obj.stateNum = response.data.records[i].state
+            if (obj.stateNum === 0) {
+              obj.state = '离线'
+            } else if (obj.stateNum === 1) {
+              obj.state = '在线'
+            }
+            this.tableData.push(obj)
+          }
+        } else {
+          this.tableData = []
+        }
+      }.bind(this))
+        .catch(function (error) {
+          console.log(error)
+        })
+    },
+    // 查看设备详情
+    backQueDevInfo: function () {
+      sessionSetStore('backName', '查看设备详情')
+      back.queDevInfo(this.param).then(function (response) {
+        console.log(response)
+        this.editform.deviceId = response.data.id
+        this.editform.devName = response.data.name
+        let groupList = []
+        this.devSiteOptions = [] // 初始化
+        if (response.data.groupList) {
+          for (let i = 0; i < response.data.groupList.length; i++) {
+            let groupObj = {}
+            groupObj.value = response.data.groupList[i].id
+            groupObj.label = response.data.groupList[i].name
+            let siteList = []
+            if (response.data.groupList[i].siteList === undefined) {
+              siteList[0] = {}
+              groupObj.children = siteList
+              groupList[i] = groupObj
+              continue
+            }
+            for (let j = 0; j < response.data.groupList[i].siteList.length; j++) {
+              let siteObj = {}
+              siteObj.value = response.data.groupList[i].siteList[j].id
+              siteObj.label = response.data.groupList[i].siteList[j].name
+              siteList[j] = siteObj
+            }
+            groupObj.children = siteList
+            groupList[i] = groupObj
+          }
+        }
+        this.devSiteOptions = groupList
+      }.bind(this))
+        .catch(function (error) {
+          console.log(error)
+        })
+    },
+    // 修改设备
+    backUpdateDevice: function () {
+      sessionSetStore('backName', '修改设备')
+      back.updateDevice(this.param).then(function (response) {
+        console.log(response)
+        this.param.devId = ''
+        this.backQueDevPage()
+      }.bind(this))
+        .catch(function (error) {
+          console.log(error)
+        })
     },
     backUnbind: function () {
       this.$message({
@@ -431,6 +525,29 @@ export default {
     },
     // 查询设备在线状态
     backOnlineQue: function () {
+    },
+    //
+    // *******************   辅助函数   *********************
+    //
+    // 分页查询请求可选项置空函数
+    pageQueSelInit: function () {
+      this.param.devId = ''
+      this.param.deviceId = ''
+      this.param.siteId = ''
+      this.param.managerId = ''
+      this.param.userId = ''
+      this.param.state = ''
+      this.param.site = ''
+      this.param.id = ''
+      this.param.paperId = ''
+    },
+    // 可关闭式通知提示，titlePara为标题，messagePara为通知内容
+    notificationInfo: function (titlePara, messagePara) {
+      const h = this.$createElement
+      this.$notify({
+        title: titlePara,
+        message: h('i', {style: 'color: teal'}, `${messagePara}`)
+      })
     }
   }
 }
@@ -438,6 +555,8 @@ export default {
 
 <style scoped>
 .devListPage {
+  padding: 20px;
+  background-color: white;
   width: 100%;
 }
 .select {
@@ -448,11 +567,12 @@ export default {
 .el-select >>> .el-input {
   font-size: 12px;
 }
-.tablediv {
-  overflow: auto;
+.select .el-input {
+  width: 230px;
+  margin-right: 5px;
 }
 .flexbox {
-  margin: 20px 0 0 0;
+  /* margin: 20px 0 0 0; */
   display: -webkit-flex; /* Safari */
   display: flex;
   flex-wrap: nowrap;

@@ -9,18 +9,18 @@
         <span class="form_title">纸巾盒设备管理系统</span>
         <div style="width:100%;height:1px;margin-top:20px;background-color:#cac1c6;"></div>
         <el-form :model="ruleFormLogin" ref="ruleFormLogin" label-width="50px" :rules="rulesLogin">
-          <el-form-item prop="phone" label="账号">
+          <!-- <el-form-item prop="username" label="账号">
             <el-autocomplete
               class="inline-input"
-              v-model="ruleFormLogin.phone"
+              v-model="ruleFormLogin.username"
               :fetch-suggestions="querySearch"
               :trigger-on-focus="false"
-              placeholder="请输入手机号">
+              placeholder="请输入账号">
             </el-autocomplete>
-          </el-form-item>
-          <!-- <el-form-item prop="phone" label="账号">
-            <el-input type="text" @keyup.enter.native="loginBt(ruleFormLogin)" v-model="ruleFormLogin.phone" auto-complete="off" placeholder="请输入手机号"></el-input>
           </el-form-item> -->
+          <el-form-item prop="username" label="账号">
+            <el-input type="text" @keyup.enter.native="loginBt(ruleFormLogin)" v-model="ruleFormLogin.username" auto-complete="off" placeholder="请输入账号"></el-input>
+          </el-form-item>
           <el-form-item prop="password" class="password" label="密码">
             <el-input type="password" @keyup.enter.native="loginBt(ruleFormLogin)" v-model="ruleFormLogin.password" auto-complete="off" placeholder="请输入密码"></el-input>
           </el-form-item>
@@ -50,16 +50,14 @@ export default {
   name: 'login',
   data () {
     // ***********表单输入规则校验***********
-    // 校验手机号
-    // var checkPhone = (rule, value, callback) => {
-    //   if (value === '') {
-    //     callback(new Error('手机号不能为空'))
-    //   } else if (value.length !== 11) {
-    //     callback(new Error('请输入11位手机号'))
-    //   } else {
-    //     callback()
-    //   }
-    // }
+    // 校验账号
+    var checkAccount = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('账号不能为空'))
+      } else {
+        callback()
+      }
+    }
     // 校验密码
     var checkPassword = (rule, value, callback) => {
       if (value === '') {
@@ -82,14 +80,14 @@ export default {
       cookiephone: [], // cookie中手机号数据，根据el-autocomplete要求设置格式
       // 用户登录
       ruleFormLogin: {
-        phone: '',
+        username: '',
         password: ''
       },
       // 登录表单校验
       rulesLogin: {
-        // phone: [
-        //   { validator: checkPhone, trigger: 'blur' }
-        // ],
+        username: [
+          { validator: checkAccount, trigger: 'blur' }
+        ],
         password: [
           { validator: checkPassword, trigger: 'blur' }
         ]
@@ -113,7 +111,10 @@ export default {
     }
     this.getCookie()
   },
-  //
+  // 注销window.onresize事件
+  destroyed () {
+    window.onresize = null
+  },
   methods: {
     //
     // ***************** 功能函数 ****************
@@ -149,21 +150,18 @@ export default {
       // 错误检查
       this.$refs.ruleFormLogin.validate((valid) => {
         if (valid) {
-          if ((ruleFormLogin.phone === '12312312312' && ruleFormLogin.password === '123456') || (ruleFormLogin.phone === '13588767140' && ruleFormLogin.password === '123456')) {
-            // sessionSetStore('userPhone', ruleFormLogin.phone)
-            sessionSetStore('userName', 'admin')
-            // sessionSetStore('userAuth', 1)
-            this.$store.commit('setUserName', 'admin')
-            // this.$store.commit('setUserAuth', 1)
-            // this.$cookies.set('name', 'may')
-            this.setCookie(ruleFormLogin.phone, 7)
-            // Routers.push({ path: '/home' })
-            console.log('success')
-            this.backUserLogin()
-          }
-          // this.param.mobile = this.ruleFormLogin.phone
-          // this.param.password = this.ruleFormLogin.password
-          // this.backUserLogMobile()
+          sessionSetStore('username', ruleFormLogin.username)
+          sessionSetStore('password', ruleFormLogin.password)
+          // sessionSetStore('userAuth', 1)
+          this.$store.commit('setUserName', ruleFormLogin.username)
+          // this.$store.commit('setUserAuth', 1)
+          // this.$cookies.set('name', 'may')
+          this.setCookie(ruleFormLogin.username, 7)
+          // Routers.push({ path: '/home' })
+          console.log('success')
+          this.param.username = this.ruleFormLogin.username
+          this.param.password = this.ruleFormLogin.password
+          this.backUserLogin()
         } else {
           console.log('error submit!!')
           return false
@@ -184,7 +182,7 @@ export default {
     *
     */
     // 设置cookie
-    setCookie: function (userPhone, exdays) {
+    setCookie: function (username, exdays) {
       // 获取时间
       var exdate = new Date()
       // 保存的天数,setTime() 方法以毫秒设置 Date 对象
@@ -195,9 +193,9 @@ export default {
       // 综上，我采用拼接字符串的方法，用“&”做分隔符，把不同的手机号拼接成一个字符串，读取的时候再处理得到多个数据
       // 要考虑几种情况，第一，除了userPhone还有其他的cookie，第二，用户是否是第一次操作
       var nameupdate
-      if (document.cookie.indexOf('userPhone') === -1) {
+      if (document.cookie.indexOf('username') === -1) {
         // 第一次操作
-        nameupdate = userPhone
+        nameupdate = username
       } else {
         // 取出cookie中各个手机号的值，与当前值比较，如果当前值已存在，不改变cookie，否则写入新的cookie
         var nameStr = ''
@@ -205,7 +203,7 @@ export default {
           console.log('多个cookie')
           var data1 = document.cookie.split(';')
           for (let i = 0; i < data1.length; i++) {
-            if (data1[i].split('=')[0] === ' userPhone' || data1[i].split('=')[0] === 'userPhone') {
+            if (data1[i].split('=')[0] === ' username' || data1[i].split('=')[0] === 'username') {
               nameStr = data1[i].split('=')[1]
             }
           }
@@ -215,14 +213,14 @@ export default {
         }
         var data = nameStr.split('&')
         for (let i = 0; i < data.length; i++) {
-          if (data[i] === userPhone) {
+          if (data[i] === username) {
             return
           }
         }
-        nameupdate = nameStr + '&' + userPhone
+        nameupdate = nameStr + '&' + username
       }
       // 字符串拼接cookie，toGMTString() 方法根据格林威治时间 (GMT) 把 Date 对象转换为字符串
-      document.cookie = 'userPhone' + '=' + nameupdate + ';path=/;expires=' + exdate.toGMTString()
+      document.cookie = 'username' + '=' + nameupdate + ';path=/;expires=' + exdate.toGMTString()
     },
     // 读取cookie
     getCookie: function () {
@@ -234,13 +232,13 @@ export default {
         var nameStr = ''
         if (document.cookie.indexOf(';') > -1) {
           console.log('多个')
-          if (document.cookie.indexOf('userPhone') === -1) {
+          if (document.cookie.indexOf('username') === -1) {
             console.log('没有用户信息的cookie')
             return
           }
           var data1 = document.cookie.split(';')
           for (let i = 0; i < data1.length; i++) {
-            if (data1[i].split('=')[0] === ' userPhone' || data1[i].split('=')[0] === 'userPhone') {
+            if (data1[i].split('=')[0] === ' username' || data1[i].split('=')[0] === 'username') {
               nameStr = data1[i].split('=')[1]
             }
           }
@@ -267,24 +265,18 @@ export default {
     },
     /*
     *
-    *   ******** API调用函数 ********
-    *
-    */
-    /*
-    *
     *   ******** 辅助方法函数 ********
     *
     */
     // 用户信息存储vuex localstorge
     userinfoStore: function (info) {
       // vuex存储
-      this.$store.commit('setUserId', info.data[0].userId)
-      this.$store.commit('setUserName', this.param.userName)
-      this.param.userId = info.data[0].userId
+      this.$store.commit('setUserId', info.data.managerId)
+      this.$store.commit('setUserName', this.param.username)
       // 浏览器本地存储
-      sessionSetStore('name', this.param.userName)
-      sessionSetStore('pass', this.param.password)
-      sessionSetStore('userId', this.param.userId)
+      sessionSetStore('managerId', info.data.id)
+      sessionSetStore('roleId', info.data.roleType)
+      sessionSetStore('activeNum', '1')
     },
     // 可关闭式通知提示，titlePara为标题，messagePara为通知内容
     notificationInfo: function (titlePara, messagePara) {
@@ -301,21 +293,19 @@ export default {
     */
     // 用户登录
     backUserLogin: function () {
-      back.userLogMobile(this.param).then(function (response) {
-        console.log('用户登录')
+      sessionSetStore('backName', '用户登录')
+      back.loginManager(this.param).then(function (response) {
         console.log(response)
-        // if (response.errno > 0) {
-        //   this.notificationInfo('错误提示', response.error)
-        //   return
-        // }
         // 用户信息存储vuex localstorge
-        // this.userinfoStore(response)
-        // sessionSetStore('userName', response.data.name)
-        // sessionSetStore('activeNum', '1')
+        this.userinfoStore(response)
+        // 萤石云
         // this.backEzvizBindQue()
-        // 跳转到home页面
+        // 跳转到home页面s
         Routers.push({ path: '/home' })
-      })
+      }.bind(this))
+        .catch(function (error) {
+          console.log(error)
+        })
     }
   }
 }

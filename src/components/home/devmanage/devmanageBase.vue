@@ -14,7 +14,6 @@
 
 <script>
 import { sessionGetStore, sessionSetStore } from '@/components/config/Utils'
-import $ from 'jquery'
 import Routers from '@/router'
 export default {
   name: 'devmanageBase',
@@ -31,9 +30,6 @@ export default {
     console.log(this.devmanage_activeName)
   },
   mounted: function () {
-    var windowHeight = $(window).height()
-    var mainHeight = windowHeight - 80
-    $('.devmanageBase').height(mainHeight)
   },
   methods: {
     handleClick: function (tab) {
@@ -64,6 +60,6 @@ export default {
 }
 .devmanageBasemain {
   width: 100%;
-  padding: 0 20px;
+  /* padding: 0 20px; */
 }
 </style>

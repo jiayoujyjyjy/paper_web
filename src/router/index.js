@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import store from '../vuex/store'
+import { sessionGetStore } from '@/components/config/Utils'
 // 路由懒加载
 // 登录
 const Login = r => require.ensure([], () => r(require('@/components/login')), 'Login')
@@ -29,7 +30,6 @@ const Manager = r => require.ensure([], () => r(require('@/components/home/userM
 const Blank = r => require.ensure([], () => r(require('@/components/home/blank')), 'Blank')
 
 Vue.use(Router)
-
 const router = new Router({
   // mode: 'history',
   routes: [
@@ -67,7 +67,7 @@ const router = new Router({
   ]
 })
 router.beforeEach((to, from, next) => {
-  console.log(from.name)
+  console.log(from.name) // 上边的组件配置项一定要写name字段
   console.log(to.name)
   if (to.name === 'blank') {
     if (from.name === 'device') {
@@ -77,7 +77,23 @@ router.beforeEach((to, from, next) => {
       store.commit('setResetPage', 'place')
     }
   }
-  next()
+  // next()
+  // 校验uesrId
+  let userId = sessionGetStore('managerId')
+  if (userId && userId !== '') {
+    // 验证通过---跳转到目标路由
+    next()
+  } else {
+    if (to.path.indexOf('login') !== -1) {
+      // 是登录---跳转到目标路由
+      next()
+    } else {
+      // 不是登录---返回登录页
+      next({
+        path: '/login'
+      })
+    }
+  }
 })
 
 export default router

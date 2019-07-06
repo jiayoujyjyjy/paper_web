@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
-    userName: 'noUser',
+    username: 'noUser',
     userId: 123,
     userAuth: 0,
     menuActive: '1',
@@ -13,7 +13,7 @@ const store = new Vuex.Store({
   },
   mutations: {
     setUserName (state, msg) {
-      state.userName = msg
+      state.username = msg
     },
     setUserId (state, msg) {
       state.userId = msg

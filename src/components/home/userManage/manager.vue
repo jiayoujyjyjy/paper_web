@@ -1,8 +1,8 @@
 <template>
   <div class="managerPage">
-    <div class="selectionOperation">勾选操作：
+    <div class="selectionOperation">
       <el-button type="primary" size="small" @click="addBt">新增</el-button>
-      <el-button size="small" type="primary" style="margin-left:20px;" @click="delBt">删除</el-button>
+      <!-- <el-button size="small" type="primary" style="margin-left:20px;" @click="delBt">删除</el-button> -->
     </div>
     <el-table
       :header-cell-style="{'font-size':'14px'}"
@@ -11,10 +11,10 @@
       border
       style="width: 100%;font-size:12px;"
       @selection-change="handleSelectionChange">
-      <el-table-column
+      <!-- <el-table-column
         type="selection"
         min-width="10%">
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column
         align="center"
         prop="name"
@@ -27,12 +27,12 @@
         label="手机号"
         min-width="25%">
       </el-table-column>
-      <el-table-column
+      <!-- <el-table-column
         align="center"
         prop="password"
         label="密码"
         min-width="20%">
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column
         align="center"
         label="状态"
@@ -50,7 +50,7 @@
         min-width="20%">
         <template slot-scope="scope">
           <el-button type="text" size="small" icon="el-icon-edit" @click="editBt(scope.$index, scope.row)">编辑</el-button>
-          <!-- <el-button type="text" size="small" icon="el-icon-delete" @click="delBt(scope.$index, scope.row)">删除</el-button> -->
+          <el-button size="small" type="text" icon="el-icon-delete" @click="delBt(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -203,19 +203,20 @@ export default {
       this.dialogEditVisible = true
     },
     // 删除管理员信息对话框
-    delBt: function () {
-      if (this.multipleSelection.length !== 0) {
-        this.$confirm('您确定删除所选管理员信息吗?', '删除管理员', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.backDel()
-        }).catch(() => {
-        })
-      } else {
-        this.$message.error('请至少选择一个条目')
-      }
+    delBt: function (index, row) {
+      console.log(index, row)
+      // if (this.multipleSelection.length !== 0) {
+      //   this.$confirm('您确定删除所选管理员信息吗?', '删除管理员', {
+      //     confirmButtonText: '确定',
+      //     cancelButtonText: '取消',
+      //     type: 'warning'
+      //   }).then(() => {
+      //     this.backDel()
+      //   }).catch(() => {
+      //   })
+      // } else {
+      //   this.$message.error('请至少选择一个条目')
+      // }
     },
     // 新增管理员信息对话框
     addBt: function () {
