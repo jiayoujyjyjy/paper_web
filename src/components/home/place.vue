@@ -598,8 +598,4 @@ export default {
 .placePage >>> .el-dialog__header {
   background-color: #f4f4f4;
 }
-.el-pagination {
-  margin: 20px 20px 0 0;
-  float: right;
-}
 </style>

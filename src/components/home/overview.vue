@@ -243,7 +243,7 @@ export default {
   },
   mounted: function () {
     var windowHeight = $(window).height()
-    var mainHeight = windowHeight - 120
+    var mainHeight = windowHeight - 40 - 20 - 40
     $('.overviewPage').height(mainHeight)
     $('.left').height(mainHeight)
     $('.right').height(mainHeight)
@@ -266,15 +266,15 @@ export default {
       resizeBoxFun(barChartBox)
       resizeBoxFun(lineChartBox)
       // 2.页面缩放调整高宽
-      let barChartInstance = echarts.init(barChartBox)
-      let lineChartInstance = echarts.init(lineChartBox)
-      window.onresize = function () {
-        alert('resize') // 为啥执行了两次呢？
-        resizeBoxFun(barChartBox)
-        resizeBoxFun(lineChartBox)
-        barChartInstance.resize()
-        lineChartInstance.resize()
-      }
+      // let barChartInstance = echarts.init(barChartBox)
+      // let lineChartInstance = echarts.init(lineChartBox)
+      // window.onresize = function () {
+      //   alert('resize') // 为啥执行了两次呢？
+      //   resizeBoxFun(barChartBox)
+      //   resizeBoxFun(lineChartBox)
+      //   barChartInstance.resize()
+      //   lineChartInstance.resize()
+      // }
     },
     fullscreen: function () {
       this.ismask = true
@@ -391,7 +391,7 @@ export default {
       }
       incomePie.setOption(option)
     },
-    // 加载图表 折线图
+    // 加载图表 折线图 左下角
     loaddiagram: function (data, id) {
       console.log('加载图表 折线图')
       console.log(data)
@@ -423,11 +423,12 @@ export default {
             end: 100
           }
         ],
-        legend: {
-          orient: 'horizontal',
-          y: 'bottom',
-          data: this.legend(id)
-        },
+        // 因为太多导致内容溢出，所以暂时隐藏
+        // legend: {
+        //   orient: 'horizontal',
+        //   y: 'bottom',
+        //   data: this.legend(id)
+        // },
         xAxis: {
           data: xdata
         },

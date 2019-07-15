@@ -16,6 +16,7 @@
         :data="tableData"
         border
         style="width: 100%;font-size:12px;"
+        :max-height="tableMaxHeght"
         @selection-change="handleSelectionChange">
         <el-table-column
           label="操作"
@@ -35,7 +36,7 @@
           align="center"
           prop="devName"
           label="设备名称"
-          min-width="20%">
+          min-width="30%">
         </el-table-column>
         <el-table-column
           align="center"
@@ -54,7 +55,7 @@
           align="center"
           prop="location"
           label="场地"
-          min-width="20%">
+          min-width="30%">
         </el-table-column>
         <!-- <el-table-column
           align="center"
@@ -275,7 +276,9 @@ export default {
         state: 0,
         group: '',
         msg: ''
-      }
+      },
+      // 表格最大高度 header mainOuterPadding tabs mainInPadding footer serachDiv bugSet
+      tableMaxHeght: document.body.clientHeight - 40 - 20 - 40 - 40 - 40 - 42 - 53 + 13 // ===tableDiv的高度
     }
   },
   created: function () {
@@ -285,10 +288,13 @@ export default {
     this.backQueDevPage()
   },
   mounted: function () {
+    var windowWidth = $(window).width()
+    $('.tableDiv').width(windowWidth - 200 - 20 - 40) // 解决表格滚动条分页益处问题
     var windowHeight = $(window).height()
-    var mainHeight = windowHeight - 60 - 20 - 40 - 20 - 40
-    $('.devListPage').height(mainHeight)
-    $('.tableDiv').height(mainHeight - 32 - 40 - 32 - 20 - 50 + 40)
+    var mainHeight = windowHeight - 40 - 20 - 40 - 40 // header mainOuterPadding tabs mainInPadding
+    console.log(mainHeight) // 617
+    $('.devListPage').height(mainHeight) // 设置的是内容高度，巨坑啊卧槽
+    $('.tableDiv').height(mainHeight - 40 - 42 - 53 + 13) // serachDiv 几台设备Div footer +13的原因是element的控件boder-sizing为content
   },
   beforeDestroy: function () {
     // 停止定时器
@@ -374,6 +380,7 @@ export default {
     },
     // 每次切换页码之前清空table数据
     handlePaginationChange: function (value) {
+      // this.tableMaxHeght = document.body.clientHeight - 40 - 20 - 40 - 40 - 40 - 42 - 53 // ===tableDiv的高度
       console.log(value)
       this.param.currentPage = value
       // 分页查询请求可选项置空函数
@@ -561,7 +568,7 @@ export default {
 }
 .select {
   width: 100%;
-  height: auto;
+  height: 40px;
   text-align: left;
 }
 .el-select >>> .el-input {
@@ -577,16 +584,20 @@ export default {
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-between;
+  height: 30px;
+  margin: 6px 0;
 }
 .box2 {
   font-size:15px;
   letter-spacing:3px
 }
-.el-pagination {
-  margin: 20px 20px 0 0;
-  float: right;
+.box2 p {
+  margin: 0;
 }
 .devListPage >>> .el-dialog__header {
   border-bottom: 1px solid #CDC9C9;
 }
+/* .tableDiv {
+  overflow: hidden;
+} */
 </style>

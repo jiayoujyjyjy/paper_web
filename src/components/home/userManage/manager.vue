@@ -288,10 +288,6 @@ export default {
   padding: 20px;
   background-color: white;
 }
-.el-pagination {
-  margin: 20px 20px 0 0;
-  float: right;
-}
 .selectionOperation {
   float: left;
   margin: 0 0 20px 10px;

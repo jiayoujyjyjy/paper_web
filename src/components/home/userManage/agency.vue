@@ -9,6 +9,7 @@
         :data="tableData"
         stripe
         border
+        :max-height="tableMaxHeght"
         style="width: 100%;font-size:12px;"
         @selection-change="handleSelectionChange"
         >
@@ -202,7 +203,9 @@ export default {
         password: [
           { required: true, validator: checkPassword, trigger: 'blur' }
         ]
-      }
+      },
+      // 表格最大高度 header mainOuterPadding tabs mainInPadding footer serachDiv bugSet
+      tableMaxHeght: document.body.clientHeight - 40 - 20 - 40 - 40 - 40 - 53 + 13
     }
   },
   created: async function () {
@@ -217,11 +220,12 @@ export default {
     this.backQueManagerPage()
   },
   mounted: function () {
+    var windowWidth = $(window).width()
+    $('.tableDiv').width(windowWidth - 200 - 20 - 40) // 解决表格滚动条分页益处问题
     var windowHeight = $(window).height()
-    var mainHeight = windowHeight - 60 - 20 - 40 - 60
-    console.log(mainHeight)
+    var mainHeight = windowHeight - 40 - 20 - 40 - 40
     $('.agencyPage').height(mainHeight)
-    $('.tableDiv').height(mainHeight - 32 - 40 - 32 - 20 + 60 + 10)
+    $('.tableDiv').height(mainHeight - 40 - 53 + 13)
   },
   methods: {
     // 编辑代理人信息对话框
@@ -477,13 +481,9 @@ export default {
   padding: 20px;
   background-color: white;
 }
-.el-pagination {
-  margin: 20px 20px 0 0;
-  float: right;
-}
 .selectionOperation {
-  float: left;
-  margin: 0 0 20px 10px;
+  height: 40px;
+  text-align: left;
 }
 .agencyPage >>> .el-dialog__header {
   border-bottom: 1px solid #CDC9C9;

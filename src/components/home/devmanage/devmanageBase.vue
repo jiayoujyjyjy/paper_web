@@ -55,11 +55,12 @@ export default {
 
 <style scoped>
 .devmanageBase{
-  /* overflow: hidden; */
+  overflow: hidden;
   background-color: #FFFFFD;
+  width: 100%;
 }
 .devmanageBasemain {
-  width: 100%;
+  /* width: 100%; */
   /* padding: 0 20px; */
 }
 </style>

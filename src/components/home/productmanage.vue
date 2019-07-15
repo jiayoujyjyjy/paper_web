@@ -32,6 +32,7 @@
         :data="tableData"
         stripe
         border
+        :max-height="tableMaxHeght"
         style="width: 100%;font-size:12px;"
         @selection-change="handleSelectionChange">
         <!-- <el-table-column
@@ -238,7 +239,9 @@ export default {
         price: [
           { required: true, validator: checkPrice, trigger: 'blur' }
         ]
-      }
+      },
+      // 表格最大高度 header mainOuterPadding tabs mainInPadding footer serachDiv bugSet
+      tableMaxHeght: document.body.clientHeight - 40 - 20 - 40 - 72 + 13 // ===tableDiv的高度
     }
   },
   created: function () {
@@ -247,10 +250,12 @@ export default {
     this.backQuePaperPage()
   },
   mounted: function () {
+    var windowWidth = $(window).width()
+    $('.tableDiv').width(windowWidth - 200 - 20 - 40) // 解决表格滚动条分页益处问题
     var windowHeight = $(window).height()
-    var mainHeight = windowHeight - 60 - 20 - 40
+    var mainHeight = windowHeight - 40 - 20 - 40
     $('.productmanagePage').height(mainHeight)
-    $('.tableDiv').height(mainHeight - 32 - 40 - 32 - 20)
+    $('.tableDiv').height(mainHeight - 72 - 53 + 13)
   },
   methods: {
     // 选择投放地址自动完成
@@ -487,10 +492,6 @@ export default {
 .productmanagePage {
   padding: 20px;
   background-color: white;
-}
-.el-pagination {
-  margin: 20px 20px 0 0;
-  float: right;
 }
 .flexbox {
   margin: 20px 0 20px 0;

@@ -61,7 +61,7 @@
     <el-container>
       <el-header>
         <div class="user">
-          <img style="width:45px;height:45px;float:left" src="/static/user.png" />
+          <img style="width:40px;height:40px;float:left;margin-right:6px;" src="/static/user.png" />
           <el-dropdown @command="handleCommand">
             <span class="el-dropdown-link">
               {{username}}<i class="el-icon-arrow-down el-icon--right"></i>
@@ -351,10 +351,11 @@ export default {
 }
 .user {
   float: right;
-  margin-top: 8px;
+  margin: 1px 0;
 }
 .el-dropdown {
-  margin: 15px 0 0 10px;
+  /* line-height === 包含快高度,可垂直居中文本 */
+  line-height: 40px;
 }
 .el-aside {
   background-color: #252E49;
@@ -371,6 +372,7 @@ export default {
   background-color: #eee;
   text-align: center;
   padding: 10px;
+  width: 100%;
 }
 .logo {
   height:80px;

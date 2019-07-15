@@ -15,6 +15,7 @@
         :header-cell-style="{'font-size':'14px'}"
         :data="tableData"
         border
+        :max-height="tableMaxHeght"
         style="width: 100%;font-size:12px;">
         <el-table-column
           align="center"
@@ -87,7 +88,9 @@ export default {
         createTime: '2017-11-25 16:27:08',
         oldSite: '江泰国际广场4楼',
         newSite: '江泰国际广场2楼'
-      }]
+      }],
+      // 表格最大高度 header mainOuterPadding tabs mainInPadding footer serachDiv bugSet
+      tableMaxHeght: document.body.clientHeight - 40 - 20 - 40 - 40 - 62 - 53 + 13 // ===tableDiv的高度
     }
   },
   created: function () {
@@ -98,9 +101,12 @@ export default {
   },
   mounted: function () {
     var windowHeight = $(window).height()
-    var mainHeight = windowHeight - 60 - 20 - 40 - 20 - 40
-    $('.devTransferRecordPage').height(mainHeight)
-    $('.tableDiv').height(mainHeight - 32 - 40 - 32 - 20 + 13)
+    var windowWidth = $(window).width()
+    var mainHeight = windowHeight - 40 - 20 - 40 - 40 // header mainOuterPadding tabs mainInPadding
+    console.log(mainHeight)
+    $('.devTransferRecordPage').height(mainHeight) // 设置的是内容高度，巨坑啊卧槽
+    $('.tableDiv').height(mainHeight - 62 - 53 + 13) // serachDiv footer
+    $('.tableDiv').width(windowWidth - 200 - 20 - 40) // 解决表格滚动条分页益处问题
   },
   methods: {
     searchDev: function (val) {
@@ -195,17 +201,11 @@ export default {
 }
 .select {
   width: 100%;
-  height: auto;
+  height: 40px;
   text-align: left;
+  margin-bottom: 22px;
 }
 .el-select >>> .el-input {
   font-size: 12px;
-}
-.el-table {
-  margin-top: 20px;
-}
-.el-pagination {
-  margin: 20px 20px 0 0;
-  float: right;
 }
 </style>

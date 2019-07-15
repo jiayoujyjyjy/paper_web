@@ -62,7 +62,7 @@
       </div>
     </div>
 
-    <div class="flexbox" style="margin:5px 0 10px 0;">
+    <div class="flexbox">
       <div>展示
         <el-radio-group v-model="isTable" size="small">
           <el-radio-button :label="true">详情</el-radio-button>
@@ -75,60 +75,62 @@
       </div>
     </div>
     <div v-show="isTable">
-      <el-table
-        :header-cell-style="{'font-size':'14px'}"
-        :data="tableData"
-        stripe
-        border
-        size="small"
-        style="width: 100%;font-size:12px;">
-        <el-table-column
-          align="center"
-          prop="name"
-          label="名称">
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="deviceId"
-          label="设备编码">
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="location"
-          label="投放地址">
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="state"
-          label="状态">
-          <template slot-scope="scope">
-            <el-tag
-              :type="scope.row.state === '在线' ? 'success' : 'danger'"
-              disable-transitions>{{scope.row.state}}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="onlineIncome"
-          label="在线收益">
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="tradNum"
-          label="交易笔数">
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="adIncome"
-          label="广告收益">
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="totalIncome"
-          label="总收益">
-        </el-table-column>
-      </el-table>
-
+      <div class="tableDiv">
+        <el-table
+          :header-cell-style="{'font-size':'14px'}"
+          :data="tableData"
+          stripe
+          border
+          :max-height="tableMaxHeght"
+          size="small"
+          style="width: 100%;font-size:12px;">
+          <el-table-column
+            align="center"
+            prop="name"
+            label="名称">
+          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="deviceId"
+            label="设备编码">
+          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="location"
+            label="投放地址">
+          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="state"
+            label="状态">
+            <template slot-scope="scope">
+              <el-tag
+                :type="scope.row.state === '在线' ? 'success' : 'danger'"
+                disable-transitions>{{scope.row.state}}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="onlineIncome"
+            label="在线收益">
+          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="tradNum"
+            label="交易笔数">
+          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="adIncome"
+            label="广告收益">
+          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="totalIncome"
+            label="总收益">
+          </el-table-column>
+        </el-table>
+      </div>
       <el-pagination
         @current-change="handlePaginationChange"
         :current-page="param.currentPage"
@@ -292,7 +294,8 @@ export default {
       }],
       chartsDataResult: [],
       deviceNameDataResult: [],
-      dateDataResult: []
+      dateDataResult: [],
+      tableMaxHeght: document.body.clientHeight - 40 - 20 - 40 - 40 - 52 - 53 + 13
     }
   },
   created: function () {
@@ -301,9 +304,11 @@ export default {
   },
   mounted: function () {
     var windowHeight = $(window).height()
-    var mainHeight = windowHeight - 120
+    var windowWidth = $(window).width()
+    var mainHeight = windowHeight - 40 - 20 - 40 // header mainOuterPadding tabs mainInPadding一侧bug
     $('.deviceInfoPage').height(mainHeight)
-    $('.el-table').height(mainHeight - 150)
+    $('.tableDiv').height(mainHeight - 40 - 52 - 53 + 13) // footer serachDiv mainInPadding一侧bug
+    $('.tableDiv').width(windowWidth - 200 - 20 - 40) // 解决表格滚动条分页益处问题
     this.dataprocessing()
   },
   // 注销window.onresize事件
@@ -594,12 +599,18 @@ export default {
   display: -webkit-flex; /* Safari */
   display: flex;
   flex-wrap: wrap;
+  height: 40px;
+}
+.flexbox1 > div {
+  height: 100%;
 }
 .flexbox {
   display: -webkit-flex;
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-between;
+  height: 30px;
+  margin: 6px 0 16px 0;
 }
 .popdiv {
   border: 1px solid #ebeef5;
@@ -624,9 +635,5 @@ export default {
 }
 .deviceInfoPage >>> .el-dialog__header {
   background-color: #f4f4f4;
-}
-.el-pagination {
-  margin: 20px 20px 0 0;
-  float: right;
 }
 </style>

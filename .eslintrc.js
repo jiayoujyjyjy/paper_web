@@ -21,9 +21,10 @@ module.exports = {
   ],
   // add your custom rules here
   rules: {
-    // allow async-await
+    "no-multi-spaces": 0, // 允许出现多余的空格（注释格式用）
+    "no-trailing-spaces": 0, // 一行最后允许有空格
     'generator-star-spacing': 'off',
-    // allow // degugger during development
-    'no-// degugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
+    // allow debugger during development
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
   }
 }
