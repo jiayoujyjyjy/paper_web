@@ -14,6 +14,8 @@ const DevmanageBase = r => require.ensure([], () => r(require('@/components/home
 const DevList = r => require.ensure([], () => r(require('@/components/home/devmanage/devList')), 'DevList')
 const DevTransferRecord = r => require.ensure([], () => r(require('@/components/home/devmanage/devTransferRecord')), 'DevTransferRecord')
 const DevInfo = r => require.ensure([], () => r(require('@/components/home/devInfo')), 'DevInfo')
+const AreaManage = r => require.ensure([], () => r(require('@/components/home/areaManage')), 'AreaManage')
+
 // 数据统计
 const Income = r => require.ensure([], () => r(require('@/components/home/income')), 'Income')
 const User = r => require.ensure([], () => r(require('@/components/home/user')), 'User')
@@ -48,6 +50,7 @@ const router = new Router({
             { path: 'devTransferRecord', component: DevTransferRecord }
           ]},
         { path: 'devInfo', name: 'devInfo', component: DevInfo },
+        { path: 'areaManage', component: AreaManage },
         { path: 'income', name: 'income', component: Income },
         { path: 'user', name: 'user', component: User },
         { path: 'device', name: 'device', component: Device },

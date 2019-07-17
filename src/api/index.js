@@ -10,7 +10,162 @@ export const back = {
   /*
   ********* 2 场地模块 *********
   */
-
+  // 3.1 场地分页查询
+  queAreaPage (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/site/page?pageNo=${param.pageNo}&pageSize=${param.pageSize}&groupId=${param.groupId}&name=${param.name}&address=${param.address}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        managerId: param.managerId,
+        roleId: param.roleId
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        // degugger
+        // console.log(error)
+        return Promise.reject(error) // Promise.reject跳到具体页面api请求.catch()
+        // return error // 跳到具体页面api请求.then()
+        // 以上: 只有return Promise.reject(error)才会跳到.catch()其他再怎么return都会跳到.then()
+      })
+  },
+  // 2.2 扫码查询场地
+  // 2.3 场地查询
+  // queArea (param) {
+  //   return axios({
+  //     url: `${url.backbasurl}/api/v1/site/list?groupId=${param.groupId}&name=${param.name}&address=${param.address}`,
+  //     method: 'get',
+  //     headers: {
+  //       'managerId': param.managerId,
+  //       roleId: param.roleId
+  //     },
+  //     data: {}
+  //   })
+  //     .then((response) => {
+  //       // degugger
+  //       return response.data // 跳到具体页面api请求.then()
+  //     })
+  //     .catch((error) => {
+  //       // degugger
+  //       // console.log(error)
+  //       return Promise.reject(error) // Promise.reject跳到具体页面api请求.catch()
+  //       // return error // 跳到具体页面api请求.then()
+  //       // 以上: 只有return Promise.reject(error)才会跳到.catch()其他再怎么return都会跳到.then()
+  //     })
+  // },
+  // 2.4 新增场地
+  addArea (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/site/add`,
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+        'managerId': param.managerId
+      },
+      data: {
+        name: param.name,
+        province: param.province,
+        city: param.city,
+        area: param.area,
+        address: param.address,
+        type: param.type,
+        isDefault: param.isDefault
+      }
+    })
+      .then((response) => {
+        // degugger
+        return response.data // 跳到具体页面api请求.then()
+      })
+      .catch((error) => {
+        // degugger
+        // console.log(error)
+        return Promise.reject(error) // Promise.reject跳到具体页面api请求.catch()
+        // return error // 跳到具体页面api请求.then()
+        // 以上: 只有return Promise.reject(error)才会跳到.catch()其他再怎么return都会跳到.then()
+      })
+  },
+  // 2.5 修改场地
+  updateArea (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/site/update`,
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+        id: param.id,
+        name: param.name,
+        province: param.province,
+        city: param.city,
+        area: param.area,
+        address: param.address,
+        type: param.type,
+        isDefault: param.isDefault
+      }
+    })
+      .then((response) => {
+        // degugger
+        return response.data // 跳到具体页面api请求.then()
+      })
+      .catch((error) => {
+        // degugger
+        // console.log(error)
+        return Promise.reject(error) // Promise.reject跳到具体页面api请求.catch()
+        // return error // 跳到具体页面api请求.then()
+        // 以上: 只有return Promise.reject(error)才会跳到.catch()其他再怎么return都会跳到.then()
+      })
+  },
+  // 2.6 查看场地详情
+  showArea (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/site/show?id=${param.id}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        // degugger
+        return response.data // 跳到具体页面api请求.then()
+      })
+      .catch((error) => {
+        // degugger
+        // console.log(error)
+        return Promise.reject(error) // Promise.reject跳到具体页面api请求.catch()
+        // return error // 跳到具体页面api请求.then()
+        // 以上: 只有return Promise.reject(error)才会跳到.catch()其他再怎么return都会跳到.then()
+      })
+  },
+  // 2.7 删除场地
+  delArea (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/site/delete?id=${param.id}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        // degugger
+        return response.data // 跳到具体页面api请求.then()
+      })
+      .catch((error) => {
+        // degugger
+        // console.log(error)
+        return Promise.reject(error) // Promise.reject跳到具体页面api请求.catch()
+        // return error // 跳到具体页面api请求.then()
+        // 以上: 只有return Promise.reject(error)才会跳到.catch()其他再怎么return都会跳到.then()
+      })
+  },
   /*
   ********* 3 设备模块 *********
   */

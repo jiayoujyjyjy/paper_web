@@ -33,6 +33,7 @@
           </template>
           <el-menu-item index="2-1">设备管理</el-menu-item>
           <el-menu-item index="2-2" v-show="false">设备故障信息</el-menu-item>
+          <el-menu-item index="2-3">场地管理</el-menu-item>
         </el-submenu>
         <el-submenu index="3">
           <template slot="title">
@@ -105,6 +106,9 @@ export default {
       }, {
         index: '2-2',
         value: '设备故障信息'
+      }, {
+        index: '2-3',
+        value: '场地管理'
       }, {
         index: '3-1',
         value: '收益统计'
@@ -233,6 +237,11 @@ export default {
       if (value === '2-2') {
         sessionSetStore('menuActive', '2-2')
         Routers.push({ path: '/home/devInfo' })
+        this.changeMenuImg(false, false)
+      }
+      if (value === '2-3') {
+        sessionSetStore('menuActive', '2-3')
+        Routers.push({ path: '/home/areamanage' })
         this.changeMenuImg(false, false)
       }
       if (value === '3-1') {

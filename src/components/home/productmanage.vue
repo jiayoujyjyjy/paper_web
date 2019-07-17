@@ -1,27 +1,27 @@
 <template>
   <div class="productmanagePage">
     <div class="flexbox">
-      <!-- <div class="box">
-        <div>投放地址
+      <div class="box">
+        <div>产品名称
           <el-autocomplete
             class="inline-input"
             suffix-icon="el-icon-arrow-down"
-            v-model="selection.location"
+            v-model="selection.name"
             :fetch-suggestions="querySearch_Loca"
-            placeholder="请输入或选择投放地址">
+            placeholder="请输入或选择产品名称">
           </el-autocomplete>
         </div>
-        <div style="margin: 0 20px;">产品编码
+        <div style="margin: 0 20px;">产品类型
           <el-autocomplete
             class="inline-input"
             suffix-icon="el-icon-arrow-down"
-            v-model="selection.deviceId"
+            v-model="selection.type"
             :fetch-suggestions="querySearch_DevId"
-            placeholder="请输入或选择编号">
+            placeholder="请输入或选择产品类型">
           </el-autocomplete>
         </div>
         <el-button type="primary" size="small" @click="searchBt">搜索</el-button>
-      </div> -->
+      </div>
       <div class="box">
         <el-button type="primary" size="small" @click="addBt">新增</el-button>
       </div>
@@ -191,9 +191,10 @@ export default {
       multipleSelection: [],
       isedit: false,
       selection: {
-        location: '',
-        deviceId: ''
+        name: '',
+        type: ''
       },
+      midData: [], // 中间量，存储tableData（用于搜索）
       locationlist: [{
         value: '江泰国际广场1楼'
       }, {
@@ -295,6 +296,7 @@ export default {
     },
     // 新增产品按钮
     addBt: function () {
+      console.log(this.tableData)
       this.dialogTitle = '新增'
       this.isEditOrAdd = 1
       this.isProductIdShowDia = false
@@ -358,6 +360,47 @@ export default {
     // 搜索按钮
     searchBt: function () {
       console.log(this.selection)
+      // 如果要搜索的产品类型和产品名称为空，则显示全部列表
+      if (this.selection.name === '' && this.selection.type === '') {
+        this.tableData = this.midData
+      } else if (this.selection.name !== '' && this.selection.type === '') {
+        // 如果只搜索名称，不搜索类型
+        this.tableData = []
+        for (var i = 0; i < this.midData.length; i++) {
+          if (this.selection.name === this.midData[i].productName) {
+            this.tableData.push(this.midData[i])
+          }
+        }
+        // 搜索不到数据时，通知搜索错误
+        if (this.tableData.length === 0) {
+          this.notificationInfo('错误！', '产品名称不存在！')
+        }
+      } else if (this.selection.name === '' && this.selection.type !== '') {
+        // 如果只搜索名称，不搜索类型
+        this.tableData = []
+        for (var j = 0; j < this.midData.length; j++) {
+          if (this.selection.type === this.midData[j].productType) {
+            this.tableData.push(this.midData[j])
+          }
+        }
+        // 搜索不到数据时，通知搜索错误
+        if (this.tableData.length === 0) {
+          this.notificationInfo('错误！', '产品类型不存在！')
+        }
+      } else if (this.selection.name !== '' && this.selection.type !== '') {
+        // 同时搜索设备名称和设备类型时
+        this.tableData = []
+        for (var k = 0; k < this.midData.length; k++) {
+          if (this.selection.type === this.midData[k].productType && this.selection.name === this.midData[k].productName) {
+            this.tableData.push(this.midData[k])
+          }
+        }
+        // 搜索不到数据时，通知搜索错误
+        if (this.tableData.length === 0) {
+          this.notificationInfo('错误！', '产品名称或产品类型不存在！')
+        }
+        console.log(this.tableData)
+      }
     },
     handleSelectionChange: function (val) {
       this.multipleSelection = val
@@ -384,18 +427,32 @@ export default {
         this.eltotal = response.data.total
         if (response.data.records) {
           this.tableData = []
+          this.locationlist = []
+          this.devIdlist = []
           for (let i = 0; i < response.data.records.length; i++) {
             let obj = {}
+            let nameObj = {}
+            let typeObj = {}
             obj.deviceId = response.data.records[i].id
             obj.productName = response.data.records[i].name
+            nameObj.value = response.data.records[i].name
             obj.productTypeNum = response.data.records[i].type
             obj.productType = response.data.records[i].type === 1 ? '小报纸' : '卷纸'
+            typeObj.value = obj.productType
             obj.num = response.data.records[i].num
             obj.price = response.data.records[i].price
             this.tableData.push(obj) // 或用this.tableData[i] = obj亦可
+            this.locationlist.push(nameObj)
+            this.devIdlist.push(typeObj)
+            console.log(this.tableData)
+            console.log(this.locationlist)
+            console.log(this.devIdlist)
+            this.midData = this.tableData
           }
         } else {
           this.tableData = []
+          this.locationlist = []
+          this.devIdlist = []
         }
       }.bind(this))
         .catch(function (error) {
