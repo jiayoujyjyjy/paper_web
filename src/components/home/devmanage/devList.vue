@@ -19,14 +19,6 @@
         :max-height="tableMaxHeght"
         @selection-change="handleSelectionChange">
         <el-table-column
-          label="操作"
-          align="center"
-          min-width="10%">
-          <template slot-scope="scope">
-            <el-button type="text" size="small" icon="el-icon-edit" @click="editBt(scope.$index, scope.row)">编辑</el-button>
-          </template>
-        </el-table-column>
-        <el-table-column
           align="center"
           prop="deviceId"
           label="设备编号"
@@ -68,6 +60,14 @@
             </el-switch>
           </template>
         </el-table-column> -->
+        <el-table-column
+          label="操作"
+          align="center"
+          min-width="10%">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" icon="el-icon-edit" @click="editBt(scope.$index, scope.row)">编辑</el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
 

@@ -1,8 +1,11 @@
 <template>
   <div class="productmanagePage">
     <div class="flexbox">
-      <div class="box">
-        <div>产品名称
+        <div class="box">
+        <span style="width:80px;margin-top:6px">产品名称</span>
+        <el-input size="small" v-model="selection.name" placeholder="请输入产品名称"></el-input>
+      </div>
+        <!-- <div>产品名称
           <el-autocomplete
             class="inline-input"
             suffix-icon="el-icon-arrow-down"
@@ -10,7 +13,7 @@
             :fetch-suggestions="querySearch_Loca"
             placeholder="请输入或选择产品名称">
           </el-autocomplete>
-        </div>
+        </div> -->
         <div style="margin: 0 20px;">产品类型
           <el-autocomplete
             class="inline-input"
@@ -21,7 +24,6 @@
           </el-autocomplete>
         </div>
         <el-button type="primary" size="small" @click="searchBt">搜索</el-button>
-      </div>
       <div class="box">
         <el-button type="primary" size="small" @click="addBt">新增</el-button>
       </div>
@@ -259,18 +261,18 @@ export default {
     $('.tableDiv').height(mainHeight - 72 - 53 + 13)
   },
   methods: {
-    // 选择投放地址自动完成
-    querySearch_Loca: function (queryString, cb) {
-      var locationlist = this.locationlist
-      var results = queryString ? locationlist.filter(this.createFilter_Loca(queryString)) : locationlist
-      // 调用 callback 返回建议列表的数据
-      cb(results)
-    },
-    createFilter_Loca: function (queryString) {
-      return (locationlist) => {
-        return (locationlist.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
-      }
-    },
+    // // 选择投放地址自动完成
+    // querySearch_Loca: function (queryString, cb) {
+    //   var locationlist = this.locationlist
+    //   var results = queryString ? locationlist.filter(this.createFilter_Loca(queryString)) : locationlist
+    //   // 调用 callback 返回建议列表的数据
+    //   cb(results)
+    // },
+    // createFilter_Loca: function (queryString) {
+    //   return (locationlist) => {
+    //     return (locationlist.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+    //   }
+    // },
     // 选择设备编码自动完成
     querySearch_DevId: function (queryString, cb) {
       var devIdlist = this.devIdlist
@@ -360,47 +362,48 @@ export default {
     // 搜索按钮
     searchBt: function () {
       console.log(this.selection)
-      // 如果要搜索的产品类型和产品名称为空，则显示全部列表
-      if (this.selection.name === '' && this.selection.type === '') {
-        this.tableData = this.midData
-      } else if (this.selection.name !== '' && this.selection.type === '') {
-        // 如果只搜索名称，不搜索类型
-        this.tableData = []
-        for (var i = 0; i < this.midData.length; i++) {
-          if (this.selection.name === this.midData[i].productName) {
-            this.tableData.push(this.midData[i])
-          }
-        }
-        // 搜索不到数据时，通知搜索错误
-        if (this.tableData.length === 0) {
-          this.notificationInfo('错误！', '产品名称不存在！')
-        }
-      } else if (this.selection.name === '' && this.selection.type !== '') {
-        // 如果只搜索名称，不搜索类型
-        this.tableData = []
-        for (var j = 0; j < this.midData.length; j++) {
-          if (this.selection.type === this.midData[j].productType) {
-            this.tableData.push(this.midData[j])
-          }
-        }
-        // 搜索不到数据时，通知搜索错误
-        if (this.tableData.length === 0) {
-          this.notificationInfo('错误！', '产品类型不存在！')
-        }
-      } else if (this.selection.name !== '' && this.selection.type !== '') {
-        // 同时搜索设备名称和设备类型时
-        this.tableData = []
-        for (var k = 0; k < this.midData.length; k++) {
-          if (this.selection.type === this.midData[k].productType && this.selection.name === this.midData[k].productName) {
-            this.tableData.push(this.midData[k])
-          }
-        }
-        // 搜索不到数据时，通知搜索错误
-        if (this.tableData.length === 0) {
-          this.notificationInfo('错误！', '产品名称或产品类型不存在！')
-        }
-        console.log(this.tableData)
-      }
+      this.backQuePaperList()
+      // // 如果要搜索的产品类型和产品名称为空，则显示全部列表
+      // if (this.selection.name === '' && this.selection.type === '') {
+      //   this.tableData = this.midData
+      // } else if (this.selection.name !== '' && this.selection.type === '') {
+      //   // 如果只搜索名称，不搜索类型
+      //   this.tableData = []
+      //   for (var i = 0; i < this.midData.length; i++) {
+      //     if (this.selection.name === this.midData[i].productName) {
+      //       this.tableData.push(this.midData[i])
+      //     }
+      //   }
+      //   // 搜索不到数据时，通知搜索错误
+      //   if (this.tableData.length === 0) {
+      //     this.notificationInfo('错误！', '产品名称不存在！')
+      //   }
+      // } else if (this.selection.name === '' && this.selection.type !== '') {
+      //   // 如果只搜索名称，不搜索类型
+      //   this.tableData = []
+      //   for (var j = 0; j < this.midData.length; j++) {
+      //     if (this.selection.type === this.midData[j].productType) {
+      //       this.tableData.push(this.midData[j])
+      //     }
+      //   }
+      //   // 搜索不到数据时，通知搜索错误
+      //   if (this.tableData.length === 0) {
+      //     this.notificationInfo('错误！', '产品类型不存在！')
+      //   }
+      // } else if (this.selection.name !== '' && this.selection.type !== '') {
+      //   // 同时搜索设备名称和设备类型时
+      //   this.tableData = []
+      //   for (var k = 0; k < this.midData.length; k++) {
+      //     if (this.selection.type === this.midData[k].productType && this.selection.name === this.midData[k].productName) {
+      //       this.tableData.push(this.midData[k])
+      //     }
+      //   }
+      //   // 搜索不到数据时，通知搜索错误
+      //   if (this.tableData.length === 0) {
+      //     this.notificationInfo('错误！', '产品名称或产品类型不存在！')
+      //   }
+      //   console.log(this.tableData)
+      // }
     },
     handleSelectionChange: function (val) {
       this.multipleSelection = val
@@ -511,6 +514,15 @@ export default {
         console.log(response)
         this.backQuePaperPage()
       }.bind(this))
+        .catch(function (error) {
+          console.log(error)
+        })
+    },
+    // 纸巾查询
+    backQuePaperList: function () {
+      back.quePaperList().then(function (response) {
+        console.log(response)
+      })
         .catch(function (error) {
           console.log(error)
         })

@@ -4,6 +4,30 @@ import * as url from './urlConfig'
 
 export const back = {
   /*
+  ********* 0 公共分类 *********
+  */
+  // 0.1 枚举查询
+  queEnum (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/enum/list?type=${param.type}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {}
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        // degugger
+        // console.log(error)
+        return Promise.reject(error) // Promise.reject跳到具体页面api请求.catch()
+        // return error // 跳到具体页面api请求.then()
+        // 以上: 只有return Promise.reject(error)才会跳到.catch()其他再怎么return都会跳到.then()
+      })
+  },
+  /*
   ********* 1 场地分组模块 *********
   */
 
@@ -368,8 +392,7 @@ export const back = {
       url: `${url.backbasurl}/api/v1/paper/lsit`,
       method: 'get',
       headers: {
-        'Content-Type': 'application/json',
-        'managerId': param.managerId
+        'Content-Type': 'application/json'
       },
       data: {
       }

@@ -1,14 +1,19 @@
 <template>
   <div class="devTransferRecordPage">
-    <div class="select">
-      <el-select v-model="selectedValue" placeholder="请选择需要查询的设备编号" @change="searchDev">
+    <div class="flexbox">
+      <!-- <el-select v-model="selectedValue" placeholder="请选择需要查询的设备编号" @change="searchDev">
         <el-option
           v-for="item in devDeviceIdList"
           :key="item.value + randomValue"
           :label="item.label"
           :value="item.value">
         </el-option>
-      </el-select>
+      </el-select> -->
+      <div class="box">
+        <span style="width:80px;margin-top:6px">设备编号</span>
+        <el-input size="small" v-model="selectedValue" placeholder="请输入设备编号"></el-input>
+      </div>
+      <el-button type="primary" size="small" @click="searchDev">查询</el-button>
     </div>
     <div class="tableDiv">
       <el-table
@@ -109,9 +114,8 @@ export default {
     $('.tableDiv').width(windowWidth - 200 - 20 - 40) // 解决表格滚动条分页益处问题
   },
   methods: {
-    searchDev: function (val) {
-      console.log(val)
-      this.param.devId = val
+    searchDev: function () {
+      this.param.devId = this.selectedValue
       this.backQueDevOperRecodPage()
     },
     // 每次切换页码之前清空table数据
@@ -199,13 +203,21 @@ export default {
   background-color: white;
   width: 100%;
 }
-.select {
-  width: 100%;
-  height: 40px;
-  text-align: left;
-  margin-bottom: 22px;
-}
 .el-select >>> .el-input {
   font-size: 12px;
+}
+.flexbox {
+  margin: 20px 80px 20px 0;
+  display: -webkit-flex; /* Safari */
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-around;
+}
+.box {
+  display: -webkit-flex; /* Safari */
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  width:auto;
 }
 </style>

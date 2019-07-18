@@ -5,12 +5,21 @@
         <span style="width:120px;margin-top:6px">支付用户编号</span>
         <el-input size="small" v-model="selection.userId" placeholder="请输入用户ID号"></el-input>
       </div> -->
+      <!-- 模糊搜索 -->
       <div class="box">
         <span style="width:80px;margin-top:6px">订单编码</span>
         <el-input size="small" v-model="selection.orderId" placeholder="请输入交易/商户订单号"></el-input>
       </div>
+      <div class="box">
+        <span style="width:80px;margin-top:6px">设备编码</span>
+        <el-input size="small" v-model="selection.deviceId" placeholder="请输入设备编码"></el-input>
+      </div>
+      <div class="box">
+        <span style="width:80px;margin-top:6px">场地名称</span>
+        <el-input size="small" v-model="selection.site" placeholder="请输入场地名称"></el-input>
+      </div>
       <!-- 去除了输入自动匹配功能 -->
-      <div style="margin: 0 20px;">设备编码
+      <!-- <div style="margin: 0 20px;">设备编码
         <el-autocomplete
           size="small"
           class="inline-input"
@@ -29,7 +38,7 @@
           :fetch-suggestions="querySearch_Loca"
           placeholder="请输入或选择场地">
         </el-autocomplete>
-      </div>
+      </div> -->
       <el-button type="primary" size="small" @click="searchBt">查询</el-button>
     </div>
     <div class="tableDiv">
@@ -170,15 +179,7 @@ export default {
       currentPage: 1,
       pagesize: 10,
       eltotal: 20,
-      siteList: [{
-        value: '江泰国际广场1楼'
-      }, {
-        value: '江泰国际广场2楼'
-      }, {
-        value: '江泰国际广场3楼'
-      }, {
-        value: '江泰国际广场4楼'
-      }],
+      siteList: [],
       devIdlist: [],
       isedit: false,
       dialogTitle: '', // 详情对话框标题
@@ -222,30 +223,30 @@ export default {
     $('.tableDiv').height(mainHeight - 72 - 53 + 13)
   },
   methods: {
-    // 选择投放地址自动完成
-    querySearch_Loca: function (queryString, cb) {
-      var siteList = this.siteList
-      var results = queryString ? siteList.filter(this.createFilter_Loca(queryString)) : siteList
-      // 调用 callback 返回建议列表的数据
-      cb(results)
-    },
-    createFilter_Loca: function (queryString) {
-      return (siteList) => {
-        return (siteList.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
-      }
-    },
-    // 选择设备编码自动完成
-    querySearch_DevId: function (queryString, cb) {
-      var devIdlist = this.devIdlist
-      var results = queryString ? devIdlist.filter(this.createFilter_DevId(queryString)) : devIdlist
-      // 调用 callback 返回建议列表的数据
-      cb(results)
-    },
-    createFilter_DevId: function (queryString) {
-      return (devIdlist) => {
-        return (devIdlist.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
-      }
-    },
+    // // 选择投放地址自动完成
+    // querySearch_Loca: function (queryString, cb) {
+    //   var siteList = this.siteList
+    //   var results = queryString ? siteList.filter(this.createFilter_Loca(queryString)) : siteList
+    //   // 调用 callback 返回建议列表的数据
+    //   cb(results)
+    // },
+    // createFilter_Loca: function (queryString) {
+    //   return (siteList) => {
+    //     return (siteList.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+    //   }
+    // },
+    // // 选择设备编码自动完成
+    // querySearch_DevId: function (queryString, cb) {
+    //   var devIdlist = this.devIdlist
+    //   var results = queryString ? devIdlist.filter(this.createFilter_DevId(queryString)) : devIdlist
+    //   // 调用 callback 返回建议列表的数据
+    //   cb(results)
+    // },
+    // createFilter_DevId: function (queryString) {
+    //   return (devIdlist) => {
+    //     return (devIdlist.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+    //   }
+    // },
     // 详情信息按钮
     detailBt: function (index, row) {
       this.dialogTitle = '详情'

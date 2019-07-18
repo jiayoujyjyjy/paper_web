@@ -3,7 +3,7 @@
   <div class="areaManagePage">
     <div class="flexbox">
       <!-- 添加了输入自动匹配功能 -->
-      <div style="margin: 0 20px;">场地名称
+      <!-- <div style="margin: 0 20px;">场地名称
         <el-autocomplete
           size="small"
           class="inline-input"
@@ -22,6 +22,15 @@
           :fetch-suggestions="querySearch_Loca"
           placeholder="请输入或选择详细地址">
         </el-autocomplete>
+      </div> -->
+      <!-- 模糊搜索 -->
+      <div class="box">
+        <span style="width:80px;margin-top:6px">场地名称</span>
+        <el-input size="small" v-model="selection.name" placeholder="请输入或选择场地名称"></el-input>
+      </div>
+      <div class="box">
+        <span style="width:80px;margin-top:6px">详细地址</span>
+        <el-input size="small" v-model="selection.address" placeholder="请输入或选择详细地址"></el-input>
       </div>
       <el-button type="primary" size="small" @click="searchBt">搜索</el-button>
       <el-button type="primary" size="small" @click="addBt">添加场地</el-button>
@@ -105,38 +114,46 @@
       :before-close="handleClose"
       width="50%"
       center>
+      <!-- 当点击详情时，:disabled=true；其他为false (true为禁用）-->
       <el-form :model="detailForm" label-width="100px">
         <el-form-item label="场地编码" v-show="editShow">
-          <el-input v-model="detailForm.id" placeholder="请填写场地编码"></el-input>
+          <el-input v-model="detailForm.id" placeholder="请填写场地编码" :disabled="unchange"></el-input>
         </el-form-item>
         <el-form-item label="场地名称">
-          <el-input v-model="detailForm.name" placeholder="请填写场地名称"></el-input>
+          <el-input v-model="detailForm.name" placeholder="请填写场地名称" :disabled="unchange"></el-input>
         </el-form-item>
         <el-form-item label="省份">
-          <el-input v-model="detailForm.province" placeholder="请填写省份"></el-input>
+          <el-input v-model="detailForm.province" placeholder="请填写省份" :disabled="unchange"></el-input>
         </el-form-item>
         <el-form-item label="城市">
-          <el-input v-model="detailForm.city" placeholder="请填写城市"></el-input>
+          <el-input v-model="detailForm.city" placeholder="请填写城市" :disabled="unchange"></el-input>
         </el-form-item>
         <el-form-item label="地区">
-          <el-input v-model="detailForm.area" placeholder="请填写地区"></el-input>
+          <el-input v-model="detailForm.area" placeholder="请填写地区" :disabled="unchange"></el-input>
         </el-form-item>
         <el-form-item label="详细地址">
-          <el-input v-model="detailForm.address" placeholder="请填写详细地址"></el-input>
+          <el-input v-model="detailForm.address" placeholder="请填写详细地址" :disabled="unchange"></el-input>
         </el-form-item>
         <!-- 场地类型需为数字，在表单验证中体现 -->
+        <!-- <el-form-item label="场地类型" prop="type">
+          <el-input v-model.number="detailForm.type" placeholder="请填写场地类型" :disabled="unchange"></el-input>
+        </el-form-item> -->
         <el-form-item label="场地类型">
-          <el-input v-model="detailForm.type" placeholder="请填写场地类型"></el-input>
+          <el-select v-model="detailForm.type" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+              :disabled="unchange">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="默认地址">
           <!-- <el-input v-model="detailForm.isDefault"></el-input> -->
-          <el-radio v-model="detailForm.isDefault" :label="1">是</el-radio>
-          <el-radio v-model="detailForm.isDefault" :label="0">否</el-radio>
+          <el-radio v-model="detailForm.isDefault" :label="1" :disabled="unchange">是</el-radio>
+          <el-radio v-model="detailForm.isDefault" :label="0" :disabled="unchange">否</el-radio>
         </el-form-item>
-        <el-form-item label="场地分组编码" v-show="groupHide">
-          <el-input v-model="detailForm.isGroup"></el-input>
-        </el-form-item>
-
       </el-form>
 
       <span slot="footer">
@@ -184,10 +201,11 @@ export default {
       editShow: false,
       addShow: false,
       delShow: false,
-      groupHide: false,
+      unchange: false,
       currentPage: 1,
       pagesize: 10,
       eltotal: 20,
+      options: [],
       siteList: [{
         value: '江泰国际广场1楼'
       }, {
@@ -240,7 +258,8 @@ export default {
       this.editShow = false
       this.addShow = false
       this.delShow = false
-      this.groupHide = false
+      this.unchange = false
+      this.options = []
     },
     // 添加场地按钮
     addBt: function () {
@@ -256,12 +275,25 @@ export default {
       this.dialogTitle = '添加场地'
       this.dialogEditVisible = true
       this.addShow = true
+      this.backQueEnum()
     },
     // 确定添加场地
     addConfirm: function () {
-      this.addShow = false
-      this.dialogEditVisible = false
-      this.backAddArea()
+      console.log(this.detailForm)
+      if (this.detailForm.id === '' ||
+        this.detailForm.name === '' ||
+        this.detailForm.address === '' ||
+        this.detailForm.isDefault === '' ||
+        this.detailForm.province === '' ||
+        this.detailForm.city === '' ||
+        this.detailForm.area === '' ||
+        this.detailForm.type === '') {
+        this.notificationInfo('错误！', '所有项目必须填完！')        
+      } else {
+        this.addShow = false
+        this.dialogEditVisible = false
+        this.backAddArea()
+      }
     },
     // 删除场地按钮
     delBt: function (index, row) {
@@ -274,54 +306,57 @@ export default {
       this.delShow = false
       this.deleId = ''
     },
-    // 选择投放地址自动完成
-    querySearch_Loca: function (queryString, cb) {
-      var siteList = this.siteList
-      var results = queryString ? siteList.filter(this.createFilter_Loca(queryString)) : siteList
-      // 调用 callback 返回建议列表的数据
-      cb(results)
-    },
-    createFilter_Loca: function (queryString) {
-      return (siteList) => {
-        return (siteList.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
-      }
-    },
-    // 选择设备编码自动完成
-    querySearch_DevId: function (queryString, cb) {
-      var devIdlist = this.devIdlist
-      var results = queryString ? devIdlist.filter(this.createFilter_DevId(queryString)) : devIdlist
-      // 调用 callback 返回建议列表的数据
-      cb(results)
-    },
-    createFilter_DevId: function (queryString) {
-      return (devIdlist) => {
-        return (devIdlist.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
-      }
-    },
+    // // 选择投放地址自动完成
+    // querySearch_Loca: function (queryString, cb) {
+    //   var siteList = this.siteList
+    //   var results = queryString ? siteList.filter(this.createFilter_Loca(queryString)) : siteList
+    //   // 调用 callback 返回建议列表的数据
+    //   cb(results)
+    // },
+    // createFilter_Loca: function (queryString) {
+    //   return (siteList) => {
+    //     return (siteList.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+    //   }
+    // },
+    // // 选择设备编码自动完成
+    // querySearch_DevId: function (queryString, cb) {
+    //   var devIdlist = this.devIdlist
+    //   var results = queryString ? devIdlist.filter(this.createFilter_DevId(queryString)) : devIdlist
+    //   // 调用 callback 返回建议列表的数据
+    //   cb(results)
+    // },
+    // createFilter_DevId: function (queryString) {
+    //   return (devIdlist) => {
+    //     return (devIdlist.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+    //   }
+    // },
     // 修改按钮
     updateBt: function (index, row) {
+      this.deleId = this.tableData[index].id
       this.dialogTitle = '修改场地'
-      this.detailForm = {
-        id: this.tableData[index].id,
-        name: this.tableData[index].name,
-        address: this.tableData[index].address,
-        isDefault: this.tableData[index].isDefault === '是' ? 1 : 0,
-        province: this.changeData.province,
-        city: this.changeData.city,
-        area: this.changeData.area,
-        type: this.changeData.type
-      }
       this.dialogEditVisible = true
       this.editShow = true
+      this.backShowArea()
     },
     // 修改对话框确定按键
     editConfirm: function () {
       console.log('详情对话框确定按键')
       console.log(this.detailForm)
-      this.dialogEditVisible = false
-      this.editShow = false
-      this.backUpdateArea()
-      this.detailForm = {}
+      if (this.detailForm.id === '' ||
+        this.detailForm.name === '' ||
+        this.detailForm.address === '' ||
+        this.detailForm.isDefault === '' ||
+        this.detailForm.province === '' ||
+        this.detailForm.city === '' ||
+        this.detailForm.area === '' ||
+        this.detailForm.type === '') {
+        this.notificationInfo('错误！', '所有项目必须填完！')        
+      } else {
+        this.dialogEditVisible = false
+        this.editShow = false
+        this.backUpdateArea()
+        this.detailForm = {}
+      }
     },
     // 搜索按钮
     searchBt: function () {
@@ -329,53 +364,12 @@ export default {
       this.param.name = this.selection.name
       this.param.address = this.selection.address
       this.backQueAreaPage()
-      // // 如果要搜索的场地名称和详细地址为空，则显示全部列表
-      // if (this.selection.name === '' && this.selection.address === '') {
-      //   this.tableData = this.midData
-      // } else if (this.selection.name !== '' && this.selection.address === '') {
-      //   // 如果只搜索名称，不搜索类型
-      //   this.tableData = []
-      //   for (var i = 0; i < this.midData.length; i++) {
-      //     if (this.selection.name === this.midData[i].name) {
-      //       this.tableData.push(this.midData[i])
-      //     }
-      //   }
-      //   // 搜索不到数据时，通知搜索错误
-      //   if (this.tableData.length === 0) {
-      //     this.notificationInfo('错误！', '产品名称不存在！')
-      //   }
-      // } else if (this.selection.name === '' && this.selection.address !== '') {
-      //   // 如果只搜索名称，不搜索类型
-      //   this.tableData = []
-      //   for (var j = 0; j < this.midData.length; j++) {
-      //     if (this.selection.address === this.midData[j].address) {
-      //       this.tableData.push(this.midData[j])
-      //     }
-      //   }
-      //   // 搜索不到数据时，通知搜索错误
-      //   if (this.tableData.length === 0) {
-      //     this.notificationInfo('错误！', '产品类型不存在！')
-      //   }
-      // } else if (this.selection.name !== '' && this.selection.address !== '') {
-      //   // 同时搜索设备名称和设备类型时
-      //   this.tableData = []
-      //   for (var k = 0; k < this.midData.length; k++) {
-      //     if (this.selection.address === this.midData[k].address && this.selection.name === this.midData[k].name) {
-      //       this.tableData.push(this.midData[k])
-      //     }
-      //   }
-      //   // 搜索不到数据时，通知搜索错误
-      //   if (this.tableData.length === 0) {
-      //     this.notificationInfo('错误！', '产品名称或产品类型不存在！')
-      //   }
-      //   console.log(this.tableData)
-      // }
     },
     // 详情按钮
     detailBt: function (index, row) {
       this.dialogTitle = '场地详情'
       this.dialogEditVisible = true
-      this.groupHide = true
+      this.unchange = true
       this.deleId = this.tableData[index].id
       this.backShowArea()
     },
@@ -430,16 +424,16 @@ export default {
             siteObj.value = response.data.records[i].address
             this.siteList[i] = siteObj
             // 清空表单
-            // this.detailForm = {
-            //   id: '',
-            //   name: '',
-            //   address: '',
-            //   isDefault: '',
-            //   province: '',
-            //   city: '',
-            //   area: '',
-            //   type: ''
-            // }
+            this.detailForm = {
+              id: '',
+              name: '',
+              address: '',
+              isDefault: '',
+              province: '',
+              city: '',
+              area: '',
+              type: ''
+            }
           }
         } else {
           this.tableData = []
@@ -530,15 +524,38 @@ export default {
       let paramObj = {
         id: this.deleId
       }
+      this.detailForm = {}
       sessionSetStore('backName', '查看场地详情')
       back.showArea(paramObj).then(function (response) {
         console.log(response)
         this.detailForm = response.data
-        this.changeData.province = response.data.province
-        this.changeData.city = response.data.city
-        this.changeData.area = response.data.area
-        this.changeData.type = response.data.type
-        this.backQueAreaPage()
+        this.backQueEnum()
+      }.bind(this))
+        .catch((error) => {
+          console.log(error)
+        })
+    },
+    // 获取场地类型
+    backQueEnum: function () {
+      let paramObj = {
+        type: 'SITE_TYPE'
+      }
+      sessionSetStore('backName', '获取场地类型')
+      back.queEnum(paramObj).then(function (response) {
+        console.log(response)
+        let arr = {}
+        for (var i = 0; i < response.data.length; i++) {
+          arr.value = response.data[i].enumKey
+          arr.label = response.data[i].enumValue
+          this.options.push(arr)
+          console.log(this.detailForm.type)
+          // if (this.detailForm.type === response.data[i].enumKey) {
+          //   this.detailForm.type = response.data[i].enumValue
+          //   console.log(this.detailForm.type)
+          // }
+          arr = {}
+        }
+        console.log(this.options)
       }.bind(this))
         .catch((error) => {
           console.log(error)
