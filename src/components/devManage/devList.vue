@@ -292,7 +292,7 @@ export default {
     var windowWidth = $(window).width()
     $('.tableDiv').width(windowWidth - 200 - 20 - 40) // 解决表格滚动条分页益处问题
     var windowHeight = $(window).height()
-    var mainHeight = windowHeight - 40 - 20 - 40 - 40 // header mainOuterPadding tabs mainInPadding
+    var mainHeight = windowHeight - 20 - 40 - 40 // header mainOuterPadding tabs mainInPadding
     console.log(mainHeight) // 617
     $('.devListPage').height(mainHeight) // 设置的是内容高度，巨坑啊卧槽
     $('.tableDiv').height(mainHeight - 40 - 42 - 53 + 13) // serachDiv 几台设备Div footer +13的原因是element的控件boder-sizing为content
