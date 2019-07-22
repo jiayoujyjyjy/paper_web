@@ -1,3 +1,4 @@
+// 5商品管理 -> 5-1商品列表
 <template>
   <div class="productmanagePage">
     <div class="flexbox">
@@ -182,7 +183,9 @@ export default {
         'currentPage': 1,
         'pagesize': 8,
         'currentPage_DiaDev': 1,
-        'pagesize_DiaDev': 8
+        'pagesize_DiaDev': 8,
+        name: '',
+        type: ''
       },
       currentPage: 1,
       pagesize: 10,
@@ -362,48 +365,18 @@ export default {
     // 搜索按钮
     searchBt: function () {
       console.log(this.selection)
-      this.backQuePaperList()
-      // // 如果要搜索的产品类型和产品名称为空，则显示全部列表
-      // if (this.selection.name === '' && this.selection.type === '') {
-      //   this.tableData = this.midData
-      // } else if (this.selection.name !== '' && this.selection.type === '') {
-      //   // 如果只搜索名称，不搜索类型
-      //   this.tableData = []
-      //   for (var i = 0; i < this.midData.length; i++) {
-      //     if (this.selection.name === this.midData[i].productName) {
-      //       this.tableData.push(this.midData[i])
-      //     }
-      //   }
-      //   // 搜索不到数据时，通知搜索错误
-      //   if (this.tableData.length === 0) {
-      //     this.notificationInfo('错误！', '产品名称不存在！')
-      //   }
-      // } else if (this.selection.name === '' && this.selection.type !== '') {
-      //   // 如果只搜索名称，不搜索类型
-      //   this.tableData = []
-      //   for (var j = 0; j < this.midData.length; j++) {
-      //     if (this.selection.type === this.midData[j].productType) {
-      //       this.tableData.push(this.midData[j])
-      //     }
-      //   }
-      //   // 搜索不到数据时，通知搜索错误
-      //   if (this.tableData.length === 0) {
-      //     this.notificationInfo('错误！', '产品类型不存在！')
-      //   }
-      // } else if (this.selection.name !== '' && this.selection.type !== '') {
-      //   // 同时搜索设备名称和设备类型时
-      //   this.tableData = []
-      //   for (var k = 0; k < this.midData.length; k++) {
-      //     if (this.selection.type === this.midData[k].productType && this.selection.name === this.midData[k].productName) {
-      //       this.tableData.push(this.midData[k])
-      //     }
-      //   }
-      //   // 搜索不到数据时，通知搜索错误
-      //   if (this.tableData.length === 0) {
-      //     this.notificationInfo('错误！', '产品名称或产品类型不存在！')
-      //   }
-      //   console.log(this.tableData)
-      // }
+      this.param.name = this.selection.name
+      switch (this.selection.type) {
+        case '小包纸':
+          this.param.type = 1
+          break
+        case '卷纸':
+          this.param.type = 2
+          break
+        default:
+          this.notificationInfo('错误', '暂无该类型商品')
+      }
+      this.backQuePaperPage()
     },
     handleSelectionChange: function (val) {
       this.multipleSelection = val
@@ -451,6 +424,9 @@ export default {
             console.log(this.locationlist)
             console.log(this.devIdlist)
             this.midData = this.tableData
+            // 清空搜索框内容
+            this.selection.name = ''
+            this.selection.type = ''
           }
         } else {
           this.tableData = []
@@ -518,15 +494,15 @@ export default {
           console.log(error)
         })
     },
-    // 纸巾查询
-    backQuePaperList: function () {
-      back.quePaperList().then(function (response) {
-        console.log(response)
-      })
-        .catch(function (error) {
-          console.log(error)
-        })
-    },
+    // // 纸巾查询
+    // backQuePaperList: function () {
+    //   back.quePaperList().then(function (response) {
+    //     console.log(response)
+    //   })
+    //     .catch(function (error) {
+    //       console.log(error)
+    //     })
+    // },
     /*
       *
       *******************   辅助函数   *********************

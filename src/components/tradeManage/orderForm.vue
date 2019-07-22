@@ -1,5 +1,6 @@
+// 更改为3交易管理-> 3-1交易订单
 <template>
-  <div class="placePage">
+  <div class="deviceInfoPage">
     <div class="flexbox1">
 
       <div>
@@ -56,9 +57,13 @@
           <el-button type="text" size="small" @click="editGroup">编辑分组</el-button>
         </div> -->
       </div>
+      <div style="display: -webkit-flex;display: flex;flex-wrap: nowrap;margin-left:20px;">
+        <span style="display:block;margin-top:5px;width:80px;margin-right:5px;">设备编码</span>
+        <el-input v-model="input_devId" size="small" placeholder="请输入设备编码"></el-input>
+      </div>
     </div>
 
-    <div class="flexbox" style="margin:5px 0 10px 0;">
+    <div class="flexbox">
       <div>展示
         <el-radio-group v-model="isTable" size="small">
           <el-radio-button :label="true">详情</el-radio-button>
@@ -71,45 +76,62 @@
       </div>
     </div>
     <div v-show="isTable">
-      <el-table
-        :header-cell-style="{'font-size':'14px'}"
-        :data="tableData"
-        stripe
-        border
-        size="small"
-        style="width: 100%;font-size:12px;">
-        <el-table-column
-          align="center"
-          prop="location"
-          label="投放地址">
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="deviceNum"
-          label="设备数量">
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="tradeNumber"
-          label="交易笔数">
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="onlineIncome"
-          label="在线支付">
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="adIncome"
-          label="广告收益">
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="totalIncome"
-          label="总收益">
-        </el-table-column>
-      </el-table>
-
+      <div class="tableDiv">
+        <el-table
+          :header-cell-style="{'font-size':'14px'}"
+          :data="tableData"
+          stripe
+          border
+          :max-height="tableMaxHeght"
+          size="small"
+          style="width: 100%;font-size:12px;">
+          <el-table-column
+            align="center"
+            prop="name"
+            label="名称">
+          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="deviceId"
+            label="设备编码">
+          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="location"
+            label="投放地址">
+          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="state"
+            label="状态">
+            <template slot-scope="scope">
+              <el-tag
+                :type="scope.row.state === '在线' ? 'success' : 'danger'"
+                disable-transitions>{{scope.row.state}}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="onlineIncome"
+            label="在线收益">
+          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="tradNum"
+            label="交易笔数">
+          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="adIncome"
+            label="广告收益">
+          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="totalIncome"
+            label="总收益">
+          </el-table-column>
+        </el-table>
+      </div>
       <el-pagination
         @current-change="handlePaginationChange"
         :current-page="param.currentPage"
@@ -221,6 +243,7 @@ export default {
       checkedAll_locaGroup: true,
       checkList_loca: [],
       checkList_locaGroup: [],
+      input_devId: '',
       isTable: true,
       isIncome: true,
       selectGroup: false,
@@ -252,36 +275,42 @@ export default {
         checkList: []
       },
       tableData: [{
+        name: '',
+        deviceId: '139761',
         location: '江泰国际广场1楼',
-        deviceNum: 6,
-        tradeNumber: 2,
+        state: '在线',
         onlineIncome: '',
+        tradNum: 10,
         adIncome: '',
         totalIncome: ''
       }, {
-        location: '江泰国际广场2楼',
-        deviceNum: 4,
-        tradeNumber: 1,
+        name: '',
+        deviceId: '139761',
+        location: '江泰国际广场1楼',
+        state: '离线',
         onlineIncome: '',
+        tradNum: 10,
         adIncome: '',
         totalIncome: ''
       }],
       chartsDataResult: [],
       deviceNameDataResult: [],
-      dateDataResult: []
+      dateDataResult: [],
+      tableMaxHeght: document.body.clientHeight - 40 - 20 - 40 - 40 - 52 - 53 + 13
     }
   },
   created: function () {
     this.pageQueSelInit()
-    this.backQueSiteStatis()
+    this.backQueDeviceStatis()
   },
   mounted: function () {
     var windowHeight = $(window).height()
-    var mainHeight = windowHeight - 120
-    $('.placePage').height(mainHeight)
-    $('.el-table').height(mainHeight - 150)
+    var windowWidth = $(window).width()
+    var mainHeight = windowHeight - 40 - 20 - 40 // header mainOuterPadding tabs mainInPadding一侧bug
+    $('.deviceInfoPage').height(mainHeight)
+    $('.tableDiv').height(mainHeight - 40 - 52 - 53 + 13) // footer serachDiv mainInPadding一侧bug
+    $('.tableDiv').width(windowWidth - 200 - 20 - 40) // 解决表格滚动条分页益处问题
     this.dataprocessing()
-    // this.loaddiagram(this.incomeCharts)
   },
   // 注销window.onresize事件
   destroyed () {
@@ -366,8 +395,8 @@ export default {
       } else {
         this.pageQueSelInit()
       }
-      // this.param.deviceId = this.input_devId
-      this.backQueSiteStatis()
+      this.param.deviceId = this.input_devId
+      this.backQueDeviceStatis()
     },
     resetBt: function () {
       Routers.push({ path: '/home/blank' })
@@ -423,10 +452,10 @@ export default {
       this.param.currentPage = value
       // 分页查询请求可选项置空函数
       this.pageQueSelInit()
-      this.backQueSiteStatis()
+      this.backQueDeviceStatis()
     },
     // 加载图表
-    loaddiagram: function (data) {
+    loaddiagram: function () {
       console.log(123)
       var diagramContainer = document.getElementById('diagram')
       var myChart = echarts.init(diagramContainer)
@@ -449,7 +478,6 @@ export default {
             end: 100
           }
         ],
-        color: ['#303133', '#c23531'],
         legend: {
           left: 'left',
           data: this.deviceNameDataResult
@@ -472,10 +500,10 @@ export default {
       *******************   API调用   *********************
       *
     */
-    // 场地统计
-    backQueSiteStatis: function () {
-      sessionSetStore('backName', '场地统计')
-      back.queSiteStatis(this.param).then(function (response) {
+    // 设备统计
+    backQueDeviceStatis: function () {
+      sessionSetStore('backName', '设备统计')
+      back.queDeviceStatis(this.param).then(function (response) {
         console.log(response)
         // 设备详情数据存储
         this.eltotal = response.data.total
@@ -487,20 +515,25 @@ export default {
             obj.deviceId = response.data.records[i].deviceId
             obj.location = response.data.records[i].siteName
             obj.onlineIncome = response.data.records[i].onlineIncome
+            obj.tradNum = response.data.records[i].orderNum
             obj.adIncome = response.data.records[i].advertIncome
             obj.totalIncome = response.data.records[i].totalIncome
-            obj.deviceNum = response.data.records[i].deviceNum
-            obj.tradeNumber = response.data.records[i].orderNum
+            obj.stateNum = response.data.records[i].state
+            if (obj.stateNum === 0) {
+              obj.state = '离线'
+            } else if (obj.stateNum === 1) {
+              obj.state = '在线'
+            }
             tableDataAlter.push(obj)
           }
         }
         this.tableData = tableDataAlter
         // 设备图表数据存储
-        this.chartsDataResult = this.merge(response.siteStatisTrendList)
+        this.chartsDataResult = this.merge(response.deviceStatisTrendList)
         this.chartsDataResult.forEach(item => {
           this.deviceNameDataResult.push(item.name)
         })
-        this.dateDataResult = this.chartsDataResult[0].date
+        if (this.chartsDataResult) this.dateDataResult = this.chartsDataResult[0].date
         this.loaddiagram() // 必须等待back数据获取后再加载图表
       }.bind(this))
         .catch(function (error) {
@@ -537,7 +570,7 @@ export default {
           if (idArr[i] === list[j].deviceId) {
             orderData.push(list[j].orderNum)
             incomeData.push(list[j].totalIncome)
-            deviceNameData.push(list[j].siteName)
+            deviceNameData.push(list[j].deviceName)
             dateData.push(list[j].date)
           }
         }
@@ -559,7 +592,7 @@ export default {
 </script>
 
 <style scoped>
-.placePage {
+.deviceInfoPage {
   padding: 20px;
   background-color: white;
 }
@@ -567,12 +600,18 @@ export default {
   display: -webkit-flex; /* Safari */
   display: flex;
   flex-wrap: wrap;
+  height: 40px;
+}
+.flexbox1 > div {
+  height: 100%;
 }
 .flexbox {
   display: -webkit-flex;
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-between;
+  height: 30px;
+  margin: 6px 0 16px 0;
 }
 .popdiv {
   border: 1px solid #ebeef5;
@@ -595,7 +634,7 @@ export default {
   border: 1px solid #ebeef5;
   padding:10px;
 }
-.placePage >>> .el-dialog__header {
+.deviceInfoPage >>> .el-dialog__header {
   background-color: #f4f4f4;
 }
 </style>

@@ -1,6 +1,7 @@
+// 4.我的收益 -> 4-2缺货备货
 <template>
   <div>
-    user
+    incom
   </div>
 </template>
 

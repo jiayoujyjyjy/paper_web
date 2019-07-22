@@ -370,7 +370,7 @@ export const back = {
   // 4.1 纸巾分页查询
   quePaperPage (param) {
     return axios({
-      url: `${url.backbasurl}/api/v1/paper/page?pageNo=${param.currentPage}&pageSize=${param.pagesize}`,
+      url: `${url.backbasurl}/api/v1/paper/page?pageNo=${param.currentPage}&pageSize=${param.pagesize}&name=${param.name}&type=${param.type}`,
       method: 'get',
       headers: {
         'Content-Type': 'application/json',
@@ -387,23 +387,23 @@ export const back = {
       })
   },
   // 4.2 纸巾查询
-  quePaperList (param) {
-    return axios({
-      url: `${url.backbasurl}/api/v1/paper/lsit`,
-      method: 'get',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      data: {
-      }
-    })
-      .then((response) => {
-        return response.data
-      })
-      .catch((error) => {
-        return Promise.reject(error)
-      })
-  },
+  // quePaperList (param) {
+  //   return axios({
+  //     url: `${url.backbasurl}/api/v1/paper/lsit`,
+  //     method: 'get',
+  //     headers: {
+  //       'Content-Type': 'application/json'
+  //     },
+  //     data: {
+  //     }
+  //   })
+  //     .then((response) => {
+  //       return response.data
+  //     })
+  //     .catch((error) => {
+  //       return Promise.reject(error)
+  //     })
+  // },
   // 4.3 新增纸巾
   addPaper (param) {
     return axios({

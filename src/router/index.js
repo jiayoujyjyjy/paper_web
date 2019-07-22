@@ -5,29 +5,63 @@ import { sessionGetStore } from '@/components/config/Utils'
 // 路由懒加载
 // 登录
 const Login = r => require.ensure([], () => r(require('@/components/login')), 'Login')
-// 主页
+// 1 主页
 const Home = r => require.ensure([], () => r(require('@/components/home')), 'Home')
-// 数据概况
 const Overview = r => require.ensure([], () => r(require('@/components/home/overview')), 'Overview')
-// 设备管理
-const DevmanageBase = r => require.ensure([], () => r(require('@/components/home/devmanage/devmanageBase')), 'DevmanageBase')
-const DevList = r => require.ensure([], () => r(require('@/components/home/devmanage/devList')), 'DevList')
-const DevTransferRecord = r => require.ensure([], () => r(require('@/components/home/devmanage/devTransferRecord')), 'DevTransferRecord')
-const DevInfo = r => require.ensure([], () => r(require('@/components/home/devInfo')), 'DevInfo')
+
+// 2 我的收益 myProfit
+// 2-1 钱包账户
+const Income = r => require.ensure([], () => r(require('@/components/myProfit/income')), 'Income')
+
+// 3 交易管理 tradeManage
+// 3-1 交易订单
+const OrderForm = r => require.ensure([], () => r(require('@/components/tradeManage/orderForm')), 'OrderForm')
+// 3-2 交易统计
+const TradeSta = r => require.ensure([], () => r(require('@/components/tradeManage/tradeSta')), 'TradeSta')
+
+// 4 设备管理 devManage
+// 4-1 设备列表
+const DevList = r => require.ensure([], () => r(require('@/components/devManage/devList')), 'DevList')
+// 4-2 缺货备货
+const DevSupply = r => require.ensure([], () => r(require('@/components/devManage/devSupply')), 'DevSupply')
+// 4-3 补货日志
+const DevLog = r => require.ensure([], () => r(require('@/components/devManage/devLog')), 'DevLog')
+
+// 5 商品管理 goodsManage
+// 5-1 商品列表
+const Productmanage = r => require.ensure([], () => r(require('@/components/goodsManage/productmanage')), 'Productmanage')
+// 5-2 商品类型
+const ProductType = r => require.ensure([], () => r(require('@/components/goodsManage/productType')), 'ProductType')
+
+// 6 场地管理 home
+// 6-1 场地列表
 const AreaManage = r => require.ensure([], () => r(require('@/components/home/areaManage')), 'AreaManage')
 
-// 数据统计
-const Income = r => require.ensure([], () => r(require('@/components/home/income')), 'Income')
-const User = r => require.ensure([], () => r(require('@/components/home/user')), 'User')
-const Device = r => require.ensure([], () => r(require('@/components/home/device')), 'Device')
-const Place = r => require.ensure([], () => r(require('@/components/home/place')), 'Place')
-// 运营
-const Productmanage = r => require.ensure([], () => r(require('@/components/home/productmanage')), 'Productmanage')
-const Ordermanage = r => require.ensure([], () => r(require('@/components/home/ordermanage')), 'Ordermanage')
-// 用户管理
-const UserBase = r => require.ensure([], () => r(require('@/components/home/userManage/userBase')), 'UserBase')
-const Agency = r => require.ensure([], () => r(require('@/components/home/userManage/agency')), 'Agency')
-const Manager = r => require.ensure([], () => r(require('@/components/home/userManage/manager')), 'Manager')
+// 7 用户管理 home
+// 7-1 用户列表
+const UserList = r => require.ensure([], () => r(require('@/components/home/userList')), 'UserList')
+
+// 8 数据分析 dataAnaly
+// 8-1 订单分析
+const OrderAnaly = r => require.ensure([], () => r(require('@/components/dataAnaly/orderAnaly')), 'OrderAnaly')
+// 8-2 商品分析
+const ProductAnaly = r => require.ensure([], () => r(require('@/components/dataAnaly/productAnaly')), 'ProductAnaly')
+// 8-3 点位分析
+const AreaAnaly = r => require.ensure([], () => r(require('@/components/dataAnaly/areaAnaly')), 'AreaAnaly')
+// 8-4 客户分析
+const CustomerAnaly = r => require.ensure([], () => r(require('@/components/dataAnaly/customerAnaly')), 'CustomerAnaly')
+
+// 9 异常管理 abnormalManage
+// 9-1 异常列表
+const AbnormalList = r => require.ensure([], () => r(require('@/components/abnormalManage/abnormalList')), 'AbnormalList')
+// 9-2 远程出货
+const ShipmentDistance = r => require.ensure([], () => r(require('@/components/abnormalManage/shipmentDistance')), 'ShipmentDistance')
+
+// 10 系统配置 settings
+// 10-1 角色管理
+const RoleManage = r => require.ensure([], () => r(require('@/components/settings/roleManage')), 'RoleManage')
+// 10-2 子账号管理
+const ChildAccountManage = r => require.ensure([], () => r(require('@/components/settings/childAccountManage')), 'ChildAccountManage')
 // 重置刷新跳转空白页
 const Blank = r => require.ensure([], () => r(require('@/components/home/blank')), 'Blank')
 
@@ -42,28 +76,24 @@ const router = new Router({
       children: [
         { path: '', redirect: 'overview' },
         { path: 'overview', name: 'overview', component: Overview },
-        { path: 'devmanage',
-          component: DevmanageBase,
-          children: [
-            { path: '', redirect: 'devList' },
-            { path: 'devList', component: DevList },
-            { path: 'devTransferRecord', component: DevTransferRecord }
-          ]},
-        { path: 'devInfo', name: 'devInfo', component: DevInfo },
-        { path: 'areaManage', component: AreaManage },
-        { path: 'income', name: 'income', component: Income },
-        { path: 'user', name: 'user', component: User },
-        { path: 'device', name: 'device', component: Device },
-        { path: 'place', name: 'place', component: Place },
+        { path: 'incom', name: 'income', component: Income },
+        { path: 'orderForm', name: 'orderForm', component: OrderForm },
+        { path: 'tradeSta', name: 'tradeSta', component: TradeSta },
+        { path: 'devList', name: 'devList', component: DevList },
+        { path: 'devSupply', name: 'devSupply', component: DevSupply },
+        { path: 'devLog', name: 'devLog', component: DevLog },
         { path: 'productmanage', name: 'productmanage', component: Productmanage },
-        { path: 'ordermanage', name: 'ordermanage', component: Ordermanage },
-        { path: 'usermanage',
-          component: UserBase,
-          children: [
-            { path: '', redirect: 'agency' },
-            { path: 'agency', component: Agency },
-            { path: 'manager', component: Manager }
-          ]},
+        { path: 'productType', name: 'productType', component: ProductType },
+        { path: 'areaManage', name: 'areaManage', component: AreaManage },
+        { path: 'userList', name: 'userList', component: UserList },
+        { path: 'orderAnaly', name: 'orderAnaly', component: OrderAnaly },
+        { path: 'productAnaly', name: 'productAnaly', component: ProductAnaly },
+        { path: 'areaAnaly', name: 'areaAnaly', component: AreaAnaly },
+        { path: 'customerAnaly', name: 'customerAnaly', component: CustomerAnaly },
+        { path: 'abnormalList', name: 'abnormalList', component: AbnormalList },
+        { path: 'shipmentDistance', name: 'shipmentDistance', component: ShipmentDistance },
+        { path: 'roleManage', name: 'roleManage', component: RoleManage },
+        { path: 'childAccountManage', name: 'childAccountManage', component: ChildAccountManage },
         { path: 'blank', name: 'blank', component: Blank }
       ]
     }

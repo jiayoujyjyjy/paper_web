@@ -28,35 +28,76 @@
         </el-menu-item>
         <el-submenu index="2">
           <template slot="title">
-            <img :src="devImgSrc" class="menuImg" />
-            <span class="menu_text">设备管理</span>
+            <img :src="incomeImgSrc" class="menuImg" />
+            <span class="menu_text">我的收益</span>
           </template>
-          <el-menu-item index="2-1">设备管理</el-menu-item>
-          <el-menu-item index="2-2" v-show="false">设备故障信息</el-menu-item>
-          <el-menu-item index="2-3">场地管理</el-menu-item>
+          <el-menu-item index="2-1">钱包账户</el-menu-item>
         </el-submenu>
         <el-submenu index="3">
           <template slot="title">
-            <img :src="dataImgSrc" class="menuImg" />
-            <span class="menu_text">数据报表</span>
+            <img :src="tradeImgSrc" class="menuImg" />
+            <span class="menu_text">交易管理</span>
           </template>
-          <el-menu-item index="3-1" v-show="false">收益统计</el-menu-item>
-          <el-menu-item index="3-2" v-show="false">用户统计</el-menu-item>
-          <el-menu-item index="3-3">设备统计</el-menu-item>
-          <el-menu-item index="3-4">场地统计</el-menu-item>
+          <el-menu-item index="3-1">交易订单</el-menu-item>
+          <el-menu-item index="3-2">交易统计</el-menu-item>
         </el-submenu>
         <el-submenu index="4">
           <template slot="title">
-            <img :src="operationImgSrc" class="menuImg" />
-            <span class="menu_text">运营管理</span>
+            <img :src="devImgSrc" class="menuImg" />
+            <span class="menu_text">设备管理</span>
           </template>
-          <el-menu-item index="4-1">产品管理</el-menu-item>
-          <el-menu-item index="4-2">订单管理</el-menu-item>
+          <el-menu-item index="4-1">设备列表</el-menu-item>
+          <el-menu-item index="4-2">缺货备货</el-menu-item>
+          <el-menu-item index="4-3">补货日志</el-menu-item>
         </el-submenu>
-        <el-menu-item index="5" v-show="(userAuth === 0)">
-          <img :src="agencyImgSrc" class="menuImg" />
-          <span slot="title" class="menu_text">用户管理</span>
-        </el-menu-item>
+        <el-submenu index="5">
+          <template slot="title">
+            <img :src="productImgSrc" class="menuImg" />
+            <span class="menu_text">商品管理</span>
+          </template>
+          <el-menu-item index="5-1">商品列表</el-menu-item>
+          <el-menu-item index="5-2">商品类型</el-menu-item>
+        </el-submenu>
+        <el-submenu index="6">
+          <template slot="title">
+            <img :src="areaImgSrc" class="menuImg" />
+            <span class="menu_text">场地管理</span>
+          </template>
+          <el-menu-item index="6-1">场地列表</el-menu-item>
+        </el-submenu>
+        <el-submenu index="7">
+          <template slot="title">
+            <img :src="userImgSrc" class="menuImg" />
+            <span class="menu_text">用户管理</span>
+          </template>
+          <el-menu-item index="7-1">用户列表</el-menu-item>
+        </el-submenu>
+        <el-submenu index="8">
+          <template slot="title">
+            <img :src="dataImgSrc" class="menuImg" />
+            <span class="menu_text">数据分析</span>
+          </template>
+          <el-menu-item index="8-1">订单分析</el-menu-item>
+          <el-menu-item index="8-2">商品分析</el-menu-item>
+          <el-menu-item index="8-3">点位分析</el-menu-item>
+          <el-menu-item index="8-4">客户分析</el-menu-item>
+        </el-submenu>
+        <el-submenu index="9">
+          <template slot="title">
+            <img :src="errImgSrc" class="menuImg" />
+            <span class="menu_text">异常管理</span>
+          </template>
+          <el-menu-item index="9-1">异常列表</el-menu-item>
+          <el-menu-item index="9-2">远程出货</el-menu-item>
+        </el-submenu>
+        <el-submenu index="10" v-show="(userAuth === 0)">
+          <template slot="title">
+            <img :src="settingImgSrc" class="menuImg" />
+            <span class="menu_text">系统配置</span>
+          </template>
+          <el-menu-item index="10-1">角色管理</el-menu-item>
+          <el-menu-item index="10-2">账号管理</el-menu-item>
+        </el-submenu>
       </el-menu>
     </el-aside>
     <el-container>
@@ -102,38 +143,70 @@ export default {
         value: '主页'
       }, {
         index: '2-1',
-        value: '设备管理'
-      }, {
-        index: '2-2',
-        value: '设备故障信息'
-      }, {
-        index: '2-3',
-        value: '场地管理'
+        value: '钱包账户'
       }, {
         index: '3-1',
-        value: '收益统计'
+        value: '交易管理'
       }, {
         index: '3-2',
-        value: '用户统计'
-      }, {
-        index: '3-3',
-        value: '设备统计'
-      }, {
-        index: '3-4',
-        value: '场地统计'
+        value: '交易统计'
       }, {
         index: '4-1',
-        value: '产品管理'
+        value: '设备列表'
       }, {
         index: '4-2',
-        value: '订单管理'
+        value: '缺货补货'
+      }, {
+        index: '4-3',
+        value: '补货日志'
+      }, {
+        index: '5-1',
+        value: '商品列表'
+      }, {
+        index: '5-2',
+        value: '商品类型'
+      }, {
+        index: '6-1',
+        value: '场地列表'
+      }, {
+        index: '7-1',
+        value: '用户列表'
+      }, {
+        index: '8-1',
+        value: '订单分析'
+      }, {
+        index: '8-2',
+        value: '商品分析'
+      }, {
+        index: '8-3',
+        value: '点位分析'
+      }, {
+        index: '8-4',
+        value: '客户分析'
+      }, {
+        index: '9-1',
+        value: '异常列表'
+      }, {
+        index: '9-2',
+        value: '远程出货'
+      }, {
+        index: '10-1',
+        value: '角色管理'
+      }, {
+        index: '10-2',
+        value: '账号管理'
       }],
       userInfo: {}, // 管理员详情信息
       homeImgSrc: '/static/home_active.png',
       devImgSrc: '/static/devmanage.png',
       dataImgSrc: '/static/data.png',
-      operationImgSrc: '/static/operation.png',
-      agencyImgSrc: '/static/agency.png'
+      tradeImgSrc: '/static/operation.png',
+      userImgSrc: '/static/agency.png',
+      incomeImgSrc: '/static/income.png',
+      productImgSrc: '/static/product.png',
+      areaImgSrc: '/static/site.png',
+      errImgSrc: '/static/error.png',
+      settingImgSrc: '/static/settings.png'
       // username: 'admin'
     }
   },
@@ -154,11 +227,9 @@ export default {
     if (sessionGetStore('menuActive')) {
       this.$store.commit('setMenuActive', sessionGetStore('menuActive'))
       if (sessionGetStore('menuActive') === '1') {
-        this.changeMenuImg(true, false)
-      } else if (sessionGetStore('menuActive') === '5') {
-        this.changeMenuImg(false, true)
+        this.changeMenuImg(true)
       } else {
-        this.changeMenuImg(false, false)
+        this.changeMenuImg(false)
       }
     }
     // session获取登录者关键参数
@@ -182,8 +253,8 @@ export default {
     // 菜单搜索权限区分
     if (this.userAuth === 0) {
       let obj = {
-        index: '5',
-        value: '用户管理'
+        index: '10-2',
+        value: '账号管理'
       }
       this.searchItem.push(obj)
     }
@@ -226,59 +297,100 @@ export default {
       if (value === '1') {
         sessionSetStore('menuActive', '1')
         Routers.push({ path: '/home/overview' })
-        this.changeMenuImg(true, false)
+        this.changeMenuImg(true)
       }
+
       if (value === '2-1') {
         sessionSetStore('menuActive', '2-1')
-        sessionSetStore('devmanage_activeName', 'first')
-        Routers.push({ path: '/home/devmanage' })
-        this.changeMenuImg(false, false)
-      }
-      if (value === '2-2') {
-        sessionSetStore('menuActive', '2-2')
-        Routers.push({ path: '/home/devInfo' })
-        this.changeMenuImg(false, false)
-      }
-      if (value === '2-3') {
-        sessionSetStore('menuActive', '2-3')
-        Routers.push({ path: '/home/areamanage' })
-        this.changeMenuImg(false, false)
+        // sessionSetStore('devmanage_activeName', 'first')
+        Routers.push({ path: '/home/incom' })
+        this.changeMenuImg(false)
       }
       if (value === '3-1') {
         sessionSetStore('menuActive', '3-1')
-        Routers.push({ path: '/home/income' })
-        this.changeMenuImg(false, false)
+        Routers.push({ path: '/home/orderForm' })
+        this.changeMenuImg(false)
       }
       if (value === '3-2') {
         sessionSetStore('menuActive', '3-2')
-        Routers.push({ path: '/home/user' })
-        this.changeMenuImg(false, false)
-      }
-      if (value === '3-3') {
-        sessionSetStore('menuActive', '3-3')
-        Routers.push({ path: '/home/device' })
-        this.changeMenuImg(false, false)
-      }
-      if (value === '3-4') {
-        sessionSetStore('menuActive', '3-4')
-        Routers.push({ path: '/home/place' })
-        this.changeMenuImg(false, false)
+        Routers.push({ path: '/home/tradeSta' })
+        this.changeMenuImg(false)
       }
       if (value === '4-1') {
         sessionSetStore('menuActive', '4-1')
-        Routers.push({ path: '/home/productmanage' })
-        this.changeMenuImg(false, false)
+        Routers.push({ path: '/home/devList' })
+        this.changeMenuImg(false)
       }
       if (value === '4-2') {
         sessionSetStore('menuActive', '4-2')
-        Routers.push({ path: '/home/ordermanage' })
-        this.changeMenuImg(false, false)
+        Routers.push({ path: '/home/devSupply' })
+        this.changeMenuImg(false)
       }
-      if (value === '5') {
-        sessionSetStore('menuActive', '5')
-        sessionSetStore('usermanage_activeName', 'first')
-        Routers.push({ path: '/home/usermanage' })
-        this.changeMenuImg(false, true)
+      if (value === '4-3') {
+        sessionSetStore('menuActive', '4-3')
+        Routers.push({ path: '/home/devLog' })
+        this.changeMenuImg(false)
+      }
+      if (value === '5-1') {
+        sessionSetStore('menuActive', '5-1')
+        Routers.push({ path: '/home/productmanage' })
+        this.changeMenuImg(false)
+      }
+      if (value === '5-2') {
+        sessionSetStore('menuActive', '5-2')
+        Routers.push({ path: '/home/productType' })
+        this.changeMenuImg(false)
+      }
+      if (value === '6-1') {
+        sessionSetStore('menuActive', '6-1')
+        Routers.push({ path: '/home/areaManage' })
+        this.changeMenuImg(false)
+      }
+      if (value === '7-1') {
+        sessionSetStore('menuActive', '7-1')
+        // sessionSetStore('usermanage_activeName', 'first')
+        Routers.push({ path: '/home/userList' })
+        this.changeMenuImg(false)
+      }
+      if (value === '8-1') {
+        sessionSetStore('menuActive', '8-1')
+        Routers.push({ path: '/home/orderAnaly' })
+        this.changeMenuImg(false)
+      }
+      if (value === '8-2') {
+        sessionSetStore('menuActive', '8-2')
+        Routers.push({ path: '/home/productAnaly' })
+        this.changeMenuImg(false)
+      }
+      if (value === '8-3') {
+        sessionSetStore('menuActive', '8-3')
+        Routers.push({ path: '/home/areaAnaly' })
+        this.changeMenuImg(false)
+      }
+      if (value === '8-4') {
+        sessionSetStore('menuActive', '8-4')
+        Routers.push({ path: '/home/customerAnaly' })
+        this.changeMenuImg(false)
+      }
+      if (value === '9-1') {
+        sessionSetStore('menuActive', '9-1')
+        Routers.push({ path: '/home/abnormalList' })
+        this.changeMenuImg(false)
+      }
+      if (value === '9-2') {
+        sessionSetStore('menuActive', '9-2')
+        Routers.push({ path: '/home/shipmentDistance' })
+        this.changeMenuImg(false)
+      }
+      if (value === '10-1') {
+        sessionSetStore('menuActive', '10-1')
+        Routers.push({ path: '/home/roleManage' })
+        this.changeMenuImg(false)
+      }
+      if (value === '10-2') {
+        sessionSetStore('menuActive', '10-2')
+        Routers.push({ path: '/home/childAccountManage' })
+        this.changeMenuImg(false)
       }
     },
     querySearch: function (queryString, cb) {
@@ -293,16 +405,11 @@ export default {
       }
     },
     // 菜单项切换时，对应图标颜色改变
-    changeMenuImg: function (home, agency) {
+    changeMenuImg: function (home) {
       if (home) {
         this.homeImgSrc = '/static/home_active.png'
       } else {
         this.homeImgSrc = '/static/home.png'
-      }
-      if (agency) {
-        this.agencyImgSrc = '/static/agency_active.png'
-      } else {
-        this.agencyImgSrc = '/static/agency.png'
       }
     },
     tologinBt: function () {
