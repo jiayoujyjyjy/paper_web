@@ -495,11 +495,12 @@ export const back = {
   // 5.1 订单分页查询
   queOrderPage (param) {
     return axios({
-      url: `${url.backbasurl}/api/v1/order/page?pageNo=${param.currentPage}&pageSize=${param.pagesize}&deviceId=${param.deviceId}&siteId=${param.siteId}&managerId=${param.managerId}&userId=${param.userId}&state=${param.state}&site=${param.site}&id=${param.id}&paperId=${param.paperId}`,
+      url: `${url.backbasurl}/api/v1/order/page?pageNo=${param.currentPage}&pageSize=${param.pagesize}&deviceId=${param.deviceId}&siteId=${param.siteId}&userId=${param.userId}&state=${param.state}&site=${param.site}&id=${param.id}&paperId=${param.paperId}&beginDate=${param.beginDate}&endDate=${param.endDate}`,
       method: 'get',
       headers: {
         'Content-Type': 'application/json',
-        'managerId': param.managerId
+        managerId: param.managerId,
+        roleId: param.roleId
       },
       data: {
       }

@@ -563,6 +563,7 @@ export default {
 .placePage {
   padding: 20px;
   background-color: white;
+  width: 100%;
 }
 .flexbox1 {
   display: -webkit-flex; /* Safari */
