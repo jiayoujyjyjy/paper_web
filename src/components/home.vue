@@ -116,7 +116,11 @@
         </div>
       </el-header>
       <el-main>
-        <router-view></router-view>
+        <div class="main-container-base">
+          <el-container>
+            <router-view></router-view>
+          </el-container>
+        </div>
       </el-main>
     </el-container>
   </el-container>
@@ -505,5 +509,10 @@ export default {
 }
 .el-menu {
   border-right: 0px solid #e6e6e6;
+}
+.main-container-base {
+  overflow: hidden;
+  background-color: #FFFFFD;
+  width: 100%;
 }
 </style>
