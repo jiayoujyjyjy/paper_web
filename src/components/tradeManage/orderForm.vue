@@ -23,37 +23,16 @@
         <span style="width:80px;margin-top:6px">日期</span>
         <el-date-picker
           v-model="dateValue"
-          type="datetimerange"
-          size="small"
-          :picker-options="pickerOptions"
+          type="daterange"
+          unlink-panels
           range-separator="至"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
+          :picker-options="pickerOptions"
           format="yyyy 年 MM 月 dd 日"
           value-format="yyyy-MM-dd">
-        </el-date-picker>
+        </el-date-picker>      
       </div>
-      <!-- 去除了输入自动匹配功能 -->
-      <!-- <div style="margin: 0 20px;">设备编码
-        <el-autocomplete
-          size="small"
-          class="inline-input"
-          suffix-icon="el-icon-arrow-down"
-          v-model="selection.deviceId"
-          :fetch-suggestions="querySearch_DevId"
-          placeholder="请输入或选择编号">
-        </el-autocomplete>
-      </div>
-      <div>场地名称
-        <el-autocomplete
-          size="small"
-          class="inline-input"
-          suffix-icon="el-icon-arrow-down"
-          v-model="selection.site"
-          :fetch-suggestions="querySearch_Loca"
-          placeholder="请输入或选择场地">
-        </el-autocomplete>
-      </div> -->
       <el-button type="primary" size="small" @click="searchBt">查询</el-button>
     </div>
     <div class="tableDiv">
@@ -121,18 +100,6 @@
           prop="paper"
           label="纸巾名称">
         </el-table-column>
-        <!-- <el-table-column
-          align="center"
-          prop="userId"
-          label="支付用户编号">
-        </el-table-column> -->
-        <!-- <el-table-column
-          label="详情"
-          align="center">
-          <template slot-scope="scope">
-            <el-button type="text" size="small" @click="detailBt(scope.$index, scope.row)">查看</el-button>
-          </template>
-        </el-table-column> -->
       </el-table>
     </div>
 
@@ -266,11 +233,6 @@ export default {
     detailBt: function (index, row) {
       this.dialogTitle = '详情'
       this.isedit = true
-      // this.detailForm = {
-      //   productName: this.tableData[index].productName,
-      //   productNum: this.tableData[index].productNum,
-      //   productPrice: this.tableData[index].productPrice
-      // }
       this.dialogEditVisible = true
     },
     // 详情对话框确定按键
@@ -284,6 +246,8 @@ export default {
       this.param.id = this.selection.orderId
       this.param.deviceId = this.selection.deviceId
       this.param.site = this.selection.site
+      this.param.beginDate = this.dateValue[0]
+      this.param.endDate = this.dateValue[1]
       console.log(this.dateValue)
       this.backQueOrderPage()
     },
@@ -325,14 +289,6 @@ export default {
             obj.paper = response.data.records[i].paper
             obj.createTime = response.data.records[i].createTime
             this.tableData.push(obj) // 或用this.tableData[i] = obj亦可
-            // 存储设备编码列表
-            let devObj = {}
-            devObj.value = response.data.records[i].deviceId
-            this.devIdlist[i] = devObj
-            // 存储场地名称列表
-            let siteObj = {}
-            siteObj.value = response.data.records[i].site
-            this.siteList[i] = siteObj
           }
         } else {
           this.tableData = []
