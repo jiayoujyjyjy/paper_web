@@ -6,7 +6,7 @@ export const back = {
   /*
   ********* 0 公共分类 *********
   */
-  // 0.1 枚举查询
+  // 0.1 枚举查询 test
   queEnum (param) {
     return axios({
       url: `${url.backbasurl}/api/v1/enum/list?type=${param.type}`,
