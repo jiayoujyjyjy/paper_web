@@ -180,8 +180,7 @@ export default {
         deviceId: '',
         site: ''
       },
-      // 表格最大高度 header mainOuterPadding tabs mainInPadding footer serachDiv bugSet
-      tableMaxHeght: document.body.clientHeight - 40 - 20 - 40 - 72 - 53 + 13,
+      tableMaxHeght: document.body.clientHeight - 60 - 40 - 40 - 62 - 53 + 13,
       // 日期选择器
       pickerOptions: {
         shortcuts: [{
@@ -210,7 +209,24 @@ export default {
           }
         }]
       },
-      dateValue: ''
+      dateValue: '',
+      screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
+      onresizeTimer: false // 屏幕高度变化定时器，避免频繁调用window.onresize()方法
+    }
+  },
+  watch: {
+    // 监听屏幕高度改变表格高度
+    screenHeight (val) {
+      /* 触发dom操作，考虑到函数节流，避免window.onresize()方法频繁触发
+      强调一点，window.onresize()方法频繁触发也无所谓，前提是在不操作dom的情况下 */
+      if (!this.onresizeTimer) {
+        this.tableContainerHeightSet()
+        this.onresizeTimer = true
+        const that = this
+        setTimeout(function () {
+          that.onresizeTimer = false
+        }, 400)
+      }
     }
   },
   created: function () {
@@ -221,14 +237,31 @@ export default {
     this.backQueOrderPage()
   },
   mounted: function () {
-    var windowWidth = $(window).width()
-    $('.tableDiv').width(windowWidth - 200 - 20 - 40) // 解决表格滚动条分页益处问题
-    var windowHeight = $(window).height()
-    var mainHeight = windowHeight - 40 - 20 - 40
-    $('.ordermanagePage').height(mainHeight)
-    $('.tableDiv').height(mainHeight - 72 - 53 + 13)
+    // var windowWidth = $(window).width()
+    // $('.tableDiv').width(windowWidth - 200 - 20 - 40) // 解决表格滚动条分页益处问题
+    // 初始化表格容器高度/最大高度
+    this.tableContainerHeightSet()
+    // 监听屏幕高度
+    this.screenOnresizeFun()
   },
   methods: {
+    // 表格容器高度随窗口视口变化函数
+    tableContainerHeightSet: function () {
+      var windowHeight = $(window).height()
+      var mainHeight = windowHeight - 60 - 40 - 40
+      $('.tableDiv').height(mainHeight - 62 - 53 + 13)
+      this.tableMaxHeght = windowHeight - 60 - 40 - 40 - 62 - 53 + 13
+    },
+    // 监听屏幕高度
+    screenOnresizeFun: function () {
+      const that = this
+      window.onresize = () => {
+        return (() => {
+          that.screenHeight = document.body.clientHeight
+          console.log('that.screenHeight: ' + that.screenHeight)
+        })() // 不加最后()会报错，并没有立即执行,立即执行函数
+      }
+    },
     // 详情信息按钮
     detailBt: function (index, row) {
       this.dialogTitle = '详情'
@@ -367,13 +400,10 @@ export default {
 </script>
 
 <style scoped>
-.ordermanagePage {
-  padding: 20px;
-  background-color: white;
-  font-size: 14px;
-}
 .flexbox {
-  margin: 20px 80px 20px 0;
+  /* margin: 20px 80px 20px 0; */
+  height: 30px;
+  margin: 16px 0;
   display: -webkit-flex; /* Safari */
   display: flex;
   flex-wrap: nowrap;

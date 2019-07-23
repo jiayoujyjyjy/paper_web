@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <router-view/>
+    <div class="index">
+      <router-view/>
+    </div>
   </div>
 </template>
 
@@ -31,6 +33,9 @@ body, html {
   font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, SimSun, sans-serif;
   font-size: 14px;
   -webkit-font-smoothing: antialiased;
+}
+.index, .el-container {
+  height: 100%;
 }
 /* 覆盖element组件高度：
 header 40px;

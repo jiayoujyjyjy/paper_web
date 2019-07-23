@@ -59,7 +59,7 @@ function interceptors () {
       return Promise.reject(error)
     }
   )
-  // http response 拦截器
+  // http response 拦截器 //
   axios.interceptors.response.use(
     response => {
       // console.log(response)

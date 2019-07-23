@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-aside width="200px">
+    <el-aside>
       <div class="logo">
         <img style="width:180px;margin-top:22px;" src="/static/logo.png" />
       </div>
@@ -93,10 +93,11 @@
         <el-submenu index="10" v-show="(userAuth === 0)">
           <template slot="title">
             <img :src="settingImgSrc" class="menuImg" />
-            <span class="menu_text">系统配置</span>
+            <span class="menu_text">用户管理</span>
           </template>
           <el-menu-item index="10-1">角色管理</el-menu-item>
-          <el-menu-item index="10-2">账号管理</el-menu-item>
+          <el-menu-item index="10-2">子账号管理</el-menu-item>
+          <el-menu-item index="10-3">代理管理</el-menu-item>
         </el-submenu>
       </el-menu>
     </el-aside>
@@ -116,10 +117,8 @@
         </div>
       </el-header>
       <el-main>
-        <div class="main-container-base">
-          <el-container>
-            <router-view></router-view>
-          </el-container>
+        <div class="page-container main-page">
+          <router-view></router-view>
         </div>
       </el-main>
     </el-container>
@@ -128,7 +127,6 @@
 
 <script>
 import { back } from 'api'
-import $ from 'jquery'
 import Routers from '@/router'
 import { sessionSetStore, sessionGetStore } from '@/components/config/Utils'
 export default {
@@ -198,7 +196,10 @@ export default {
         value: '角色管理'
       }, {
         index: '10-2',
-        value: '账号管理'
+        value: '子账号管理'
+      }, {
+        index: '10-3',
+        value: '代理管理'
       }],
       userInfo: {}, // 管理员详情信息
       homeImgSrc: '/static/home_active.png',
@@ -253,7 +254,6 @@ export default {
     // 防止刷新后丢失用户信息
   },
   mounted: function () {
-    this.caculateContainer()
     // 菜单搜索权限区分
     if (this.userAuth === 0) {
       let obj = {
@@ -262,24 +262,12 @@ export default {
       }
       this.searchItem.push(obj)
     }
-    // var _this = this
-    // window.onresize = function () {
-    //   console.log('resize')
-    //   console.log(document.body.clientWidth)
-    //   _this.caculateContainer()
-    // }
   },
   // 注销window.onresize事件
   destroyed () {
     window.onresize = null
   },
   methods: {
-    // 计算元素高度
-    caculateContainer: function () {
-      var windowHeight = $(window).height()
-      console.log(windowHeight)
-      $('.el-aside').height(windowHeight)
-    },
     // 搜索框选中事件
     handleSearch: function () {
       console.log(this.selectedItem)
@@ -481,7 +469,8 @@ export default {
   background-color: #252E49;
   text-align: center;
   height: 100%;
-  color:#fff
+  color:#fff;
+  width: 250px!important;
 }
 .search {
   width: 90%;
@@ -489,10 +478,12 @@ export default {
   margin-top: 10px;
 }
 .el-main {
-  background-color: #eee;
+  color: #333;
+  background-color: #f0f2f5;
   text-align: center;
-  padding: 10px;
-  width: 100%;
+  padding: 20px;
+  height: 100%;
+  margin: unset;
 }
 .logo {
   height:80px;
@@ -510,9 +501,10 @@ export default {
 .el-menu {
   border-right: 0px solid #e6e6e6;
 }
-.main-container-base {
-  overflow: hidden;
-  background-color: #FFFFFD;
-  width: 100%;
+.main-page {
+  height: calc(100% - 40px);
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
 }
 </style>
