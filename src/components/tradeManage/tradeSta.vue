@@ -2,113 +2,28 @@
 <template>
   <div class="placePage">
     <div class="flexbox1">
-
-      <div>
-        <div>
-          <span style="margin-right:5px;">日期</span>
-          <el-date-picker
-            v-model="dateValue"
-            type="datetimerange"
-            size="small"
-            :picker-options="pickerOptions"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期">
-          </el-date-picker>
-        </div>
-        <p></p>
-      </div>
-
-      <div>
-        <!-- <div style="display: -webkit-flex;display: flex;flex-wrap: nowrap;margin-left:20px;">
-          <span style="display:block;margin-top:5px;margin-right:5px;">场地</span>
-          <el-popover
-            placement="bottom"
-            width="300"
-            trigger="click"
-            >
-            <div>
-              <el-input v-model="popoverInput" size="small" @change="popInputChange" placeholder="请输入场地名称"></el-input>
-              <div class="popdiv">
-                <div style="background-color:#f5f7fa;padding:10px;">场地</div>
-                <div style="padding-left: 10px;">
-                  <el-checkbox v-model="checkedAll_loca" @change="changeCheck">全选</el-checkbox>
-                  <el-checkbox-group v-model="checkList_loca" @change="changeCheckGroup">
-                    <el-checkbox v-for="item in locationlist" :key="item.key" style="width:100%" :label="item.value"></el-checkbox>
-                  </el-checkbox-group>
-                </div>
-              </div>
-              <div class="popdiv">
-                <div style="background-color:#f5f7fa;padding:10px;">分组</div>
-                <div style="padding-left: 10px;">
-                  <el-checkbox v-model="checkedAll_locaGroup" @change="changeCheck">全选</el-checkbox>
-                  <el-checkbox-group v-model="checkList_locaGroup" @change="changeCheckGroup">
-                    <el-checkbox v-for="item in locaGrouplist" :key="item.key" style="width:100%" :label="item.value"></el-checkbox>
-                  </el-checkbox-group>
-                </div>
-              </div>
-            </div>
-            <el-input slot="reference" size="small" suffix-icon="el-icon-arrow-down" v-model="poploca"></el-input>
-          </el-popover>
-        </div> -->
-        <!-- <div>
-          <el-button type="text" size="small" @click="addGroup">添加分组</el-button>
-          <span class="dividingLine">|</span>
-          <el-button type="text" size="small" @click="editGroup">编辑分组</el-button>
-        </div> -->
-      </div>
+      <el-button size="small" type="primary" round plain @click="dayTable">日报表</el-button>
+      <el-button size="small" type="primary" round plain @click="weekTable">周报表</el-button>
+      <el-button size="small" type="primary" round plain @click="monthTable">月报表</el-button>
+      <span style="margin: 0.5% 2%">统计维度：</span>
+      <el-select v-model="value" placeholder="请选择" @change="select(value)">
+        <el-option
+          v-for="item in options"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value">
+        </el-option>
+      </el-select>
     </div>
-
-    <div class="flexbox" style="margin:5px 0 10px 0;">
-      <div>展示
-        <el-radio-group v-model="isTable" size="small">
-          <el-radio-button :label="true">详情</el-radio-button>
-          <el-radio-button :label="false">趋势</el-radio-button>
-        </el-radio-group>
-      </div>
-      <div class="flexbox">
-        <el-button type="primary" size="small" @click="searchBt">查询</el-button>
-        <el-button size="small" type="primary" style="margin-left:20px;" @click="resetBt">重置</el-button>
-      </div>
-    </div>
-    <div v-show="isTable">
-      <el-table
-        :header-cell-style="{'font-size':'14px'}"
-        :data="tableData"
-        stripe
-        border
-        size="small"
-        style="width: 100%;font-size:12px;">
-        <el-table-column
-          align="center"
-          prop="location"
-          label="投放地址">
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="deviceNum"
-          label="设备数量">
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="tradeNumber"
-          label="交易笔数">
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="onlineIncome"
-          label="在线支付">
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="adIncome"
-          label="广告收益">
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="totalIncome"
-          label="总收益">
-        </el-table-column>
+    <!-- 场地类型统计 -->
+    <div v-show="areaSta">
+      <el-table :header-cell-style="{'font-size':'14px'}" :data="areaData" stripe border size="small" style="width: 100%;font-size:12px;">
+        <el-table-column align="center" prop="siteName" label="场地"></el-table-column>
+        <el-table-column align="center" prop="deviceNum" label="设备数量"></el-table-column>
+        <el-table-column align="center" prop="orderNum" label="交易笔数"></el-table-column>
+        <el-table-column align="center" prop="onlineIncome" label="在线收益"></el-table-column>
+        <el-table-column align="center" prop="advertIncome" label="广告收益"></el-table-column>
+        <el-table-column align="center" prop="totalIncome" label="总收益"></el-table-column>
       </el-table>
 
       <el-pagination
@@ -120,60 +35,54 @@
       </el-pagination>
     </div>
 
-    <div v-show="!isTable">
-      <div class="chartsRadio">
-        <el-radio-group v-model="isIncome" size="small" @change="changeRadio">
-          <el-radio-button :label="true">总收益</el-radio-button>
-          <el-radio-button :label="false">交易笔数</el-radio-button>
-        </el-radio-group>
-      </div>
-      <div id="diagram">charts</div>
+    <!-- 按设备统计 -->
+    <div v-show="devSta">
+      <el-table :header-cell-style="{'font-size':'14px'}" :data="devData" stripe border size="small" style="width: 100%;font-size:12px;">
+        <el-table-column align="center" prop="deviceName" label="设备名称"></el-table-column>
+        <el-table-column align="center" prop="deviceId" label="设备编码"></el-table-column>
+        <el-table-column align="center" prop="state" label="设备状态"></el-table-column>
+        <el-table-column align="center" prop="orderNum" label="交易笔数"></el-table-column>
+        <el-table-column align="center" prop="onlineIncome" label="在线收益"></el-table-column>
+        <el-table-column align="center" prop="advertIncome" label="广告收益"></el-table-column>
+        <el-table-column align="center" prop="totalIncome" label="总收益"></el-table-column>
+      </el-table>
+
+      <el-pagination
+        @current-change="handlePaginationChange"
+        :current-page="param.currentPage"
+        :page-size="param.pagesize"
+        layout="total, prev, pager, next, jumper"
+        :total="eltotal">
+      </el-pagination>
+
+    <!-- 按商品类型统计 -->
+    <div v-show="productSta">
+      <el-table :header-cell-style="{'font-size':'14px'}" :data="goods" stripe border size="small" style="width: 100%;font-size:12px;">
+        <el-table-column align="center" prop="siteName" label="场地"></el-table-column>
+        <el-table-column align="center" prop="deviceId" label="设备编码"></el-table-column>
+        <el-table-column align="center" prop="state" label="设备状态"></el-table-column>
+        <el-table-column align="center" prop="orderNum" label="交易笔数"></el-table-column>
+        <el-table-column align="center" prop="onlineIncome" label="在线收益"></el-table-column>
+        <el-table-column align="center" prop="advertIncome" label="广告收益"></el-table-column>
+        <el-table-column align="center" prop="totalIncome" label="总收益"></el-table-column>
+      </el-table>
+
+      <el-pagination
+        @current-change="handlePaginationChange"
+        :current-page="param.currentPage"
+        :page-size="param.pagesize"
+        layout="total, prev, pager, next, jumper"
+        :total="eltotal">
+      </el-pagination>
     </div>
-
-    <!--新增/编辑分组对话框-->
-    <el-dialog
-      :title="dialogTitle"
-      :visible.sync="dialogEditVisible"
-      width="25%"
-      center>
-      <div v-show="selectGroup">
-        <div style="padding:10px;border:1px solid #ebeef5;height:200px;">
-          <div v-for="item in locaGrouplist" :key="item.key" style="width:100%;" class="flexbox">
-            <span>{{item.value}}</span>
-            <div class="flexbox">
-              <el-button type="text" size="small" @click="diaEditBt(item.value)">编辑</el-button>
-              <span class="dividingLine">|</span>
-              <el-button type="text" size="small" @click="diaDelBt(item.value)">删除</el-button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div v-show="!selectGroup">
-        <span style="display:block;margin:15px 0 10px 0;">分组名称</span>
-        <el-input v-model="editform.groupName" size="small" placeholder="请输入场地分组名称"></el-input>
-        <span style="display:block;margin:15px 0 10px 0;">选择加入该组的场地</span>
-        <div style="padding:10px;border:1px solid #ebeef5;height:200px;">
-          <el-checkbox-group v-model="editform.checkList">
-            <el-checkbox v-for="item in locationlist" :key="item.key" style="width:100%" :label="item.value"></el-checkbox>
-          </el-checkbox-group>
-        </div>
-      </div>
-
-      <span slot="footer">
-        <el-button @click="dialogEditVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editConfirm">确 定</el-button>
-      </span>
-    </el-dialog>
-
+  </div>
   </div>
 </template>
 
 <script>
 import { back } from 'api'
-import { sessionSetStore } from '@/components/config/Utils'
-import echarts from 'echarts'
+import { sessionSetStore, sessionGetStore } from '@/components/config/Utils'
 import $ from 'jquery'
-import Routers from '@/router'
 export default {
   data () {
     return {
@@ -181,243 +90,53 @@ export default {
         'currentPage': 1,
         'pagesize': 8,
         'currentPage_DiaDev': 1,
-        'pagesize_DiaDev': 8
+        'pagesize_DiaDev': 8,
+        siteId: '',
+        beginDate: '',
+        endDate: '',
+        queryType: ''
       },
       currentPage: 1,
-      pagesize: 10,
+      pagesize: 15,
       eltotal: 20,
-      dialogEditVisible: false,
-      dialogTitle: '',
-      dateValue: '',
-      pickerOptions: {
-        shortcuts: [{
-          text: '最近一天',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 1)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近一周',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近一月',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-            picker.$emit('pick', [start, end])
-          }
-        }]
-      },
-      popoverInput: '',
-      poploca: '全部',
-      checkedAll_loca: true,
-      checkedAll_locaGroup: true,
-      checkList_loca: [],
-      checkList_locaGroup: [],
-      isTable: true,
-      isIncome: true,
-      selectGroup: false,
-      locationlist: [{
-        key: '江泰国际广场1楼',
-        value: '江泰国际广场1楼'
+      areaSta: true,
+      devSta: false,
+      productSta: false,
+      areaData: [], // 存储场地列表数据
+      devData: [], // 存储设备统计列表
+      goods: [], // 存储商品类型列表
+      options: [{
+        value: '选项1',
+        label: '按场地分析'
       }, {
-        key: '江泰国际广场2楼',
-        value: '江泰国际广场2楼'
+        value: '选项2',
+        label: '按设备分析'
       }, {
-        key: '江泰国际广场3楼',
-        value: '江泰国际广场3楼'
-      }, {
-        key: '江泰国际广场4楼',
-        value: '江泰国际广场4楼'
-      }, {
-        key: '丽水金汇广场4楼',
-        value: '丽水金汇广场4楼'
+        value: '选项3',
+        label: '按商品类型分析',
+        disabled: true
       }],
-      locaGrouplist: [{
-        key: '江泰',
-        value: '江泰'
-      }, {
-        key: '金汇',
-        value: '金汇'
-      }],
-      editform: {
-        groupName: '',
-        checkList: []
-      },
-      tableData: [{
-        location: '江泰国际广场1楼',
-        deviceNum: 6,
-        tradeNumber: 2,
-        onlineIncome: '',
-        adIncome: '',
-        totalIncome: ''
-      }, {
-        location: '江泰国际广场2楼',
-        deviceNum: 4,
-        tradeNumber: 1,
-        onlineIncome: '',
-        adIncome: '',
-        totalIncome: ''
-      }],
-      chartsDataResult: [],
-      deviceNameDataResult: [],
-      dateDataResult: []
+      value: '按场地分析'
     }
   },
   created: function () {
-    this.pageQueSelInit()
     this.backQueSiteStatis()
+    // 分页可置空函数
+    this.pageQueSelInit()
+    this.param.managerId = sessionGetStore('managerId')
+    this.roleId = sessionGetStore('roleId')
   },
   mounted: function () {
     var windowHeight = $(window).height()
-    var mainHeight = windowHeight - 120
+    var mainHeight = windowHeight - 100
     $('.placePage').height(mainHeight)
-    $('.el-table').height(mainHeight - 150)
-    this.dataprocessing()
-    // this.loaddiagram(this.incomeCharts)
+    $('.el-table').height(mainHeight - 93)
   },
   // 注销window.onresize事件
   destroyed () {
     window.onresize = null
   },
   methods: {
-    // 相关数据处理
-    dataprocessing: function () {
-      if (this.checkedAll_loca) {
-        this.checkList_loca = []
-        for (let i = 0; i < this.locationlist.length; i++) {
-          this.checkList_loca.push(this.locationlist[i].value)
-        }
-      }
-      if (this.checkedAll_locaGroup) {
-        this.checkList_locaGroup = []
-        for (let i = 0; i < this.locaGrouplist.length; i++) {
-          this.checkList_locaGroup.push(this.locaGrouplist[i].value)
-        }
-      }
-    },
-    // 时间格式转换
-    GMTToStr: function (time) {
-      let date = new Date(time)
-      console.log(date)
-      let Str = date.getFullYear() + '-' +
-      (date.getMonth() + 1) + '-' +
-      date.getDate() + ' ' +
-      date.getHours() + ':' +
-      date.getMinutes() + ':' +
-      date.getSeconds()
-      return Str
-    },
-    // popover输入搜索过滤
-    popInputChange: function () {
-      console.log('搜索过滤，popover视图改变')
-    },
-    changeCheck: function () {
-      this.dataprocessing()
-      if (this.checkedAll_loca) {
-        this.poploca = ''
-        for (let i = 0; i < this.locationlist.length; i++) {
-          this.poploca = this.poploca + '' + this.locationlist[i].value
-        }
-      } else {
-        this.poploca = ''
-      }
-    },
-    changeCheckGroup: function () {
-      if (this.checkList_loca.length !== this.locationlist.length) {
-        this.checkedAll_loca = false
-      }
-      if (this.checkList_locaGroup.length !== this.locaGrouplist.length) {
-        this.checkedAll_locaGroup = false
-      }
-      this.poploca = ''
-      for (let i = 0; i < this.checkList_loca.length; i++) {
-        this.poploca = this.poploca + '' + this.checkList_loca[i]
-      }
-    },
-    // 总收益、交易笔数图表切换
-    changeRadio: function () {
-      if (this.isIncome) {
-        console.log('收益')
-        this.chartsDataResult.forEach(item => {
-          item.data = item.incomeData
-        })
-        this.loaddiagram()
-      } else {
-        console.log('交易笔数')
-        this.chartsDataResult.forEach(item => {
-          item.data = item.orderData
-        })
-        this.loaddiagram()
-      }
-    },
-    searchBt: function () {
-      console.log(this.dateValue)
-      if (this.dateValue) {
-        this.param.beginDate = this.GMTToStr(this.dateValue[0])
-        this.param.endDate = this.GMTToStr(this.dateValue[1])
-      } else {
-        this.pageQueSelInit()
-      }
-      // this.param.deviceId = this.input_devId
-      this.backQueSiteStatis()
-    },
-    resetBt: function () {
-      Routers.push({ path: '/home/blank' })
-    },
-    // 编辑产品信息按钮
-    editGroup: function () {
-      this.dialogTitle = '编辑分组'
-      this.selectGroup = true
-      this.dialogEditVisible = true
-    },
-    // 新增产品按钮
-    addGroup: function () {
-      this.dialogTitle = '添加分组'
-      this.selectGroup = false
-      this.editform = {
-        groupName: '',
-        checklist: []
-      }
-      this.dialogEditVisible = true
-    },
-    // 编辑分组对话框，编辑按钮
-    diaEditBt: function (value) {
-      console.log(value)
-      this.editform = {
-        groupName: value,
-        checkList: ['江泰国际广场1楼', '江泰国际广场2楼', '江泰国际广场3楼', '江泰国际广场4楼']
-      }
-      this.selectGroup = false
-    },
-    // 编辑分组对话框，删除按钮
-    diaDelBt: function (value) {
-      this.$confirm('您确定删除该分组吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        // this.backDelGroup()
-      }).catch(() => {
-      })
-    },
-    // 对话框修改确认
-    editConfirm: function () {
-      console.log(this.editform)
-      if (this.dialogTitle === '添加分组') {
-        console.log('添加分组')
-      } else {
-        console.log('修改')
-      }
-    },
     // 每次切换页码之前清空table数据
     handlePaginationChange: function (value) {
       console.log(value)
@@ -426,46 +145,61 @@ export default {
       this.pageQueSelInit()
       this.backQueSiteStatis()
     },
-    // 加载图表
-    loaddiagram: function (data) {
-      console.log(123)
-      var diagramContainer = document.getElementById('diagram')
-      var myChart = echarts.init(diagramContainer)
-      console.log(this.deviceNameDataResult)
-      console.log(this.dateDataResult)
-      console.log(this.chartsDataResult)
-      // 指定图表的配置项和数据
-      // 折线图
-      var option = {
-        tooltip: {
-          trigger: 'axis',
-          axisPoniter: {
-            type: 'cross'
-          }
-        },
-        dataZoom: [
-          {
-            type: 'inside', // 鼠标缩放
-            start: 0,
-            end: 100
-          }
-        ],
-        color: ['#303133', '#c23531'],
-        legend: {
-          left: 'left',
-          data: this.deviceNameDataResult
-        },
-        xAxis: {
-          data: this.dateDataResult
-        },
-        yAxis: {},
-        series: this.chartsDataResult
+    // 获取日报
+    dayTable: function () {
+      this.param.queryType = 1
+      if (this.areaSta) {
+        this.backQueSiteStatis()
+      } else if (this.devSta) {
+        this.backQueDeviceStatis()
+      } else if (this.productSta) {
+        this.backgoodsType()
       }
-      // 使用刚指定的配置项和数据显示图表。
-      myChart.setOption(option)
-      window.onresize = function () {
-        console.log('chartresize')
-        myChart.resize()
+    },
+    // 获取周报
+    weekTable: function () {
+      this.param.queryType = 3
+      if (this.areaSta) {
+        this.backQueSiteStatis()
+      } else if (this.devSta) {
+        this.backQueDeviceStatis()
+      } else if (this.productSta) {
+        this.backgoodsType()
+      }
+    },
+    // 获取月报
+    monthTable: function () {
+      this.param.queryType = 4
+      if (this.areaSta) {
+        this.backQueSiteStatis()
+      } else if (this.devSta) {
+        this.backQueDeviceStatis()
+      } else if (this.productSta) {
+        this.backgoodsType()
+      }
+    },
+    // 选择维度统计的类型
+    select: function (value) {
+      console.log(this.value)
+      switch (this.value) {
+        case '选项1':
+          this.areaSta = true
+          this.devSta = false
+          this.productSta = false
+          this.backQueSiteStatis()
+          break
+        case '选项2':
+          this.areaSta = false
+          this.devSta = true
+          this.productSta = false
+          this.backQueDeviceStatis()
+          break
+        case '选项3':
+          this.areaSta = false
+          this.devSta = false
+          this.productSta = true
+          this.backgoodsType()
+          break
       }
     },
     /*
@@ -476,84 +210,69 @@ export default {
     // 场地统计
     backQueSiteStatis: function () {
       sessionSetStore('backName', '场地统计')
+      this.param.pageNo = this.currentPage
+      this.param.pageSize = this.pagesize
       back.queSiteStatis(this.param).then(function (response) {
         console.log(response)
-        // 设备详情数据存储
+        // 总条数
         this.eltotal = response.data.total
         let tableDataAlter = []
         if (response.data.records) {
           for (let i = 0; i < response.data.records.length; i++) {
             let obj = {}
-            obj.name = response.data.records[i].deviceName
-            obj.deviceId = response.data.records[i].deviceId
-            obj.location = response.data.records[i].siteName
-            obj.onlineIncome = response.data.records[i].onlineIncome
-            obj.adIncome = response.data.records[i].advertIncome
-            obj.totalIncome = response.data.records[i].totalIncome
+            obj.siteName = response.data.records[i].siteName
             obj.deviceNum = response.data.records[i].deviceNum
-            obj.tradeNumber = response.data.records[i].orderNum
+            obj.orderNum = response.data.records[i].orderNum
+            obj.onlineIncome = response.data.records[i].onlineIncome
+            obj.advertIncome = response.data.records[i].advertIncome
+            obj.totalIncome = response.data.records[i].totalIncome
             tableDataAlter.push(obj)
           }
         }
-        this.tableData = tableDataAlter
-        // 设备图表数据存储
-        this.chartsDataResult = this.merge(response.siteStatisTrendList)
-        this.chartsDataResult.forEach(item => {
-          this.deviceNameDataResult.push(item.name)
-        })
-        this.dateDataResult = this.chartsDataResult[0].date
-        this.loaddiagram() // 必须等待back数据获取后再加载图表
+        this.areaData = tableDataAlter
       }.bind(this))
         .catch(function (error) {
           console.log(error)
         })
     },
+    // 设备统计
+    backQueDeviceStatis: function () {
+      sessionSetStore('backName', '设备统计')
+      this.param.pageNo = this.currentPage
+      this.param.pageSize = this.pagesize
+      back.queDeviceStatis(this.param).then(function (response) {
+        console.log(response)
+        // 总条数
+        this.eltotal = response.data.total
+        let tableDataAlter = []
+        if (response.data.records) {
+          for (let i = 0; i < response.data.records.length; i++) {
+            let obj = {}
+            obj.deviceName = response.data.records[i].deviceName
+            obj.deviceId = response.data.records[i].deviceId
+            obj.state = response.data.records[i].state ? '在线' : '离线'
+            obj.orderNum = response.data.records[i].orderNum
+            obj.onlineIncome = response.data.records[i].onlineIncome
+            obj.advertIncome = response.data.records[i].advertIncome
+            obj.totalIncome = response.data.records[i].totalIncome
+            tableDataAlter.push(obj)
+          }
+        }
+        this.devData = tableDataAlter
+      }.bind(this))
+        .catch(function (error) {
+          console.log(error)
+        })
+    },
+    // 按商品类型分析
+    backgoodsType: function () {
+    },
     // 分页查询请求可选项置空函数
     pageQueSelInit: function () {
-      this.param.deviceId = ''
       this.param.siteId = ''
       this.param.beginDate = ''
       this.param.endDate = ''
       this.param.queryType = ''
-    },
-    backDelGroup: function () {
-      console.log('删除产品')
-    },
-    // 数组对象合并
-    merge: function (list) {
-      let idArr = []
-      for (let i = 0; i < list.length; i++) {
-        if (idArr.indexOf(list[i].deviceId) === -1) {
-          idArr.push(list[i].deviceId)
-        }
-      }
-      let result = []
-      for (let i = 0; i < idArr.length; i++) {
-        let obj = {}
-        let orderData = []
-        let incomeData = []
-        let deviceNameData = []
-        let dateData = []
-        for (let j = 0; j < list.length; j++) {
-          if (idArr[i] === list[j].deviceId) {
-            orderData.push(list[j].orderNum)
-            incomeData.push(list[j].totalIncome)
-            deviceNameData.push(list[j].siteName)
-            dateData.push(list[j].date)
-          }
-        }
-        obj.deviceId = idArr[i]
-        obj.name = deviceNameData[i]
-        obj.type = 'line'
-        obj.smooth = true
-        obj.date = dateData
-        obj.orderData = orderData
-        obj.incomeData = incomeData
-        obj.data = incomeData // 默认显示incomeData
-        result.push(obj)
-      }
-      console.log(result)
-      return result
     }
   }
 }
@@ -569,6 +288,7 @@ export default {
   display: -webkit-flex; /* Safari */
   display: flex;
   flex-wrap: wrap;
+  margin: 10px;
 }
 .flexbox {
   display: -webkit-flex;

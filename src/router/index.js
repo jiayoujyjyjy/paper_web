@@ -12,6 +12,10 @@ const Overview = r => require.ensure([], () => r(require('@/components/home/over
 // 2 我的收益 myProfit
 // 2-1 钱包账户
 const Income = r => require.ensure([], () => r(require('@/components/myProfit/income')), 'Income')
+// 微信提现记录
+const WechatCash = r => require.ensure([], () => r(require('@/components/myProfit/wechatCash')), 'WechatCash')
+// 在线支付记录
+const PaymentOnline = r => require.ensure([], () => r(require('@/components/myProfit/paymentOnline')), 'PaymentOnline')
 
 // 3 交易管理 tradeManage
 // 3-1 交易订单
@@ -76,7 +80,14 @@ const router = new Router({
       children: [
         { path: '', redirect: 'overview' },
         { path: 'overview', name: 'overview', component: Overview },
-        { path: 'incom', name: 'income', component: Income },
+        { path: 'incom',
+          component: Income,
+          children: [
+            { path: '', redirect: 'paymentOnline' },
+            { path: 'paymentOnline', name: 'paymentOnline', component: PaymentOnline },
+            { path: 'wechatCash', name: 'wechatCash', component: WechatCash }           
+          ]
+        },
         { path: 'orderForm', name: 'orderForm', component: OrderForm },
         { path: 'tradeSta', name: 'tradeSta', component: TradeSta },
         { path: 'devList', name: 'devList', component: DevList },

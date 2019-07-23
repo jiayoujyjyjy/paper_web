@@ -1,35 +1,21 @@
 // 5商品管理 -> 5-1商品列表
 <template>
   <div class="productmanagePage">
-    <div class="flexbox">
-        <div class="box">
-        <span style="width:80px;margin-top:6px">产品名称</span>
+        <div class="select">
+        <span style="margin: auto 1%;">产品名称</span>
         <el-input size="small" v-model="selection.name" placeholder="请输入产品名称"></el-input>
+        <span style="margin: auto 1%">产品类型</span>
+        <el-autocomplete
+          class="inline-input"
+          suffix-icon="el-icon-arrow-down"
+          v-model="selection.type"
+          :fetch-suggestions="querySearch_DevId"
+          placeholder="请输入或选择产品类型">
+        </el-autocomplete>
+        <el-button type="primary" size="small" style="margin: auto 1%" @click="searchBt">搜索</el-button>
+        <el-button type="primary" size="small" style="margin: auto 1%" @click="addBt">添加商品</el-button>
       </div>
-        <!-- <div>产品名称
-          <el-autocomplete
-            class="inline-input"
-            suffix-icon="el-icon-arrow-down"
-            v-model="selection.name"
-            :fetch-suggestions="querySearch_Loca"
-            placeholder="请输入或选择产品名称">
-          </el-autocomplete>
-        </div> -->
-        <div style="margin: 0 20px;">产品类型
-          <el-autocomplete
-            class="inline-input"
-            suffix-icon="el-icon-arrow-down"
-            v-model="selection.type"
-            :fetch-suggestions="querySearch_DevId"
-            placeholder="请输入或选择产品类型">
-          </el-autocomplete>
-        </div>
-        <el-button type="primary" size="small" @click="searchBt">搜索</el-button>
-      <div class="box">
-        <el-button type="primary" size="small" @click="addBt">新增</el-button>
-      </div>
-    </div>
-    <div class="tableDiv">
+    <div class="tableDiv" style="margin-top: 1%">
       <el-table
         :header-cell-style="{'font-size':'14px'}"
         :data="tableData"
@@ -77,8 +63,8 @@
           align="center"
           min-width="20%">
           <template slot-scope="scope">
-            <!-- <el-button type="text" size="small" @click="showRecordBt(scope.$index, scope.row)">查看操作记录</el-button> -->
             <el-button type="text" size="small" @click="editBt(scope.$index, scope.row)">编辑</el-button>
+            <span style="margin: auto 10%">|</span>
             <el-button size="small" type="text" @click="delBt(scope.$index, scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -261,22 +247,9 @@ export default {
     var windowHeight = $(window).height()
     var mainHeight = windowHeight - 40 - 20 - 40
     $('.productmanagePage').height(mainHeight)
-    $('.tableDiv').height(mainHeight - 72 - 53 + 13)
+    $('.tableDiv').height(mainHeight - 72 - 26 + 13)
   },
   methods: {
-    // // 选择投放地址自动完成
-    // querySearch_Loca: function (queryString, cb) {
-    //   var locationlist = this.locationlist
-    //   var results = queryString ? locationlist.filter(this.createFilter_Loca(queryString)) : locationlist
-    //   // 调用 callback 返回建议列表的数据
-    //   cb(results)
-    // },
-    // createFilter_Loca: function (queryString) {
-    //   return (locationlist) => {
-    //     return (locationlist.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
-    //   }
-    // },
-    // 选择设备编码自动完成
     querySearch_DevId: function (queryString, cb) {
       var devIdlist = this.devIdlist
       var results = queryString ? devIdlist.filter(this.createFilter_DevId(queryString)) : devIdlist
@@ -366,15 +339,12 @@ export default {
     searchBt: function () {
       console.log(this.selection)
       this.param.name = this.selection.name
-      switch (this.selection.type) {
-        case '小包纸':
-          this.param.type = 1
-          break
-        case '卷纸':
-          this.param.type = 2
-          break
-        default:
-          this.notificationInfo('错误', '暂无该类型商品')
+      if (this.selection.type === '小包纸') {
+        this.param.type = 1
+      } else if (this.selection.type === '小包纸') {
+        this.param.type = 2
+      } else {
+        this.param.type = ''
       }
       this.backQuePaperPage()
     },
@@ -538,13 +508,6 @@ export default {
   padding: 20px;
   background-color: white;
 }
-.flexbox {
-  margin: 20px 0 20px 0;
-  display: -webkit-flex; /* Safari */
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-}
 .box {
   display: -webkit-flex; /* Safari */
   display: flex;
@@ -553,5 +516,17 @@ export default {
 }
 .productmanagePage >>> .el-dialog__header {
   border-bottom: 1px solid #CDC9C9;
+}
+.select {
+  width: 100%;
+  height: 40px;
+  text-align: left;
+}
+.el-select >>> .el-input {
+  font-size: 12px;
+}
+.select .el-input {
+  width: 230px;
+  margin-right: 5px;
 }
 </style>

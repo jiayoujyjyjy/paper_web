@@ -2,27 +2,6 @@
 <template>
   <div class="areaManagePage">
     <div class="flexbox">
-      <!-- 添加了输入自动匹配功能 -->
-      <!-- <div style="margin: 0 20px;">场地名称
-        <el-autocomplete
-          size="small"
-          class="inline-input"
-          suffix-icon="el-icon-arrow-down"
-          v-model="selection.name"
-          :fetch-suggestions="querySearch_DevId"
-          placeholder="请输入或选择场地名称">
-        </el-autocomplete>
-      </div>
-      <div>详细地址
-        <el-autocomplete
-          size="small"
-          class="inline-input"
-          suffix-icon="el-icon-arrow-down"
-          v-model="selection.address"
-          :fetch-suggestions="querySearch_Loca"
-          placeholder="请输入或选择详细地址">
-        </el-autocomplete>
-      </div> -->
       <!-- 模糊搜索 -->
       <div class="box">
         <span style="width:80px;margin-top:6px">场地名称</span>
@@ -43,24 +22,6 @@
         border
         :max-height="tableMaxHeght"
         style="width: 100%;font-size:12px;">
-         <!-- <el-table-column type="expand">
-          <template slot-scope="props">
-            <el-form label-position="left" inline class="demo-table-expand">
-              <el-form-item label="省份">
-                <span>{{ props.row.province }}</span>
-              </el-form-item>
-              <el-form-item label="城市">
-                <span>{{ props.row.city }}</span>
-              </el-form-item>
-              <el-form-item label="地区">
-                <span>{{ props.row.area }}</span>
-              </el-form-item>
-              <el-form-item label="分组">
-                <span>{{ props.row.isGroup }}</span>
-              </el-form-item>
-            </el-form>
-          </template>
-        </el-table-column> -->
         <el-table-column
           align="center"
           prop="id"
@@ -249,7 +210,7 @@ export default {
     var windowHeight = $(window).height()
     var mainHeight = windowHeight - 40 - 20 - 40
     $('.areaManagePage').height(mainHeight)
-    $('.tableDiv').height(mainHeight - 72 - 53 + 13)
+    $('.tableDiv').height(mainHeight - 72 - 45 + 13)
   },
   methods: {
     // 弹窗取消按钮
@@ -306,30 +267,6 @@ export default {
       this.delShow = false
       this.deleId = ''
     },
-    // // 选择投放地址自动完成
-    // querySearch_Loca: function (queryString, cb) {
-    //   var siteList = this.siteList
-    //   var results = queryString ? siteList.filter(this.createFilter_Loca(queryString)) : siteList
-    //   // 调用 callback 返回建议列表的数据
-    //   cb(results)
-    // },
-    // createFilter_Loca: function (queryString) {
-    //   return (siteList) => {
-    //     return (siteList.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
-    //   }
-    // },
-    // // 选择设备编码自动完成
-    // querySearch_DevId: function (queryString, cb) {
-    //   var devIdlist = this.devIdlist
-    //   var results = queryString ? devIdlist.filter(this.createFilter_DevId(queryString)) : devIdlist
-    //   // 调用 callback 返回建议列表的数据
-    //   cb(results)
-    // },
-    // createFilter_DevId: function (queryString) {
-    //   return (devIdlist) => {
-    //     return (devIdlist.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
-    //   }
-    // },
     // 修改按钮
     updateBt: function (index, row) {
       this.deleId = this.tableData[index].id
@@ -445,24 +382,6 @@ export default {
           console.log(error)
         })
     },
-    // 场地查询
-    // backQueArea: function () {
-    //   let paramObj = {
-    //     managerId: this.param.managerId,
-    //     roleId: this.param.roleId,
-    //     groupId: this.param.groupId,
-    //     name: this.param.name,
-    //     address: this.param.address
-    //   }
-    //   sessionSetStore('backName', '场地查询')
-    //   back.queArea(paramObj).then(function (response) {
-    //     console.log(response)
-    //     this.backQueAreaPage()
-    //   }.bind(this))
-    //     .catch((error) => {
-    //       console.log(error)
-    //     })
-    // },
     // 修改场地
     backUpdateArea: function () {
       let paramObj = {
@@ -549,10 +468,6 @@ export default {
           arr.label = response.data[i].enumValue
           this.options.push(arr)
           console.log(this.detailForm.type)
-          // if (this.detailForm.type === response.data[i].enumKey) {
-          //   this.detailForm.type = response.data[i].enumValue
-          //   console.log(this.detailForm.type)
-          // }
           arr = {}
         }
         console.log(this.options)

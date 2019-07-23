@@ -22,6 +22,7 @@
       <div class="box">
         <span style="width:80px;margin-top:6px">日期</span>
         <el-date-picker
+          style="height: 30px"
           v-model="dateValue"
           type="daterange"
           unlink-panels
@@ -33,7 +34,7 @@
           value-format="yyyy-MM-dd">
         </el-date-picker>      
       </div>
-      <el-button type="primary" size="small" @click="searchBt">查询</el-button>
+      <el-button type="primary" size="small" style="margin: auto 1%" @click="searchBt">查询</el-button>
     </div>
     <div class="tableDiv">
       <el-table
@@ -226,7 +227,7 @@ export default {
     var windowHeight = $(window).height()
     var mainHeight = windowHeight - 40 - 20 - 40
     $('.ordermanagePage').height(mainHeight)
-    $('.tableDiv').height(mainHeight - 72 - 53 + 13)
+    $('.tableDiv').height(mainHeight - 72 - 45 + 13)
   },
   methods: {
     // 详情信息按钮
