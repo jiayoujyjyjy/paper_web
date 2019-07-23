@@ -22,7 +22,7 @@
         background-color="#252E49"
         text-color="#fff"
         active-text-color="#ffd04b">
-        <el-menu-item index="1">
+        <el-menu-item index="1" class="home-menu">
           <img :src="homeImgSrc" class="menuImg" />
           <span slot="title" class="menu_text">主页</span>
         </el-menu-item>
@@ -470,7 +470,9 @@ export default {
   text-align: center;
   height: 100%;
   color:#fff;
-  width: 250px!important;
+  width: 15.94%!important;
+  min-width: 200px;
+  padding: 0 13px;
 }
 .search {
   width: 90%;
@@ -490,7 +492,7 @@ export default {
   border-bottom: 0.5px solid gray;
 }
 .menuImg {
-  margin-left: -20px;
+  margin-left: -6vw;
   width: 20px;
   height: 20px;
 }
@@ -500,6 +502,21 @@ export default {
 }
 .el-menu {
   border-right: 0px solid #e6e6e6;
+}
+.el-submenu {
+  margin: 7px 0;
+  font-size: 14px;
+}
+.el-submenu .el-menu-item {
+  margin-left: -2vw;
+}
+.el-submenu__title {
+  height: 40px;
+  line-height: 40px;
+}
+.el-submenu .el-menu-item {
+  height: 40px;
+  line-height: 40px;
 }
 .main-page {
   height: calc(100% - 40px);
