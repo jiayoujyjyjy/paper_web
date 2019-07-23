@@ -180,7 +180,7 @@ export default {
         deviceId: '',
         site: ''
       },
-      tableMaxHeght: document.body.clientHeight - 60 - 40 - 40 - 62 - 53 + 13,
+      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 62 - 53,
       // 日期选择器
       pickerOptions: {
         shortcuts: [{
@@ -237,8 +237,6 @@ export default {
     this.backQueOrderPage()
   },
   mounted: function () {
-    // var windowWidth = $(window).width()
-    // $('.tableDiv').width(windowWidth - 200 - 20 - 40) // 解决表格滚动条分页益处问题
     // 初始化表格容器高度/最大高度
     this.tableContainerHeightSet()
     // 监听屏幕高度
@@ -248,9 +246,9 @@ export default {
     // 表格容器高度随窗口视口变化函数
     tableContainerHeightSet: function () {
       var windowHeight = $(window).height()
-      var mainHeight = windowHeight - 60 - 40 - 40
-      $('.tableDiv').height(mainHeight - 62 - 53 + 13)
-      this.tableMaxHeght = windowHeight - 60 - 40 - 40 - 62 - 53 + 13
+      var mainHeight = windowHeight - 40 - 40 - 40
+      $('.tableDiv').height(mainHeight - 62 - 53)
+      this.tableMaxHeght = windowHeight - 40 - 40 - 40 - 62 - 53 // header outerPadding interPadding searchDiv 分页Div 
     },
     // 监听屏幕高度
     screenOnresizeFun: function () {
