@@ -3,15 +3,15 @@
   <div class="income">
     <div class="flexbox">
       <div class="box">
-        <div style="margin: auto 8%; width: 50%;">
-          <p>欢迎你：<span style="margin: auto 22%; font-weight:bold;">{{userName}}</span></p>
-          <p>钱包余额：<span style="margin: auto 20%; font-weight:bold;">{{income}} 元</span></p>
-          <p>PC端提现功能暂时维护中，请前往移动端提现。</p>
+        <div style="width: 50%; border: 1px solid #eee;">
+          <p style="margin-left: 18%;">欢迎你：<span style="margin: auto 22%; font-weight:bold;">{{userName}}</span></p>
+          <p style="margin-left: 18%;">钱包余额：<span style="margin: auto 20%; font-weight:bold;">{{income}} 元</span></p>
+          <p style="margin-left: 18%;">PC端提现功能暂时维护中，请前往移动端提现。</p>
         </div>
-        <div style="width: 50%; margin:auto 4%;">
-          <p>今日在线支付收益：<span style="margin: auto 15%; font-weight:bold;">{{todayIncome}} 元</span></p>
-          <p>昨日在线支付收益：<span style="margin: auto 15%; font-weight:bold;">{{yesterdayIncome}} 元</span></p>
-          <p>累计在线支付收益：<span style="margin: auto 15%; font-weight:bold;">{{totalIncome}} 元</span></p>
+        <div style="width: 50%; border: 1px solid #eee;">
+          <p style="margin-left: 18%;">今日在线支付收益：<span style="margin: auto 15%; font-weight:bold;">{{todayIncome}} 元</span></p>
+          <p style="margin-left: 18%;">昨日在线支付收益：<span style="margin: auto 15%; font-weight:bold;">{{yesterdayIncome}} 元</span></p>
+          <p style="margin-left: 18%;">累计在线支付收益：<span style="margin: auto 15%; font-weight:bold;">{{totalIncome}} 元</span></p>
         </div>
       </div>
     </div>
@@ -32,7 +32,6 @@
 import { back } from 'api'
 import Routers from '@/router'
 import { sessionGetStore, sessionSetStore } from '@/components/config/Utils'
-import $ from 'jquery'
 export default {
   data () {
     return {
@@ -45,7 +44,24 @@ export default {
       todayIncome: '',
       yesterdayIncome: '',
       totalIncome: '',
-      usermanage_activeName: 'first'
+      usermanage_activeName: 'first',
+      screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
+      onresizeTimer: false // 屏幕高度变化定时器，避免频繁调用window.onresize()方法      
+    }
+  },
+  watch: {
+    // 监听屏幕高度改变表格高度
+    screenHeight (val) {
+      /* 触发dom操作，考虑到函数节流，避免window.onresize()方法频繁触发
+      强调一点，window.onresize()方法频繁触发也无所谓，前提是在不操作dom的情况下 */
+      if (!this.onresizeTimer) {
+        this.tableContainerHeightSet()
+        this.onresizeTimer = true
+        const that = this
+        setTimeout(function () {
+          that.onresizeTimer = false
+        }, 400)
+      }
     }
   },
   created: function () {
@@ -56,11 +72,20 @@ export default {
     this.backMyIncome()
   },
   mounted: function () {
-    var windowHeight = $(window).height()
-    var mainHeight = windowHeight - 40 - 20 - 40
-    $('.income').height(mainHeight)
+    // 监听屏幕高度
+    this.screenOnresizeFun()
   },
   methods: {
+    // 监听屏幕高度
+    screenOnresizeFun: function () {
+      const that = this
+      window.onresize = () => {
+        return (() => {
+          that.screenHeight = document.body.clientHeight
+          console.log('that.screenHeight: ' + that.screenHeight)
+        })() // 不加最后()会报错，并没有立即执行,立即执行函数
+      }
+    },
     handleClick: function (tab) {
       if (tab.index === '0') {
         this.toOnline()
@@ -115,27 +140,26 @@ export default {
 </script>
 
 <style scoped>
-.income {
-  padding: 20px;
-  background-color: white;
-  font-size: 14px;
-  width: 100%;
-  overflow: hidden;
-}
 .flexbox {
-  margin: 20px 80px 20px 0;
   display: -webkit-flex; /* Safari */
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-around;
+  width: 100%
 }
 .box {
 display: -webkit-flex; /* Safari */
 display: flex;
 flex-wrap: nowrap;
 justify-content: space-between;
-width:100%;
+width:90%;
 text-align: left;
-border:1px solid #ccc;
+}
+.userBasemain{
+  height: 70%;
+}
+.income {
+  width: 100%;
+  height: 100%
 }
 </style>

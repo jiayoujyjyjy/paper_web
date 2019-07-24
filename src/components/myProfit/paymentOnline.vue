@@ -3,7 +3,7 @@
   <div class="paymentOnline">
     <div class="flexbox">
       <div class="box">
-        <span style="width:80px;margin: auto 6px">日期</span>
+        <span style="width:80px;margin: auto">日期</span>
         <el-date-picker
           style="width: 300px; height:40px;"
           v-model="dateValue"
@@ -16,7 +16,7 @@
           format="yyyy 年 MM 月 dd 日"
           value-format="yyyy-MM-dd">
         </el-date-picker>
-        <el-button style="margin-left:2%;" type="primary" size="small" @click="searchBt">查询</el-button>
+        <el-button style="margin-left:3%;" type="primary" size="small" @click="searchBt">查询</el-button>
       </div>
     </div>
     <div class="tableDiv">
@@ -55,8 +55,6 @@ export default {
         endDate: ''
       },
       tableData: [],
-      // 表格最大高度 header mainOuterPadding tabs mainInPadding footer serachDiv bugSet
-      tableMaxHeght: 357,
       // 日期选择器
       pickerOptions: {
         shortcuts: [{
@@ -85,7 +83,26 @@ export default {
           }
         }]
       },
-      dateValue: ''
+      dateValue: '',
+      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 115 - 54 - 40 - 20, // ===tableDiv的高度
+      screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
+      onresizeTimer: false // 屏幕高度变化定时器，避免频繁调用window.onresize()方法
+
+    }
+  },
+  watch: {
+    // 监听屏幕高度改变表格高度
+    screenHeight (val) {
+      /* 触发dom操作，考虑到函数节流，避免window.onresize()方法频繁触发
+      强调一点，window.onresize()方法频繁触发也无所谓，前提是在不操作dom的情况下 */
+      if (!this.onresizeTimer) {
+        this.tableContainerHeightSet()
+        this.onresizeTimer = true
+        const that = this
+        setTimeout(function () {
+          that.onresizeTimer = false
+        }, 400)
+      }
     }
   },
   created: function () {
@@ -95,14 +112,28 @@ export default {
     this.backMyIncome()
   },
   mounted: function () {
-    var windowWidth = $(window).width()
-    $('.tableDiv').width(windowWidth - 200 - 20) // 解决表格滚动条分页益处问题
-    var windowHeight = $(window).height()
-    var mainHeight = windowHeight - 40 - 115 - 54 - 127
-    $('.paymentOnline').height(mainHeight)
-    $('.tableDiv').height(mainHeight - 40 - 20)
+    this.tableContainerHeightSet()
+    // 监听屏幕高度
+    this.screenOnresizeFun()
   },
   methods: {
+    // 表格容器高度随窗口视口变化函数
+    tableContainerHeightSet: function () {
+      var windowHeight = $(window).height()
+      var mainHeight = windowHeight - 40 - 40 - 40
+      $('.tableDiv').height(mainHeight - 115 - 54 - 40)
+      this.tableMaxHeght = mainHeight - 115 - 54 - 40 - 20
+    },
+    // 监听屏幕高度
+    screenOnresizeFun: function () {
+      const that = this
+      window.onresize = () => {
+        return (() => {
+          that.screenHeight = document.body.clientHeight
+          console.log('that.screenHeight: ' + that.screenHeight)
+        })() // 不加最后()会报错，并没有立即执行,立即执行函数
+      }
+    },
     // 搜索按钮
     searchBt: function () {
       this.param.beginDate = this.dateValue[0]
@@ -176,7 +207,7 @@ export default {
   width: 100%;
 }
 .flexbox {
-  margin: 20px 80px 20px 0;
+  /* margin: 20px 80px 20px 0; */
   display: -webkit-flex; /* Safari */
   display: flex;
   flex-wrap: nowrap;
@@ -187,7 +218,6 @@ export default {
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-between;
-    /* width:auto; */
-  margin-left: 2%;
+  box-align: left;
 }
 </style>

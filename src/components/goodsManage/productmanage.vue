@@ -22,12 +22,8 @@
         stripe
         border
         :max-height="tableMaxHeght"
-        style="width: 100%;font-size:12px;"
+        style="margin-top: 2%;font-size:12px;"
         @selection-change="handleSelectionChange">
-        <!-- <el-table-column
-          type="selection"
-          min-width="10%">
-        </el-table-column> -->
         <el-table-column
           align="center"
           prop="deviceId"
@@ -232,8 +228,24 @@ export default {
           { required: true, validator: checkPrice, trigger: 'blur' }
         ]
       },
-      // 表格最大高度 header mainOuterPadding tabs mainInPadding footer serachDiv bugSet
-      tableMaxHeght: document.body.clientHeight - 40 - 20 - 40 - 72 + 13 // ===tableDiv的高度
+      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 25 - 53, // ===tableDiv的高度
+      screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
+      onresizeTimer: false // 屏幕高度变化定时器，避免频繁调用window.onresize()方法
+    }
+  },
+  watch: {
+    // 监听屏幕高度改变表格高度
+    screenHeight (val) {
+      /* 触发dom操作，考虑到函数节流，避免window.onresize()方法频繁触发
+      强调一点，window.onresize()方法频繁触发也无所谓，前提是在不操作dom的情况下 */
+      if (!this.onresizeTimer) {
+        this.tableContainerHeightSet()
+        this.onresizeTimer = true
+        const that = this
+        setTimeout(function () {
+          that.onresizeTimer = false
+        }, 400)
+      }
     }
   },
   created: function () {
@@ -242,14 +254,28 @@ export default {
     this.backQuePaperPage()
   },
   mounted: function () {
-    var windowWidth = $(window).width()
-    $('.tableDiv').width(windowWidth - 200 - 20 - 40) // 解决表格滚动条分页益处问题
-    var windowHeight = $(window).height()
-    var mainHeight = windowHeight - 40 - 20 - 40
-    $('.productmanagePage').height(mainHeight)
-    $('.tableDiv').height(mainHeight - 72 - 26 + 13)
+    this.tableContainerHeightSet()
+    // 监听屏幕高度
+    this.screenOnresizeFun()
   },
   methods: {
+    // 表格容器高度随窗口视口变化函数
+    tableContainerHeightSet: function () {
+      var windowHeight = $(window).height()
+      var mainHeight = windowHeight - 40 - 40 - 40
+      $('.tableDiv').height(mainHeight - 40 - 24 - 53)
+      this.tableMaxHeght = mainHeight - 40 - 24 - 53
+    },
+    // 监听屏幕高度
+    screenOnresizeFun: function () {
+      const that = this
+      window.onresize = () => {
+        return (() => {
+          that.screenHeight = document.body.clientHeight
+          console.log('that.screenHeight: ' + that.screenHeight)
+        })() // 不加最后()会报错，并没有立即执行,立即执行函数
+      }
+    },
     querySearch_DevId: function (queryString, cb) {
       var devIdlist = this.devIdlist
       var results = queryString ? devIdlist.filter(this.createFilter_DevId(queryString)) : devIdlist
@@ -504,10 +530,6 @@ export default {
 </script>
 
 <style scoped>
-.productmanagePage {
-  padding: 20px;
-  background-color: white;
-}
 .box {
   display: -webkit-flex; /* Safari */
   display: flex;

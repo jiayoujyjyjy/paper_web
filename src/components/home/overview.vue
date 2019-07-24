@@ -242,26 +242,43 @@ export default {
     this.backQueConsoleStatis()
   },
   mounted: function () {
-    var windowHeight = $(window).height()
-    var mainHeight = windowHeight - 40 - 20 - 40
-    $('.overviewPage').height(mainHeight)
-    $('.left').height(mainHeight)
-    $('.right').height(mainHeight)
+    // 初始化表格容器高度/最大高度
+    this.tableContainerHeightSet()
     // 柱状图 折线图高宽自适应
     this.chartsInit()
+    // 监听屏幕高度
+    this.screenOnresizeFun()
   },
   // 注销window.onresize事件
   destroyed () {
     window.onresize = null
   },
   methods: {
+    // 表格容器高度随窗口视口变化函数
+    tableContainerHeightSet: function () {
+      var windowHeight = $(window).height()
+      var mainHeight = windowHeight - 40 - 60 - 40
+      $('.overviewPage').height(mainHeight - 20)
+      $('.left').height(mainHeight - 20)
+      $('.right').height(mainHeight - 20)
+    },
+    // 监听屏幕高度
+    screenOnresizeFun: function () {
+      const that = this
+      window.onresize = () => {
+        return (() => {
+          that.screenHeight = document.body.clientHeight
+          console.log('that.screenHeight: ' + that.screenHeight)
+        })() // 不加最后()会报错，并没有立即执行,立即执行函数
+      }
+    },
     // 柱状图 折线图高宽自适应
     chartsInit: function () {
       // 1.页面刷新调整高宽
       let barChartBox = document.getElementById('diagram_left')
       let lineChartBox = document.getElementById('diagram_right')
       let resizeBoxFun = function (boxName) {
-        boxName.style.height = document.body.clientHeight * 0.5 + 'px'
+        boxName.style.height = document.body.clientHeight * 0.40 + 'px'
       }
       resizeBoxFun(barChartBox)
       resizeBoxFun(lineChartBox)
@@ -740,8 +757,7 @@ export default {
 
 <style scoped>
 .overviewPage {
-  min-width: 1200px;
-  height: 100%;
+  /* height: 100%; */
   padding: 20px;
   background-color: white;
   display: -webkit-flex;
@@ -753,7 +769,6 @@ export default {
 .left {
   width:62.5%;
   min-width: 600px;
-  height: 800px;
   box-sizing: border-box;
   /* padding/margin效果都一样,因为box-sizing: border-box; */
   padding-right: 15px;
@@ -780,24 +795,24 @@ export default {
   cursor: pointer;
 }
 #incomePie {
-  width: 155px;
+  width: 10%;
   height: 95%;
-  margin: 0 20px 0 20px;
+  margin: 0 10px 0 10px;
   cursor: pointer!important;
 }
 .incomePieTable {
   color:#606266;
   letter-spacing:3px;
-  width: 480px;
+  width: 90%;
   height: 95%;
-  margin: 30px 0 0 3vw;
+  margin: 10px 0 0 3vw;
 }
 .incomePieTable tr th {
   /* padding: 0 20px 20px 20px; */
-  padding: 0 1vw 1vw 1vw;
+  padding: 0 0.1vw 1vh 0.1vw;
 }
 .incomePieTable tr td {
-  padding: 0 1vw 1vw 1vw;
+  padding: 0 1vw 1vh 1vw;
 }
 .tdDiv {
   display: -webkit-flex;
@@ -829,7 +844,7 @@ export default {
   border-radius: 10px;
   border: 1px solid #eee;
   width: 100%;
-  height: 75%;
+  height: 70%;
 }
 .left_bottom >>> .el-button {
   margin: 0 10px;
@@ -867,7 +882,7 @@ export default {
 .right_top_right {
   width: 70%;
   height: 100%;
-  padding: 3vh 1vw 0 1vw;
+  padding: 2vh 1vw 0 1vw;
 }
 .right_top_right_div {
   margin-bottom: 2.2vh;
@@ -901,8 +916,8 @@ export default {
 .right_bottom {
   border-radius: 10px;
   border: 1px solid #eee;
-  width: 100%;
-  height: 75%;
+  /* width: 100%; */
+  height: 70%;
 }
 #diagram_right {
   padding-top: 10px;

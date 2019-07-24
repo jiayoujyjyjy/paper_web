@@ -2,10 +2,10 @@
 <template>
   <div class="placePage">
     <div class="flexbox1">
-      <el-button size="small" type="primary" round plain @click="dayTable">日报表</el-button>
-      <el-button size="small" type="primary" round plain @click="weekTable">周报表</el-button>
-      <el-button size="small" type="primary" round plain @click="monthTable">月报表</el-button>
-      <span style="margin: 0.5% 2%">统计维度：</span>
+      <el-button size="small" type="primary" plain @click="dayTable">日报表</el-button>
+      <el-button size="small" type="primary" plain @click="weekTable">周报表</el-button>
+      <el-button size="small" type="primary" plain @click="monthTable">月报表</el-button>
+      <span style="margin: auto 0 1% 10%">统计维度：</span>
       <el-select v-model="value" placeholder="请选择" @change="select(value)">
         <el-option
           v-for="item in options"
@@ -16,8 +16,8 @@
       </el-select>
     </div>
     <!-- 场地类型统计 -->
-    <div v-show="areaSta">
-      <el-table :header-cell-style="{'font-size':'14px'}" :data="areaData" stripe border size="small" style="width: 100%;font-size:12px;">
+    <div v-show="areaSta" class="tableDiv">
+      <el-table :max-height="tableMaxHeght" :header-cell-style="{'font-size':'14px'}" :data="areaData" stripe border size="small" style="width: 100%;font-size:12px;">
         <el-table-column align="center" prop="siteName" label="场地"></el-table-column>
         <el-table-column align="center" prop="deviceNum" label="设备数量"></el-table-column>
         <el-table-column align="center" prop="orderNum" label="交易笔数"></el-table-column>
@@ -25,19 +25,10 @@
         <el-table-column align="center" prop="advertIncome" label="广告收益"></el-table-column>
         <el-table-column align="center" prop="totalIncome" label="总收益"></el-table-column>
       </el-table>
-
-      <el-pagination
-        @current-change="handlePaginationChange"
-        :current-page="param.currentPage"
-        :page-size="param.pagesize"
-        layout="total, prev, pager, next, jumper"
-        :total="eltotal">
-      </el-pagination>
     </div>
-
     <!-- 按设备统计 -->
-    <div v-show="devSta">
-      <el-table :header-cell-style="{'font-size':'14px'}" :data="devData" stripe border size="small" style="width: 100%;font-size:12px;">
+    <div v-show="devSta" class="tableDiv">
+      <el-table :max-height="tableMaxHeght" :header-cell-style="{'font-size':'14px'}" :data="devData" stripe border size="small" style="width: 100%;font-size:12px;">
         <el-table-column align="center" prop="deviceName" label="设备名称"></el-table-column>
         <el-table-column align="center" prop="deviceId" label="设备编码"></el-table-column>
         <el-table-column align="center" prop="state" label="设备状态"></el-table-column>
@@ -46,18 +37,10 @@
         <el-table-column align="center" prop="advertIncome" label="广告收益"></el-table-column>
         <el-table-column align="center" prop="totalIncome" label="总收益"></el-table-column>
       </el-table>
-
-      <el-pagination
-        @current-change="handlePaginationChange"
-        :current-page="param.currentPage"
-        :page-size="param.pagesize"
-        layout="total, prev, pager, next, jumper"
-        :total="eltotal">
-      </el-pagination>
-
+    </div>
     <!-- 按商品类型统计 -->
-    <div v-show="productSta">
-      <el-table :header-cell-style="{'font-size':'14px'}" :data="goods" stripe border size="small" style="width: 100%;font-size:12px;">
+    <div v-show="productSta" class="tableDiv">
+      <el-table :max-height="tableMaxHeght" :header-cell-style="{'font-size':'14px'}" :data="goods" stripe border size="small" style="width: 100%;font-size:12px;">
         <el-table-column align="center" prop="siteName" label="场地"></el-table-column>
         <el-table-column align="center" prop="deviceId" label="设备编码"></el-table-column>
         <el-table-column align="center" prop="state" label="设备状态"></el-table-column>
@@ -66,16 +49,15 @@
         <el-table-column align="center" prop="advertIncome" label="广告收益"></el-table-column>
         <el-table-column align="center" prop="totalIncome" label="总收益"></el-table-column>
       </el-table>
-
-      <el-pagination
-        @current-change="handlePaginationChange"
-        :current-page="param.currentPage"
-        :page-size="param.pagesize"
-        layout="total, prev, pager, next, jumper"
-        :total="eltotal">
-      </el-pagination>
     </div>
-  </div>
+    <el-pagination
+      @current-change="handlePaginationChange"
+      :current-page="param.currentPage"
+      :page-size="param.pagesize"
+      layout="total, prev, pager, next, jumper"
+      :total="eltotal">
+    </el-pagination>
+
   </div>
 </template>
 
@@ -116,7 +98,26 @@ export default {
         label: '按商品类型分析',
         disabled: true
       }],
-      value: '按场地分析'
+      value: '按场地分析',
+      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 15 - 53, // ===tableDiv的高度
+      screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
+      onresizeTimer: false // 屏幕高度变化定时器，避免频繁调用window.onresize()方法
+
+    }
+  },
+  watch: {
+    // 监听屏幕高度改变表格高度
+    screenHeight (val) {
+      /* 触发dom操作，考虑到函数节流，避免window.onresize()方法频繁触发
+      强调一点，window.onresize()方法频繁触发也无所谓，前提是在不操作dom的情况下 */
+      if (!this.onresizeTimer) {
+        this.tableContainerHeightSet()
+        this.onresizeTimer = true
+        const that = this
+        setTimeout(function () {
+          that.onresizeTimer = false
+        }, 400)
+      }
     }
   },
   created: function () {
@@ -127,16 +128,36 @@ export default {
     this.roleId = sessionGetStore('roleId')
   },
   mounted: function () {
-    var windowHeight = $(window).height()
-    var mainHeight = windowHeight - 100
-    $('.placePage').height(mainHeight)
-    $('.el-table').height(mainHeight - 93)
+    this.tableContainerHeightSet()
+    // 监听屏幕高度
+    this.screenOnresizeFun()
+    // var windowHeight = $(window).height()
+    // var mainHeight = windowHeight - 100
+    // $('.placePage').height(mainHeight)
+    // $('.el-table').height(mainHeight - 93)
   },
   // 注销window.onresize事件
   destroyed () {
     window.onresize = null
   },
   methods: {
+    // 表格容器高度随窗口视口变化函数
+    tableContainerHeightSet: function () {
+      var windowHeight = $(window).height()
+      var mainHeight = windowHeight - 40 - 40 - 40
+      $('.tableDiv').height(mainHeight - 40 - 15 - 53)
+      this.tableMaxHeght = mainHeight - 40 - 15 - 53
+    },
+    // 监听屏幕高度
+    screenOnresizeFun: function () {
+      const that = this
+      window.onresize = () => {
+        return (() => {
+          that.screenHeight = document.body.clientHeight
+          console.log('that.screenHeight: ' + that.screenHeight)
+        })() // 不加最后()会报错，并没有立即执行,立即执行函数
+      }
+    },
     // 每次切换页码之前清空table数据
     handlePaginationChange: function (value) {
       console.log(value)
@@ -280,15 +301,13 @@ export default {
 
 <style scoped>
 .placePage {
-  padding: 20px;
   background-color: white;
-  width: 100%;
 }
 .flexbox1 {
   display: -webkit-flex; /* Safari */
   display: flex;
   flex-wrap: wrap;
-  margin: 10px;
+  margin-bottom: 15px;
 }
 .flexbox {
   display: -webkit-flex;

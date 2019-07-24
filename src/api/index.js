@@ -385,6 +385,43 @@ export const back = {
         return Promise.reject(error)
       })
   },
+  // 远程启动
+  devStartup (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/device/startup?id=${param.id}&siteId=${param.siteId}&paperId=${param.paperId}&type=${param.type}&num=${param.num}`,
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+        'managerId': param.managerId
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // 设备远程启动记录分页查询
+  devStartupPage (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/device/pageStart?pageNo=${param.pageNo}&pageSize=${param.pageSize}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
   // 库存告警分页查询
   stockAlarm (param) {
     return axios({
