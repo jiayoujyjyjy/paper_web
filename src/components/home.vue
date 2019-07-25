@@ -346,22 +346,26 @@ export default {
       }
       if (value === '8-1') {
         sessionSetStore('menuActive', '8-1')
-        Routers.push({ path: '/home/orderAnaly' })
+        this.$message.error('该功能待开发！')
+        // Routers.push({ path: '/home/orderAnaly' })
         this.changeMenuImg(false)
       }
       if (value === '8-2') {
         sessionSetStore('menuActive', '8-2')
-        Routers.push({ path: '/home/productAnaly' })
+        this.$message.error('该功能待开发！')
+        // Routers.push({ path: '/home/productAnaly/' })
         this.changeMenuImg(false)
       }
       if (value === '8-3') {
         sessionSetStore('menuActive', '8-3')
-        Routers.push({ path: '/home/areaAnaly' })
+        this.$message.error('该功能待开发！')
+        // Routers.push({ path: '/home/areaAnaly' })
         this.changeMenuImg(false)
       }
       if (value === '8-4') {
         sessionSetStore('menuActive', '8-4')
-        Routers.push({ path: '/home/customerAnaly' })
+        this.$message.error('该功能待开发！')
+        // Routers.push({ path: '/home/customerAnaly' })
         this.changeMenuImg(false)
       }
       if (value === '9-1') {
