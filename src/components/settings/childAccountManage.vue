@@ -292,7 +292,9 @@ export default {
         roleType: ''
       }
       this.$nextTick(() => {
+        // 清除表单验证
         this.$refs.form.clearValidate()
+        // 清除多选表格所选项
         this.$refs.multipleTable.clearSelection()
       })
       this.dialogEditVisible = true
@@ -302,9 +304,15 @@ export default {
       this.dialogTitle = '编辑子账号'
       this.isEditOrAdd = 0
       this.param.id = this.tableData[index].id
+      this.$nextTick(() => {
+        // 清除表单验证
+        this.$refs.form.clearValidate()
+        // 清除多选表格所选项
+        this.$refs.multipleTable.clearSelection()
+      })
       this.dialogEditVisible = true
       // 查询子账号详情
-      await this.backQueChildAccountInfo()
+      await this.backQueChildAccountInfo(index)
     },
     // 编辑子账号按钮
     delBt: function (index, row) {
@@ -477,7 +485,7 @@ export default {
         })
     },
     // 查询子账号详情
-    backQueChildAccountInfo: function () {
+    backQueChildAccountInfo: function (index) {
       sessionSetStore('backName', '查询子账号详情')
       return new Promise(function (resolve, reject) {
         back.queChildAccountInfo(this.param).then(function (response) {
@@ -486,6 +494,7 @@ export default {
           obj.id = response.data.id
           obj.account = response.data.username
           obj.nickname = response.data.nickname
+          obj.roleType = this.tableData[index].role
           obj.password = '******'
           let data = []
           for (let i = 0; i < response.data.siteList.length; i++) {
