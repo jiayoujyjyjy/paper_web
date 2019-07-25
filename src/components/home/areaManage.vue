@@ -1,37 +1,12 @@
-// 场地管理
+// 场地管理  ->>> 场地列表
 <template>
   <div class="areaManagePage">
-    <div class="flexbox">
-      <!-- 添加了输入自动匹配功能 -->
-      <!-- <div style="margin: 0 20px;">场地名称
-        <el-autocomplete
-          size="small"
-          class="inline-input"
-          suffix-icon="el-icon-arrow-down"
-          v-model="selection.name"
-          :fetch-suggestions="querySearch_DevId"
-          placeholder="请输入或选择场地名称">
-        </el-autocomplete>
-      </div>
-      <div>详细地址
-        <el-autocomplete
-          size="small"
-          class="inline-input"
-          suffix-icon="el-icon-arrow-down"
-          v-model="selection.address"
-          :fetch-suggestions="querySearch_Loca"
-          placeholder="请输入或选择详细地址">
-        </el-autocomplete>
-      </div> -->
+    <div class="select">
       <!-- 模糊搜索 -->
-      <div class="box">
-        <span style="width:80px;margin-top:6px">场地名称</span>
-        <el-input size="small" v-model="selection.name" placeholder="请输入或选择场地名称"></el-input>
-      </div>
-      <div class="box">
-        <span style="width:80px;margin-top:6px">详细地址</span>
-        <el-input size="small" v-model="selection.address" placeholder="请输入或选择详细地址"></el-input>
-      </div>
+      <span style="width:80px;margin-top:6px">场地名称</span>
+      <el-input size="small" v-model="selection.name" placeholder="请输入或选择场地名称"></el-input>
+      <span style="width:80px;margin-top:6px">详细地址</span>
+      <el-input size="small" v-model="selection.address" placeholder="请输入或选择详细地址"></el-input>
       <el-button type="primary" size="small" @click="searchBt">搜索</el-button>
       <el-button type="primary" size="small" @click="addBt">添加场地</el-button>
     </div>
@@ -42,25 +17,7 @@
         stripe
         border
         :max-height="tableMaxHeght"
-        style="width: 100%;font-size:12px;">
-         <!-- <el-table-column type="expand">
-          <template slot-scope="props">
-            <el-form label-position="left" inline class="demo-table-expand">
-              <el-form-item label="省份">
-                <span>{{ props.row.province }}</span>
-              </el-form-item>
-              <el-form-item label="城市">
-                <span>{{ props.row.city }}</span>
-              </el-form-item>
-              <el-form-item label="地区">
-                <span>{{ props.row.area }}</span>
-              </el-form-item>
-              <el-form-item label="分组">
-                <span>{{ props.row.isGroup }}</span>
-              </el-form-item>
-            </el-form>
-          </template>
-        </el-table-column> -->
+        style="margin-top: 2%;font-size:12px;">
         <el-table-column
           align="center"
           prop="id"
@@ -232,8 +189,24 @@ export default {
         name: '',
         address: ''
       },
-      // 表格最大高度 header mainOuterPadding tabs mainInPadding footer serachDiv bugSet
-      tableMaxHeght: document.body.clientHeight - 40 - 20 - 40 - 72 - 53 + 13
+      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 25 - 53, // ===tableDiv的高度
+      screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
+      onresizeTimer: false // 屏幕高度变化定时器，避免频繁调用window.onresize()方法
+    }
+  },
+  watch: {
+    // 监听屏幕高度改变表格高度
+    screenHeight (val) {
+      /* 触发dom操作，考虑到函数节流，避免window.onresize()方法频繁触发
+      强调一点，window.onresize()方法频繁触发也无所谓，前提是在不操作dom的情况下 */
+      if (!this.onresizeTimer) {
+        this.tableContainerHeightSet()
+        this.onresizeTimer = true
+        const that = this
+        setTimeout(function () {
+          that.onresizeTimer = false
+        }, 400)
+      }
     }
   },
   created: function () {
@@ -244,14 +217,28 @@ export default {
     this.backQueAreaPage()
   },
   mounted: function () {
-    var windowWidth = $(window).width()
-    $('.tableDiv').width(windowWidth - 200 - 20 - 40) // 解决表格滚动条分页益处问题
-    var windowHeight = $(window).height()
-    var mainHeight = windowHeight - 40 - 20 - 40
-    $('.areaManagePage').height(mainHeight)
-    $('.tableDiv').height(mainHeight - 72 - 53 + 13)
+    this.tableContainerHeightSet()
+    // 监听屏幕高度
+    this.screenOnresizeFun()
   },
   methods: {
+    // 表格容器高度随窗口视口变化函数
+    tableContainerHeightSet: function () {
+      var windowHeight = $(window).height()
+      var mainHeight = windowHeight - 40 - 40 - 40
+      $('.tableDiv').height(mainHeight - 40 - 24 - 53)
+      this.tableMaxHeght = mainHeight - 40 - 24 - 53
+    },
+    // 监听屏幕高度
+    screenOnresizeFun: function () {
+      const that = this
+      window.onresize = () => {
+        return (() => {
+          that.screenHeight = document.body.clientHeight
+          console.log('that.screenHeight: ' + that.screenHeight)
+        })() // 不加最后()会报错，并没有立即执行,立即执行函数
+      }
+    },
     // 弹窗取消按钮
     handleClose: function () {
       this.dialogEditVisible = false
@@ -306,30 +293,6 @@ export default {
       this.delShow = false
       this.deleId = ''
     },
-    // // 选择投放地址自动完成
-    // querySearch_Loca: function (queryString, cb) {
-    //   var siteList = this.siteList
-    //   var results = queryString ? siteList.filter(this.createFilter_Loca(queryString)) : siteList
-    //   // 调用 callback 返回建议列表的数据
-    //   cb(results)
-    // },
-    // createFilter_Loca: function (queryString) {
-    //   return (siteList) => {
-    //     return (siteList.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
-    //   }
-    // },
-    // // 选择设备编码自动完成
-    // querySearch_DevId: function (queryString, cb) {
-    //   var devIdlist = this.devIdlist
-    //   var results = queryString ? devIdlist.filter(this.createFilter_DevId(queryString)) : devIdlist
-    //   // 调用 callback 返回建议列表的数据
-    //   cb(results)
-    // },
-    // createFilter_DevId: function (queryString) {
-    //   return (devIdlist) => {
-    //     return (devIdlist.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
-    //   }
-    // },
     // 修改按钮
     updateBt: function (index, row) {
       this.deleId = this.tableData[index].id
@@ -445,24 +408,6 @@ export default {
           console.log(error)
         })
     },
-    // 场地查询
-    // backQueArea: function () {
-    //   let paramObj = {
-    //     managerId: this.param.managerId,
-    //     roleId: this.param.roleId,
-    //     groupId: this.param.groupId,
-    //     name: this.param.name,
-    //     address: this.param.address
-    //   }
-    //   sessionSetStore('backName', '场地查询')
-    //   back.queArea(paramObj).then(function (response) {
-    //     console.log(response)
-    //     this.backQueAreaPage()
-    //   }.bind(this))
-    //     .catch((error) => {
-    //       console.log(error)
-    //     })
-    // },
     // 修改场地
     backUpdateArea: function () {
       let paramObj = {
@@ -549,10 +494,6 @@ export default {
           arr.label = response.data[i].enumValue
           this.options.push(arr)
           console.log(this.detailForm.type)
-          // if (this.detailForm.type === response.data[i].enumKey) {
-          //   this.detailForm.type = response.data[i].enumValue
-          //   console.log(this.detailForm.type)
-          // }
           arr = {}
         }
         console.log(this.options)
@@ -587,17 +528,14 @@ export default {
 </script>
 
 <style scoped>
-.areaManagePage {
-  padding: 20px;
-  background-color: white;
-  font-size: 14px;
+.select {
+  width: 100%;
+  height: 40px;
+  text-align: left;
 }
-.flexbox {
-  margin: 20px 80px 20px 0;
-  display: -webkit-flex; /* Safari */
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-around;
+.select .el-input {
+  width: 200px;
+  margin-right: 5px;
 }
 .box {
   display: -webkit-flex; /* Safari */
@@ -609,16 +547,4 @@ export default {
 .areaManagePage >>> .el-dialog__header {
   border-bottom: 1px solid #CDC9C9;
 }
-/* .demo-table-expand {
-  font-size: 0;
-}
-.demo-table-expand label {
-  width: 90px;
-  color: #99a9bf;
-}
-.demo-table-expand .el-form-item {
-  margin-right: 0;
-  margin-bottom: 0;
-  width: 50%;
-} */
 </style>

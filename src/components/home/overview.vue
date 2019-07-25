@@ -268,6 +268,14 @@ export default {
     window.onresize = null
   },
   methods: {
+    // 表格容器高度随窗口视口变化函数
+    tableContainerHeightSet: function () {
+      var windowHeight = $(window).height()
+      var mainHeight = windowHeight - 40 - 60 - 40
+      $('.overviewPage').height(mainHeight - 20)
+      $('.left').height(mainHeight - 20)
+      $('.right').height(mainHeight - 20)
+    },
     // 柱状图 折线图高宽自适应
     chartsInit: function () {
       // 1.页面刷新调整高宽
@@ -792,24 +800,24 @@ export default {
   cursor: pointer;
 }
 #incomePie {
-  width: 155px;
+  width: 10%;
   height: 95%;
-  margin: 0 20px 0 20px;
+  margin: 0 10px 0 10px;
   cursor: pointer!important;
 }
 .incomePieTable {
   color:#606266;
   letter-spacing:3px;
-  width: 480px;
+  width: 90%;
   height: 95%;
   margin: 3vh 0 0 3vw;
 }
 .incomePieTable tr th {
   /* padding: 0 20px 20px 20px; */
-  padding: 0 1vw 1vw 1vw;
+  padding: 0 0.1vw 1vh 0.1vw;
 }
 .incomePieTable tr td {
-  padding: 0 1vw 1vw 1vw;
+  padding: 0 1vw 1vh 1vw;
 }
 .tdDiv {
   display: -webkit-flex;
@@ -841,7 +849,7 @@ export default {
   border-radius: 10px;
   border: 1px solid #eee;
   width: 100%;
-  height: 75%;
+  height: 70%;
 }
 .left_bottom >>> .el-button {
   margin: 0 10px;
@@ -913,8 +921,8 @@ export default {
 .right_bottom {
   border-radius: 10px;
   border: 1px solid #eee;
-  width: 100%;
-  height: 75%;
+  /* width: 100%; */
+  height: 70%;
 }
 #diagram_right {
   padding-top: 10px;

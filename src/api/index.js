@@ -65,8 +65,8 @@ export const back = {
       url: `${url.backbasurl}/api/v1/site/list?groupId=${param.groupId}&name=${param.name}&address=${param.address}`,
       method: 'get',
       headers: {
-        'managerId': param.managerId,
-        'roleId': param.roleId
+        managerId: param.managerId,
+        roleId: param.roleId
       },
       data: {}
     })
@@ -197,11 +197,12 @@ export const back = {
   queDevPage (param) {
     // degugger
     return axios({
-      url: `${url.backbasurl}/api/v1/device/page?pageNo=${param.currentPage}&pageSize=${param.pagesize}&id=${param.devId}`,
+      url: `${url.backbasurl}/api/v1/device/page?pageNo=${param.currentPage}&pageSize=${param.pagesize}&id=${param.id}&state=${param.state}&siteId=${param.siteId}`,
       method: 'get',
       headers: {
         'Content-Type': 'application/json',
-        'managerId': param.managerId
+        managerId: param.managerId,
+        roleId: param.roleId
       },
       data: {
       }
@@ -226,6 +227,26 @@ export const back = {
       headers: {
         'Content-Type': 'application/json',
         'managerId': param.managerId
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // 异常设备分页查询
+  devNormal (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/device/fault?pageNo=${param.pageNo}&pageSize=${param.pageSize}&id=${param.id}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        managerId: param.managerId,
+        roleId: param.roleId
       },
       data: {
       }
@@ -348,11 +369,88 @@ export const back = {
   // 3.9 解绑设备
   unbindDev (param) {
     return axios({
-      url: `${url.backbasurl}/api/v1/device/unbind?id=${param.deviceId}`,
+      url: `${url.backbasurl}/api/v1/device/unbind?id=${param.id}`,
       method: 'get',
       headers: {
         'Content-Type': 'application/json',
         'managerId': param.managerId
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // 远程启动
+  devStartup (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/device/startup?id=${param.id}&siteId=${param.siteId}&paperId=${param.paperId}&type=${param.type}&num=${param.num}`,
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+        'managerId': param.managerId
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // 设备远程启动记录分页查询
+  devStartupPage (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/device/pageStart?pageNo=${param.pageNo}&pageSize=${param.pageSize}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // 库存告警分页查询
+  stockAlarm (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/device/pageAlarm?pageNo=${param.pageNo}&pageSize=${param.pageSize}&id=${param.id}&siteId=${param.siteId}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        managerId: param.managerId,
+        roleId: param.roleId
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // 设备补货记录分页查询
+  addLog (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/device/pageReplenishment?pageNo=${param.pageNo}&pageSize=${param.pageSize}&id=${param.id}&siteId=${param.siteId}&beginDate=${param.beginDate}&endDate=${param.endDate}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        managerId: param.managerId,
+        roleId: param.roleId
       },
       data: {
       }
@@ -718,13 +816,35 @@ export const back = {
         return Promise.reject(error)
       })
   },
-  // 7.2 设备统计
+  // 7.2 我的收益
+  myIncome (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/statis/myIncome?beginDate=${param.beginDate}&endDate=${param.endDate}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        managerId: param.managerId
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // 7.3 交易统计
+  // 7.3 设备统计
   queDeviceStatis (param) {
     return axios({
       url: `${url.backbasurl}/api/v1/statis/device?pageNo=${param.currentPage}&pageSize=${param.pagesize}&deviceId=${param.deviceId}&siteId=${param.siteId}&beginDate=${param.beginDate}&endDate=${param.endDate}&queryType=${param.queryType}`,
       method: 'get',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        managerId: param.managerId,
+        roleId: param.roleId
       },
       data: {
       }
@@ -739,10 +859,12 @@ export const back = {
   // 7.3 场地统计
   queSiteStatis (param) {
     return axios({
-      url: `${url.backbasurl}/api/v1/statis/site?pageNo=${param.currentPage}&pageSize=${param.pagesize}&siteId=${param.siteId}&beginDate=${param.beginDate}&endDate=${param.endDate}&queryType=${param.queryType}`,
+      url: `${url.backbasurl}/api/v1/statis/site?siteId=${param.siteId}&beginDate=${param.beginDate}&endDate=${param.endDate}&queryType=${param.queryType}&pageNo=${param.pageNo}&pageSize=${param.pageSize}`,
       method: 'get',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        managerId: param.managerId,
+        roleId: param.roleId
       },
       data: {
       }
