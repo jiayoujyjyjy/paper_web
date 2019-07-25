@@ -384,6 +384,11 @@ export default {
         Routers.push({ path: '/home/childAccountManage' })
         this.changeMenuImg(false)
       }
+      if (value === '10-3') {
+        sessionSetStore('menuActive', '10-3')
+        Routers.push({ path: '/home/agencyManage' })
+        this.changeMenuImg(false)
+      }
     },
     querySearch: function (queryString, cb) {
       var searchItem = this.searchItem
@@ -520,6 +525,7 @@ export default {
 }
 .main-page {
   height: calc(100% - 40px);
+  max-width: 100%;
   background-color: #fff;
   border-radius: 10px;
   padding: 20px;

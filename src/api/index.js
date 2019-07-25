@@ -60,28 +60,28 @@ export const back = {
   },
   // 2.2 扫码查询场地
   // 2.3 场地查询
-  // queArea (param) {
-  //   return axios({
-  //     url: `${url.backbasurl}/api/v1/site/list?groupId=${param.groupId}&name=${param.name}&address=${param.address}`,
-  //     method: 'get',
-  //     headers: {
-  //       'managerId': param.managerId,
-  //       roleId: param.roleId
-  //     },
-  //     data: {}
-  //   })
-  //     .then((response) => {
-  //       // degugger
-  //       return response.data // 跳到具体页面api请求.then()
-  //     })
-  //     .catch((error) => {
-  //       // degugger
-  //       // console.log(error)
-  //       return Promise.reject(error) // Promise.reject跳到具体页面api请求.catch()
-  //       // return error // 跳到具体页面api请求.then()
-  //       // 以上: 只有return Promise.reject(error)才会跳到.catch()其他再怎么return都会跳到.then()
-  //     })
-  // },
+  queArea (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/site/list?groupId=${param.groupId}&name=${param.name}&address=${param.address}`,
+      method: 'get',
+      headers: {
+        'managerId': param.managerId,
+        'roleId': param.roleId
+      },
+      data: {}
+    })
+      .then((response) => {
+        // degugger
+        return response.data // 跳到具体页面api请求.then()
+      })
+      .catch((error) => {
+        // degugger
+        // console.log(error)
+        return Promise.reject(error) // Promise.reject跳到具体页面api请求.catch()
+        // return error // 跳到具体页面api请求.then()
+        // 以上: 只有return Promise.reject(error)才会跳到.catch()其他再怎么return都会跳到.then()
+      })
+  },
   // 2.4 新增场地
   addArea (param) {
     return axios({
@@ -740,6 +740,244 @@ export const back = {
   queSiteStatis (param) {
     return axios({
       url: `${url.backbasurl}/api/v1/statis/site?pageNo=${param.currentPage}&pageSize=${param.pagesize}&siteId=${param.siteId}&beginDate=${param.beginDate}&endDate=${param.endDate}&queryType=${param.queryType}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  /*
+  ********* x 角色模块 *********
+  */
+  // x.1 角色分页查询
+  queRolePage (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/role/page?pageNo=${param.currentPage}&pageSize=${param.pagesize}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // x.1.1 角色查询
+  queRoleList (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/role/list`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // x.2 新增角色
+  addRole (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/role/add`,
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+        name: param.name,
+        menuIds: param.menuIds
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // x.3 修改角色
+  updateRole (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/role/update`,
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+        id: param.id,
+        name: param.name,
+        menuIds: param.menuIds
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // x.4 查看角色详情
+  queRoleInfo (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/role/show?id=${param.id}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // x.5 删除角色
+  delRole (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/role/delete?id=${param.id}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // x.6 菜单查询
+  queMenuList (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/menu/list`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  /*
+  ********* xx 子账号模块 *********
+  */
+  // xx.1 子账号分页查询
+  queChildAccountPage (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/manager/pageSub?pageNo=${param.currentPage}&pageSize=${param.pagesize}&username=${param.username}&nickname=${param.nickname}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // xx.2 新增子账号
+  addChildAccount (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/manager/addSub`,
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+        username: param.username,
+        nickname: param.nickname,
+        password: param.password,
+        roleType: param.roleType,
+        siteIds: param.siteIds
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // x.3 修改子账号
+  updateChildAccount (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/manager/updateSub`,
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+        id: param.id,
+        username: param.username,
+        nickname: param.nickname,
+        password: param.password,
+        roleType: param.roleType,
+        siteIds: param.siteIds
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // x.4 查看子账号详情
+  queChildAccountInfo (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/manager/showSub?id=${param.id}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // x.5 删除子账号
+  delChildAccount (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/manager/deleteSub?id=${param.id}`,
       method: 'get',
       headers: {
         'Content-Type': 'application/json'

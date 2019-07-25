@@ -62,6 +62,8 @@ const ShipmentDistance = r => require.ensure([], () => r(require('@/components/a
 const RoleManage = r => require.ensure([], () => r(require('@/components/settings/roleManage')), 'RoleManage')
 // 10-2 子账号管理
 const ChildAccountManage = r => require.ensure([], () => r(require('@/components/settings/childAccountManage')), 'ChildAccountManage')
+// 10-3 代理管理
+const AgencyManage = r => require.ensure([], () => r(require('@/components/settings/agencyManage')), 'AgencyManage')
 // 重置刷新跳转空白页
 const Blank = r => require.ensure([], () => r(require('@/components/home/blank')), 'Blank')
 
@@ -94,6 +96,7 @@ const router = new Router({
         { path: 'shipmentDistance', name: 'shipmentDistance', component: ShipmentDistance },
         { path: 'roleManage', name: 'roleManage', component: RoleManage },
         { path: 'childAccountManage', name: 'childAccountManage', component: ChildAccountManage },
+        { path: 'agencyManage', name: 'agencyManage', component: AgencyManage },
         { path: 'blank', name: 'blank', component: Blank }
       ]
     }

@@ -305,6 +305,7 @@ export default {
     this.backQueDevPage()
   },
   mounted: function () {
+    // 表格容器高度初始化
     this.tableContainerHeightSet()
     // 监听屏幕高度
     this.screenOnresizeFun()
