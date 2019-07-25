@@ -361,8 +361,6 @@ export default {
     },
     // 加载图表 饼图
     loadIncomePie: function (id) {
-      console.log('aaaaaaaaaaaaa')
-      console.log(this.topData)
       var diagramContainer = document.getElementById(id)
       var incomePie = echarts.init(diagramContainer)
       var option = {
@@ -373,7 +371,7 @@ export default {
           y: 'center',
           top: '40%',
           textStyle: {
-            fontSize: 16,
+            fontSize: 13,
             fontWeight: 700
           },
           subtextStyle: {
@@ -396,6 +394,7 @@ export default {
           name: '收益分布',
           type: 'pie',
           radius: ['90%', '75%'],
+          center: ['50%', '50%'],
           data: [{
             value: this.topData.onlineIncome, name: '在线支付'
           }, {
@@ -789,7 +788,7 @@ export default {
   flex-wrap: nowrap;
 }
 .left_top_left {
-  margin-left: 5vw;
+  margin-left: 2.5vw;
   position: relative;
   width: 70%;
   height: 100%;
@@ -800,17 +799,16 @@ export default {
   cursor: pointer;
 }
 #incomePie {
-  width: 10%;
+  width: 30%;
   height: 95%;
-  margin: 0 10px 0 10px;
   cursor: pointer!important;
 }
 .incomePieTable {
   color:#606266;
   letter-spacing:3px;
-  width: 90%;
+  width: 69%;
   height: 95%;
-  margin: 3vh 0 0 3vw;
+  margin: 9% 0 0 6%;
 }
 .incomePieTable tr th {
   /* padding: 0 20px 20px 20px; */
