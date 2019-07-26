@@ -2,8 +2,8 @@
 <template>
   <div class="devSupply">
     <div class="select">
-      <el-button type="primary" size="small" @click="toShortage">缺货备货</el-button>
-      <el-button type="primary" size="small" @click="toStockup">备货单列表</el-button>
+      <el-button type="primary" plain size="small" @click="toShortage">缺货备货</el-button>
+      <el-button type="primary" plain size="small" @click="toStockup">备货单列表</el-button>
     </div>
     <!-- 缺货备货 -->
     <div class="select" v-show="shortage">
@@ -26,7 +26,7 @@
     <div class="select" v-show="stockup">
       <span style="margin: auto 1%">备货单号:</span>
       <el-input v-model="stockTable" placeholder="请输入设备编号"></el-input>
-      <span style="margin: aoto 1%">日期</span>
+      <span style="margin: aoto 1%">日期:</span>
         <el-date-picker
           style="width: 250px; height:40px;"
           v-model="dateValue"
@@ -56,7 +56,7 @@
         :header-cell-style="{'font-size':'14px'}"
         :data="tableData"
         border
-        style="margin-top: 2%;font-size:12px;"
+        style="margin-top: 20px;font-size:12px;"
         :max-height="tableMaxHeght">
         <el-table-column
           align="center"
@@ -97,7 +97,7 @@
         :header-cell-style="{'font-size':'14px'}"
         :data="tableList"
         border
-        style="margin-top: 2%;font-size:12px;"
+        style="margin-top: 20px;font-size:12px;"
         :max-height="tableMaxHeght">
         <el-table-column
           align="center"
@@ -195,7 +195,7 @@ export default {
           label: '已拒绝'
         }
       ],
-      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 42 - 49 - 53, // ===tableDiv的高度
+      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 42 - 50 - 53, // ===tableDiv的高度
       screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
       onresizeTimer: false // 屏幕高度变化定时器，避免频繁调用window.onresize()方法
     }
@@ -234,8 +234,8 @@ export default {
     tableContainerHeightSet: function () {
       var windowHeight = $(window).height()
       var mainHeight = windowHeight - 40 - 40 - 40
-      $('.tableDiv').height(mainHeight - 40 - 42 - 47 - 53)
-      this.tableMaxHeght = mainHeight - 40 - 42 - 47 - 53
+      $('.tableDiv').height(mainHeight - 40 - 42 - 50 - 53)
+      this.tableMaxHeght = mainHeight - 40 - 42 - 50 - 53
     },
     // 监听屏幕高度
     screenOnresizeFun: function () {
@@ -266,7 +266,6 @@ export default {
     },
     // 每次切换页码之前清空table数据
     handlePaginationChange: function (value) {
-      // this.tableMaxHeght = document.body.clientHeight - 40 - 20 - 40 - 40 - 40 - 42 - 53 // ===tableDiv的高度
       console.log(value)
       this.param.currentPage = value
       // 分页查询请求可选项置空函数
@@ -281,8 +280,8 @@ export default {
     // 库存分页查询
     backStockAlarm: function () {
       // degugger
-      this.param.pageNo = this.currentPage
-      this.param.pageSize = this.pagesize
+      this.param.pageNo = this.param.currentPage
+      this.param.pageSize = this.param.pagesize
       sessionSetStore('backName', '库存分页查询')
       back.stockAlarm(this.param).then(function (response) {
         console.log(response)

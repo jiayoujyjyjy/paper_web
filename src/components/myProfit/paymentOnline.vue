@@ -26,7 +26,7 @@
         stripe
         border
         :max-height="tableMaxHeght"
-        style="width: 100%;font-size:12px;">
+        style="margin-top: 10px;font-size:12px;">
         <el-table-column
           align="center"
           prop="date"
@@ -84,7 +84,7 @@ export default {
         }]
       },
       dateValue: '',
-      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 115 - 54 - 40 - 20, // ===tableDiv的高度
+      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 115 - 54 - 40 - 10, // ===tableDiv的高度
       screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
       onresizeTimer: false // 屏幕高度变化定时器，避免频繁调用window.onresize()方法
 
@@ -121,8 +121,8 @@ export default {
     tableContainerHeightSet: function () {
       var windowHeight = $(window).height()
       var mainHeight = windowHeight - 40 - 40 - 40
-      $('.tableDiv').height(mainHeight - 115 - 54 - 40)
-      this.tableMaxHeght = mainHeight - 115 - 54 - 40 - 20
+      $('.tableDiv').height(mainHeight - 115 - 54 - 40 - 10)
+      this.tableMaxHeght = mainHeight - 115 - 54 - 40 - 10
     },
     // 监听屏幕高度
     screenOnresizeFun: function () {

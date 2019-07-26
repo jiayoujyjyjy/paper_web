@@ -15,9 +15,9 @@
       </el-select>
       <!-- <el-input v-model="input_areaName" placeholder="请输入场地名称"></el-input> -->
       <span style="margin: auto 1%">连接状态:</span>
-      <el-button type="primary" plain @click="getAll">全部</el-button>
-      <el-button type="primary" plain @click="getOnline">在线</el-button>
-      <el-button type="primary" plain @click="getOutline">离线</el-button>
+      <el-button type="primary" size="small" plain @click="getAll">全部</el-button>
+      <el-button type="primary" size="small" plain @click="getOnline">在线</el-button>
+      <el-button type="primary" size="small" plain @click="getOutline">离线</el-button>
       <el-button size="small" type="primary" style="margin-left:10%;" @click="searchDev">搜 索</el-button>
     </div>
     <div class="flexbox">
@@ -260,7 +260,7 @@ export default {
         group: '',
         msg: ''
       },
-      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 42 - 53, // ===tableDiv的高度
+      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 40 - 62, // ===tableDiv的高度
       screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
       onresizeTimer: false // 屏幕高度变化定时器，避免频繁调用window.onresize()方法
     }
@@ -305,8 +305,8 @@ export default {
     tableContainerHeightSet: function () {
       var windowHeight = $(window).height()
       var mainHeight = windowHeight - 40 - 40 - 40
-      $('.tableDiv').height(mainHeight - 40 - 42 - 53)
-      this.tableMaxHeght = mainHeight - 40 - 42 - 53
+      $('.tableDiv').height(mainHeight - 40 - 40 - 62)
+      this.tableMaxHeght = mainHeight - 40 - 40 - 62
     },
     // 监听屏幕高度
     screenOnresizeFun: function () {

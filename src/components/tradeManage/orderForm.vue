@@ -48,57 +48,66 @@
           align="center"
           prop="orderId"
           label="订单编码"
-          min-width="100%">
+          min-width="20%">
         </el-table-column>
         <el-table-column
           align="center"
           prop="device"
+          min-width="17%"
           label="设备名称">
         </el-table-column>
         <el-table-column
           align="center"
           prop="createTime"
+          min-width="17%"
           label=下单时间>
         </el-table-column>
         <el-table-column
           align="center"
           prop="site"
+          min-width="20%"
           label="场地名称">
         </el-table-column>
         <el-table-column
           align="center"
           prop="manager"
+          min-width="10%"
           label="管理员名称">
         </el-table-column>
         <el-table-column
           align="center"
           prop="user"
+          min-width="10%"
           label="用户名称">
         </el-table-column>
         <el-table-column
           align="center"
           prop="deviceId"
           label="设备编码"
-          min-width="100%">
+          min-width="12%">
         </el-table-column>
         <el-table-column
           align="center"
           prop="money"
+          min-width="7%"
           label="订单金额">
         </el-table-column>
         <el-table-column
           align="center"
           prop="state"
+          min-width="10%"
           label="订单状态">
         </el-table-column>
         <el-table-column
           align="center"
           prop="isFree"
+          min-width="8%"
           label="是否免费">
         </el-table-column>
         <el-table-column
           align="center"
           prop="paper"
+          min-width="10%"
           label="纸巾名称">
         </el-table-column>
       </el-table>
@@ -150,7 +159,7 @@ export default {
     return {
       param: {
         'currentPage': 1,
-        'pagesize': 8,
+        'pagesize': 9,
         'currentPage_DiaDev': 1,
         'pagesize_DiaDev': 8
       },
@@ -181,7 +190,7 @@ export default {
         deviceId: '',
         site: ''
       },
-      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 62 - 53,
+      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 62 - 50 - 10,
       // 日期选择器
       pickerOptions: {
         shortcuts: [{
@@ -248,8 +257,8 @@ export default {
     tableContainerHeightSet: function () {
       var windowHeight = $(window).height()
       var mainHeight = windowHeight - 40 - 40 - 40
-      $('.tableDiv').height(mainHeight - 62 - 53)
-      this.tableMaxHeght = windowHeight - 40 - 40 - 40 - 62 - 53 // header outerPadding interPadding searchDiv 分页Div 
+      $('.tableDiv').height(mainHeight - 62 - 50 - 10)
+      this.tableMaxHeght = windowHeight - 62 - 50 - 10 // header outerPadding interPadding searchDiv 分页Div 
     },
     // 监听屏幕高度
     screenOnresizeFun: function () {
