@@ -4,14 +4,14 @@
     <div class="flexbox">
       <div class="box">
         <div style="width: 50%; border: 1px solid #eee;">
-          <p style="margin-left: 18%;">欢迎你：<span style="margin: auto 22%; font-weight:bold;">{{userName}}</span></p>
-          <p style="margin-left: 18%;">钱包余额：<span style="margin: auto 20%; font-weight:bold;">{{income}} 元</span></p>
-          <p style="margin-left: 18%;">PC端提现功能暂时维护中，请前往移动端提现。</p>
+          <p style="margin-left: 8%;">欢迎你：<span style="margin: auto 22%; font-weight:bold;">{{userName}}</span></p>
+          <p style="margin-left: 8%;">钱包余额：<span style="margin: auto 20%; font-weight:bold;">{{income}} 元</span></p>
+          <p style="margin-left: 8%;">PC端提现功能暂时维护中，请前往移动端提现。</p>
         </div>
         <div style="width: 50%; border: 1px solid #eee;">
-          <p style="margin-left: 18%;">今日在线支付收益：<span style="margin: auto 15%; font-weight:bold;">{{todayIncome}} 元</span></p>
-          <p style="margin-left: 18%;">昨日在线支付收益：<span style="margin: auto 15%; font-weight:bold;">{{yesterdayIncome}} 元</span></p>
-          <p style="margin-left: 18%;">累计在线支付收益：<span style="margin: auto 15%; font-weight:bold;">{{totalIncome}} 元</span></p>
+          <p style="margin-left: 8%;">今日在线支付收益：<span style="margin: auto 15%; font-weight:bold;">{{todayIncome}} 元</span></p>
+          <p style="margin-left: 8%;">昨日在线支付收益：<span style="margin: auto 15%; font-weight:bold;">{{yesterdayIncome}} 元</span></p>
+          <p style="margin-left: 8%;">累计在线支付收益：<span style="margin: auto 15%; font-weight:bold;">{{totalIncome}} 元</span></p>
         </div>
       </div>
     </div>
@@ -32,6 +32,7 @@
 import { back } from 'api'
 import Routers from '@/router'
 import { sessionGetStore, sessionSetStore } from '@/components/config/Utils'
+import $ from 'jquery'
 export default {
   data () {
     return {
@@ -72,10 +73,18 @@ export default {
     this.backMyIncome()
   },
   mounted: function () {
+    // 表格容器高度初始化
+    this.tableContainerHeightSet()
     // 监听屏幕高度
     this.screenOnresizeFun()
   },
   methods: {
+    // 表格容器高度随窗口视口变化函数
+    tableContainerHeightSet: function () {
+      var windowHeight = $(window).height()
+      var mainHeight = windowHeight - 40 - 40 - 40
+      $('.userBasemain').height(mainHeight - 150 - 60)
+    },
     // 监听屏幕高度
     screenOnresizeFun: function () {
       const that = this
@@ -96,12 +105,13 @@ export default {
     toOnline: function () {
       this.usermanage_activeName = 'first'
       sessionSetStore('usermanage_activeName', this.usermanage_activeName)
-      Routers.push({ path: '/home/income/paymentOnline' })
+      Routers.push({ path: '/home/incom/paymentOnline' })
     },
     toWechat: function () {
       this.usermanage_activeName = 'second'
       sessionSetStore('usermanage_activeName', this.usermanage_activeName)
-      Routers.push({ path: '/home/income/wechatCash' })
+      this.$message.error('该功能待开发！')
+      // Routers.push({ path: '/home/income/wechatCash' })
     },
     /*
       *
@@ -145,21 +155,33 @@ export default {
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-around;
-  width: 100%
+  width: 100%;
+  height: 150px;
+}
+.flexbox p {
+  padding: 14px;
+  font-size: 16px;
 }
 .box {
-display: -webkit-flex; /* Safari */
-display: flex;
-flex-wrap: nowrap;
-justify-content: space-between;
-width:90%;
-text-align: left;
+  display: -webkit-flex; /* Safari */
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  width:100%;
+  text-align: left;
 }
-.userBasemain{
-  height: 70%;
-}
+/* .userBasemain{
+  height: 100%;
+} */
 .income {
   width: 100%;
   height: 100%
+}
+.two {
+  height: 40px;
+  margin: 10px 0 10px 0;
+}
+.two >>> .el-tabs__header {
+  margin: 0px;
 }
 </style>

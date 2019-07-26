@@ -190,7 +190,7 @@ export default {
         deviceId: '',
         site: ''
       },
-      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 62 - 50 - 10,
+      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 62 - 53,
       // 日期选择器
       pickerOptions: {
         shortcuts: [{
@@ -257,8 +257,8 @@ export default {
     tableContainerHeightSet: function () {
       var windowHeight = $(window).height()
       var mainHeight = windowHeight - 40 - 40 - 40
-      $('.tableDiv').height(mainHeight - 62 - 50 - 10)
-      this.tableMaxHeght = windowHeight - 62 - 50 - 10 // header outerPadding interPadding searchDiv 分页Div 
+      $('.tableDiv').height(mainHeight - 62 - 53)
+      this.tableMaxHeght = windowHeight - 62 - 53 // header outerPadding interPadding searchDiv 分页Div 
     },
     // 监听屏幕高度
     screenOnresizeFun: function () {

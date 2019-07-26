@@ -54,6 +54,12 @@
         </el-table-column>
         <el-table-column
           align="center"
+          prop="num"
+          label="库存数量"
+          min-width="20%">
+        </el-table-column>
+        <el-table-column
+          align="center"
           prop="site"
           label="场地"
           min-width="30%">
@@ -123,11 +129,19 @@
         </el-form-item>
         <!-- 分组这里最终提交的时候要考虑分组是新建的情况 -->
         <el-form-item label="设备转移" v-show="isadd">
-          <el-cascader
+          <!-- <el-cascader
             :options="devSiteOptions"
             v-model="selectedSite"
             @change="siteChangeHandle">
-          </el-cascader>
+          </el-cascader> -->
+          <el-select v-model="editform.formselected" placeholder="请选择">
+            <el-option
+              v-for="item in formselectData"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -236,15 +250,11 @@ export default {
         value: '139766',
         label: '139766'
       }],
+      formselectData: [],
       // 表格数据
       tableData: [],
       unbindId: '',
-      selectData: [
-        {
-          value: '',
-          label: '全部'
-        }
-      ], // 下拉选择框
+      selectData: [], // 下拉选择框
       selected: '',
       transferform: {
         deviceId: '139761',
@@ -256,11 +266,13 @@ export default {
         location: '',
         locaDetail: '',
         devName: '名称1',
+        formselected: '',
         state: 0,
+        num: '',
         group: '',
         msg: ''
       },
-      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 40 - 62, // ===tableDiv的高度
+      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 42 - 53, // ===tableDiv的高度
       screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
       onresizeTimer: false // 屏幕高度变化定时器，避免频繁调用window.onresize()方法
     }
@@ -305,8 +317,8 @@ export default {
     tableContainerHeightSet: function () {
       var windowHeight = $(window).height()
       var mainHeight = windowHeight - 40 - 40 - 40
-      $('.tableDiv').height(mainHeight - 40 - 40 - 62)
-      this.tableMaxHeght = mainHeight - 40 - 40 - 62
+      $('.tableDiv').height(mainHeight - 40 - 42 - 53)
+      this.tableMaxHeght = mainHeight - 40 - 42 - 53
     },
     // 监听屏幕高度
     screenOnresizeFun: function () {
@@ -480,6 +492,11 @@ export default {
             obj.name = response.data.records[i].name
             obj.site = response.data.records[i].site
             obj.state = response.data.records[i].state ? '在线' : '离线'
+            let num = ''
+            for (let j = 0; j < response.data.records[i].paperList.length; j++) {
+              num += response.data.records[i].paperList[j].paper + ':' + response.data.records[i].paperList[j].num + ' '
+            }
+            obj.num = num
             if (obj.stateNum === 0) {
               obj.state = '离线'
             } else if (obj.stateNum === 1) {
@@ -495,6 +512,43 @@ export default {
           console.log(error)
         })
     },
+    // // 查看设备详情
+    // backQueDevInfo: function () {
+    //   sessionSetStore('backName', '查看设备详情')
+    //   back.queDevInfo(this.param).then(function (response) {
+    //     console.log(response)
+    //     this.editform.deviceId = response.data.id
+    //     this.editform.devName = response.data.name
+    //     let groupList = []
+    //     this.devSiteOptions = [] // 初始化
+    //     if (response.data.groupList) {
+    //       for (let i = 0; i < response.data.groupList.length; i++) {
+    //         let groupObj = {}
+    //         groupObj.value = response.data.groupList[i].id
+    //         groupObj.label = response.data.groupList[i].name
+    //         let siteList = []
+    //         if (response.data.groupList[i].siteList === undefined) {
+    //           siteList[0] = {}
+    //           groupObj.children = siteList
+    //           groupList[i] = groupObj
+    //           continue
+    //         }
+    //         for (let j = 0; j < response.data.groupList[i].siteList.length; j++) {
+    //           let siteObj = {}
+    //           siteObj.value = response.data.groupList[i].siteList[j].id
+    //           siteObj.label = response.data.groupList[i].siteList[j].name
+    //           siteList[j] = siteObj
+    //         }
+    //         groupObj.children = siteList
+    //         groupList[i] = groupObj
+    //       }
+    //     }
+    //     this.devSiteOptions = groupList
+    //   }.bind(this))
+    //     .catch(function (error) {
+    //       console.log(error)
+    //     })
+    // },
     // 查看设备详情
     backQueDevInfo: function () {
       sessionSetStore('backName', '查看设备详情')
@@ -502,31 +556,16 @@ export default {
         console.log(response)
         this.editform.deviceId = response.data.id
         this.editform.devName = response.data.name
-        let groupList = []
-        this.devSiteOptions = [] // 初始化
-        if (response.data.groupList) {
-          for (let i = 0; i < response.data.groupList.length; i++) {
-            let groupObj = {}
-            groupObj.value = response.data.groupList[i].id
-            groupObj.label = response.data.groupList[i].name
-            let siteList = []
-            if (response.data.groupList[i].siteList === undefined) {
-              siteList[0] = {}
-              groupObj.children = siteList
-              groupList[i] = groupObj
-              continue
-            }
-            for (let j = 0; j < response.data.groupList[i].siteList.length; j++) {
-              let siteObj = {}
-              siteObj.value = response.data.groupList[i].siteList[j].id
-              siteObj.label = response.data.groupList[i].siteList[j].name
-              siteList[j] = siteObj
-            }
-            groupObj.children = siteList
-            groupList[i] = groupObj
+        this.editform.formselected = response.data.siteName
+        this.formselectData = [] // 初始化
+        if (response.data.siteList) {
+          for (let i = 0; i < response.data.siteList.length; i++) {
+            let obj = {}
+            obj.label = response.data.siteList[i].name
+            obj.value = response.data.siteList[i].id
+            this.formselectData.push(obj)
           }
         }
-        this.devSiteOptions = groupList
       }.bind(this))
         .catch(function (error) {
           console.log(error)

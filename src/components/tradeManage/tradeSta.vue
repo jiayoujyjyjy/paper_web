@@ -70,7 +70,7 @@ export default {
       }],
       value: '按场地分析',
       nameType: '场地名称',
-      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 22 - 53, // ===tableDiv的高度
+      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 15 - 53, // ===tableDiv的高度
       screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
       onresizeTimer: false // 屏幕高度变化定时器，避免频繁调用window.onresize()方法
 
@@ -116,8 +116,8 @@ export default {
     tableContainerHeightSet: function () {
       var windowHeight = $(window).height()
       var mainHeight = windowHeight - 40 - 40 - 40
-      $('.tableDiv').height(mainHeight - 40 - 22 - 53)
-      this.tableMaxHeght = mainHeight - 40 - 22 - 53
+      $('.tableDiv').height(mainHeight - 40 - 15 - 53)
+      this.tableMaxHeght = mainHeight - 40 - 15 - 53
     },
     // 监听屏幕高度
     screenOnresizeFun: function () {
@@ -220,6 +220,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   margin-bottom: 15px;
+  height: 40px;
 }
 .flexbox {
   display: -webkit-flex;

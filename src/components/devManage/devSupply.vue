@@ -6,7 +6,7 @@
       <el-button type="primary" plain size="small" @click="toStockup">备货单列表</el-button>
     </div>
     <!-- 缺货备货 -->
-    <div class="select" v-show="shortage">
+    <div class="select search" v-show="shortage">
       <span style="margin: auto 1%">设备编号:</span>
       <el-input v-model="input_devMac" placeholder="请输入设备编号"></el-input>
       <span style="margin: auto 1%">场地:</span>
@@ -56,7 +56,7 @@
         :header-cell-style="{'font-size':'14px'}"
         :data="tableData"
         border
-        style="margin-top: 20px;font-size:12px;"
+        style="font-size:12px;"
         :max-height="tableMaxHeght">
         <el-table-column
           align="center"
@@ -195,7 +195,7 @@ export default {
           label: '已拒绝'
         }
       ],
-      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 42 - 50 - 53, // ===tableDiv的高度
+      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 60 - 53, // ===tableDiv的高度
       screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
       onresizeTimer: false // 屏幕高度变化定时器，避免频繁调用window.onresize()方法
     }
@@ -234,8 +234,8 @@ export default {
     tableContainerHeightSet: function () {
       var windowHeight = $(window).height()
       var mainHeight = windowHeight - 40 - 40 - 40
-      $('.tableDiv').height(mainHeight - 40 - 42 - 50 - 53)
-      this.tableMaxHeght = mainHeight - 40 - 42 - 50 - 53
+      $('.tableDiv').height(mainHeight - 40 - 60 - 53)
+      this.tableMaxHeght = mainHeight - 40 - 60 - 53
     },
     // 监听屏幕高度
     screenOnresizeFun: function () {
@@ -365,7 +365,9 @@ export default {
   width: 100%;
   height: 40px;
   text-align: left;
-  margin-top: 1%;
+}
+.search {
+  margin: 10px 0 10px 0;
 }
 .el-select >>> .el-input {
   font-size: 12px;
