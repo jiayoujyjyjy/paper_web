@@ -69,7 +69,7 @@
       :title="dialogTitle"
       :visible.sync="dialogEditVisible"
       :before-close="handleClose"
-      width="50%"
+      width="25%"
       center>
       <!-- 当点击详情时，:disabled=true；其他为false (true为禁用）-->
       <el-form :model="detailForm" label-width="100px">
