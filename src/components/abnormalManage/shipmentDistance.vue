@@ -149,39 +149,39 @@ import $ from 'jquery'
 export default {
   data () {
     // 场地类型
-    var siteType1 = (rule, value, callback) => {
-      if (value === '') {
-        return callback(new Error('场地类型不能为空'))
-      } else {
-        this.siteCodeShow = true
-        callback()
-      }
-    }
-    // 场地编码
-    var siteCode1 = (rule, value, callback) => {
-      if (value === '') {
-        return callback(new Error('场地编码不能为空'))
-      } else {
-        callback()
-      }
-    }
-    // 纸巾类型
-    var paperType1 = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('场地类型不能为空'))
-      } else {
-        this.paperCodeShow = true
-        callback()
-      }
-    }
-    // 纸巾编码
-    var paperCode1 = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('场地编码不能为空'))
-      } else {
-        callback()
-      }
-    }
+    // var siteType1 = (rule, value, callback) => {
+    //   if (value === '') {
+    //     return callback(new Error('场地类型不能为空'))
+    //   } else {
+    //     this.siteCodeShow = true
+    //     callback()
+    //   }
+    // }
+    // // 场地编码
+    // var siteCode1 = (rule, value, callback) => {
+    //   if (value === '') {
+    //     return callback(new Error('场地编码不能为空'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
+    // // 纸巾类型
+    // var paperType1 = (rule, value, callback) => {
+    //   if (value === '') {
+    //     callback(new Error('场地类型不能为空'))
+    //   } else {
+    //     this.paperCodeShow = true
+    //     callback()
+    //   }
+    // }
+    // // 纸巾编码
+    // var paperCode1 = (rule, value, callback) => {
+    //   if (value === '') {
+    //     callback(new Error('场地编码不能为空'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
     return {
       param: {
         'currentPage': 1,
@@ -201,7 +201,7 @@ export default {
       eltotal: 20,
       // 表格数据
       tableData: [],
-      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 40 - 50, // ===tableDiv的高度
+      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 40 - 51, // ===tableDiv的高度
       screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
       onresizeTimer: false, // 屏幕高度变化定时器，避免频繁调用window.onresize()方法
       siteTypeOptions: [], // 场地类型选项
@@ -258,8 +258,8 @@ export default {
     tableContainerHeightSet: function () {
       var windowHeight = $(window).height()
       var mainHeight = windowHeight - 40 - 40 - 40
-      $('.tableDiv').height(mainHeight - 40 - 40 - 50)
-      this.tableMaxHeght = mainHeight - 40 - 40 - 50
+      $('.tableDiv').height(mainHeight - 40 - 40 - 51)
+      this.tableMaxHeght = mainHeight - 40 - 40 - 51
     },
     // 监听屏幕高度
     screenOnresizeFun: function () {

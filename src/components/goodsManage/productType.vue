@@ -98,7 +98,7 @@ export default {
       },
       isProductIdShowDia: false,
       tableData: [],
-      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 35 - 45, // ===tableDiv的高度
+      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 35 - 38, // ===tableDiv的高度
       screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
       onresizeTimer: false // 屏幕高度变化定时器，避免频繁调用window.onresize()方法
     }
@@ -133,8 +133,8 @@ export default {
     tableContainerHeightSet: function () {
       var windowHeight = $(window).height()
       var mainHeight = windowHeight - 40 - 40 - 40
-      $('.tableDiv').height(mainHeight - 40 - 35 - 45)
-      this.tableMaxHeght = mainHeight - 40 - 35 - 45
+      $('.tableDiv').height(mainHeight - 40 - 35 - 38)
+      this.tableMaxHeght = mainHeight - 40 - 35 - 38
     },
     // 监听屏幕高度
     screenOnresizeFun: function () {
