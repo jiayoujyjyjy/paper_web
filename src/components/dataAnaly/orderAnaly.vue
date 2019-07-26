@@ -2,7 +2,6 @@
 <template>
   <div class="deviceInfoPage">
     <div class="flexbox1">
-
       <div>
         <div>
           <span style="margin-right:5px;">日期</span>
@@ -18,7 +17,6 @@
         </div>
         <p></p>
       </div>
-
       <div>
       </div>
       <div style="display: -webkit-flex;display: flex;flex-wrap: nowrap;margin-left:20px;">
@@ -26,7 +24,6 @@
         <el-input v-model="input_devId" size="small" placeholder="请输入设备编码"></el-input>
       </div>
     </div>
-
     <div class="flexbox">
       <div>展示
         <el-radio-group v-model="isTable" size="small">
@@ -260,7 +257,24 @@ export default {
       chartsDataResult: [],
       deviceNameDataResult: [],
       dateDataResult: [],
-      tableMaxHeght: document.body.clientHeight - 40 - 20 - 40 - 40 - 52 - 53 + 13
+      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 42 - 10 - 52, // ===tableDiv的高度
+      screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
+      onresizeTimer: false // 屏幕高度变化定时器，避免频繁调用window.onresize()方法
+    }
+  },
+  watch: {
+    // 监听屏幕高度改变表格高度
+    screenHeight (val) {
+      /* 触发dom操作，考虑到函数节流，避免window.onresize()方法频繁触发
+      强调一点，window.onresize()方法频繁触发也无所谓，前提是在不操作dom的情况下 */
+      if (!this.onresizeTimer) {
+        this.tableContainerHeightSet()
+        this.onresizeTimer = true
+        const that = this
+        setTimeout(function () {
+          that.onresizeTimer = false
+        }, 400)
+      }
     }
   },
   created: function () {
@@ -268,19 +282,32 @@ export default {
     this.backQueDeviceStatis()
   },
   mounted: function () {
-    var windowHeight = $(window).height()
-    var windowWidth = $(window).width()
-    var mainHeight = windowHeight - 40 - 20 - 40 // header mainOuterPadding tabs mainInPadding一侧bug
-    $('.deviceInfoPage').height(mainHeight)
-    $('.tableDiv').height(mainHeight - 40 - 52 - 53 + 13) // footer serachDiv mainInPadding一侧bug
-    $('.tableDiv').width(windowWidth - 200 - 20 - 40) // 解决表格滚动条分页益处问题
-    this.dataprocessing()
+    this.tableContainerHeightSet()
+    // 监听屏幕高度
+    this.screenOnresizeFun()
   },
   // 注销window.onresize事件
   destroyed () {
     window.onresize = null
   },
   methods: {
+    // 表格容器高度随窗口视口变化函数
+    tableContainerHeightSet: function () {
+      var windowHeight = $(window).height()
+      var mainHeight = windowHeight - 40 - 40 - 40
+      $('.tableDiv').height(mainHeight - 40 - 42 - 10 - 52)
+      this.tableMaxHeght = mainHeight - 40 - 42 - 20 - 52
+    },
+    // 监听屏幕高度
+    screenOnresizeFun: function () {
+      const that = this
+      window.onresize = () => {
+        return (() => {
+          that.screenHeight = document.body.clientHeight
+          console.log('that.screenHeight: ' + that.screenHeight)
+        })() // 不加最后()会报错，并没有立即执行,立即执行函数
+      }
+    },
     // 相关数据处理
     dataprocessing: function () {
       if (this.checkedAll_loca) {
@@ -556,10 +583,6 @@ export default {
 </script>
 
 <style scoped>
-.deviceInfoPage {
-  padding: 20px;
-  background-color: white;
-}
 .flexbox1 {
   display: -webkit-flex; /* Safari */
   display: flex;

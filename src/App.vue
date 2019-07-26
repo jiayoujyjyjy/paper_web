@@ -34,6 +34,13 @@ body, html {
   font-size: 14px;
   -webkit-font-smoothing: antialiased;
 }
+* {
+  padding: 0px;
+  margin: 0px;
+  /* box-sizing: border-box; */
+  list-style: none;
+}
+/* 统一覆盖样式 */
 .index, .el-container {
   height: 100%;
 }
@@ -58,5 +65,23 @@ tabs_header margin 0; */
   padding: 0px;
   text-align: right;
   line-height: 40px;
+}
+
+.el-dialog .el-dialog__body {
+  padding: 20px 20px 15px;
+}
+.el-dialog .el-form-item {
+  margin-bottom: 18px;
+}
+.el-dialog .el-form-item__content, .el-form-item__label {
+  line-height: 32px;
+}
+.el-dialog .el-input {
+  max-width: 200px;
+  font-size: 13px;
+}
+.el-dialog .el-input__inner {
+  height: 32px;
+  line-height: 32px;
 }
 </style>

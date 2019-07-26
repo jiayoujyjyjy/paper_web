@@ -3,31 +3,28 @@
   <div class="productmanagePage">
         <div class="select">
         <span style="margin: auto 1%;">产品名称</span>
-        <el-input size="small" v-model="selection.name" placeholder="请输入产品名称"></el-input>
+        <el-input size="small" v-model="productName" placeholder="请输入产品名称"></el-input>
         <span style="margin: auto 1%">产品类型</span>
-        <el-autocomplete
-          class="inline-input"
-          suffix-icon="el-icon-arrow-down"
-          v-model="selection.type"
-          :fetch-suggestions="querySearch_DevId"
-          placeholder="请输入或选择产品类型">
-        </el-autocomplete>
+      <el-select v-model="selected" placeholder="请选择">
+        <el-option
+          v-for="item in options"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value">
+        </el-option>
+      </el-select>
         <el-button type="primary" size="small" style="margin: auto 1%" @click="searchBt">搜索</el-button>
         <el-button type="primary" size="small" style="margin: auto 1%" @click="addBt">添加商品</el-button>
       </div>
-    <div class="tableDiv" style="margin-top: 1%">
+    <div class="tableDiv" style="margin-top: 20px">
       <el-table
         :header-cell-style="{'font-size':'14px'}"
         :data="tableData"
         stripe
         border
         :max-height="tableMaxHeght"
-        style="width: 100%;font-size:12px;"
+        style="margin-top: 20px; font-size:12px;"
         @selection-change="handleSelectionChange">
-        <!-- <el-table-column
-          type="selection"
-          min-width="10%">
-        </el-table-column> -->
         <el-table-column
           align="center"
           prop="deviceId"
@@ -94,7 +91,7 @@
         </el-form-item>
         <el-form-item label="产品类型" prop="productType">
           <el-select v-model="editform.productType" placeholder="请选择产品类型">
-            <el-option v-for="item in productTypeOptions"
+            <el-option v-for="item in option"
               :key="item.id"
               :label="item.label"
               :value="item.value">
@@ -181,29 +178,15 @@ export default {
       dialogTitle: '',
       multipleSelection: [],
       isedit: false,
-      selection: {
-        name: '',
-        type: ''
-      },
-      midData: [], // 中间量，存储tableData（用于搜索）
-      locationlist: [{
-        value: '江泰国际广场1楼'
-      }, {
-        value: '江泰国际广场2楼'
-      }, {
-        value: '江泰国际广场3楼'
-      }, {
-        value: '江泰国际广场4楼'
-      }],
-      devIdlist: [{
-        value: '139761'
-      }, {
-        value: '139762'
-      }, {
-        value: '139763'
-      }, {
-        value: '139764'
-      }],
+      productName: '',
+      options: [
+        {
+          value: '',
+          label: '全部'
+        }
+      ],  // 用于搜索,要显示'全部'
+      option: [], // 编辑时,不能出现'全部'
+      selected: '全部',
       editform: {
         deviceId: '139761',
         productName: '纸巾',
@@ -212,10 +195,6 @@ export default {
         price: '100'
       },
       isProductIdShowDia: false,
-      productTypeOptions: [
-        { label: '小包纸', value: 1 },
-        { label: '卷纸', value: 2 }
-      ],
       tableData: [],
       // 表单校验
       rulesLogin: {
@@ -232,33 +211,54 @@ export default {
           { required: true, validator: checkPrice, trigger: 'blur' }
         ]
       },
-      // 表格最大高度 header mainOuterPadding tabs mainInPadding footer serachDiv bugSet
-      tableMaxHeght: document.body.clientHeight - 40 - 20 - 40 - 72 + 13 // ===tableDiv的高度
+      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 35 - 45, // ===tableDiv的高度
+      screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
+      onresizeTimer: false // 屏幕高度变化定时器，避免频繁调用window.onresize()方法
+    }
+  },
+  watch: {
+    // 监听屏幕高度改变表格高度
+    screenHeight (val) {
+      /* 触发dom操作，考虑到函数节流，避免window.onresize()方法频繁触发
+      强调一点，window.onresize()方法频繁触发也无所谓，前提是在不操作dom的情况下 */
+      if (!this.onresizeTimer) {
+        this.tableContainerHeightSet()
+        this.onresizeTimer = true
+        const that = this
+        setTimeout(function () {
+          that.onresizeTimer = false
+        }, 400)
+      }
     }
   },
   created: function () {
     // session获取登录者关键参数
     this.param.id = sessionGetStore('managerId')
     this.backQuePaperPage()
+    // 获取纸巾分类
+    this.backpaperType()
   },
   mounted: function () {
-    var windowWidth = $(window).width()
-    $('.tableDiv').width(windowWidth - 200 - 20 - 40) // 解决表格滚动条分页益处问题
-    var windowHeight = $(window).height()
-    var mainHeight = windowHeight - 40 - 20 - 40
-    $('.productmanagePage').height(mainHeight)
-    $('.tableDiv').height(mainHeight - 72 - 26 + 13)
+    this.tableContainerHeightSet()
+    // 监听屏幕高度
+    this.screenOnresizeFun()
   },
   methods: {
-    querySearch_DevId: function (queryString, cb) {
-      var devIdlist = this.devIdlist
-      var results = queryString ? devIdlist.filter(this.createFilter_DevId(queryString)) : devIdlist
-      // 调用 callback 返回建议列表的数据
-      cb(results)
+    // 表格容器高度随窗口视口变化函数
+    tableContainerHeightSet: function () {
+      var windowHeight = $(window).height()
+      var mainHeight = windowHeight - 40 - 40 - 40
+      $('.tableDiv').height(mainHeight - 40 - 35 - 45)
+      this.tableMaxHeght = mainHeight - 40 - 35 - 45
     },
-    createFilter_DevId: function (queryString) {
-      return (devIdlist) => {
-        return (devIdlist.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+    // 监听屏幕高度
+    screenOnresizeFun: function () {
+      const that = this
+      window.onresize = () => {
+        return (() => {
+          that.screenHeight = document.body.clientHeight
+          console.log('that.screenHeight: ' + that.screenHeight)
+        })() // 不加最后()会报错，并没有立即执行,立即执行函数
       }
     },
     // 编辑产品信息按钮
@@ -337,15 +337,8 @@ export default {
     },
     // 搜索按钮
     searchBt: function () {
-      console.log(this.selection)
-      this.param.name = this.selection.name
-      if (this.selection.type === '小包纸') {
-        this.param.type = 1
-      } else if (this.selection.type === '小包纸') {
-        this.param.type = 2
-      } else {
-        this.param.type = ''
-      }
+      this.param.name = this.productName
+      this.param.type = this.selected
       this.backQuePaperPage()
     },
     handleSelectionChange: function (val) {
@@ -373,34 +366,23 @@ export default {
         this.eltotal = response.data.total
         if (response.data.records) {
           this.tableData = []
-          this.locationlist = []
-          this.devIdlist = []
           for (let i = 0; i < response.data.records.length; i++) {
             let obj = {}
-            let nameObj = {}
-            let typeObj = {}
             obj.deviceId = response.data.records[i].id
             obj.productName = response.data.records[i].name
-            nameObj.value = response.data.records[i].name
             obj.productTypeNum = response.data.records[i].type
-            obj.productType = response.data.records[i].type === 1 ? '小报纸' : '卷纸'
-            typeObj.value = obj.productType
+            obj.productType = response.data.records[i].type === 1 ? '小包纸' : '卷纸'
             obj.num = response.data.records[i].num
             obj.price = response.data.records[i].price
             this.tableData.push(obj) // 或用this.tableData[i] = obj亦可
-            this.locationlist.push(nameObj)
-            this.devIdlist.push(typeObj)
             console.log(this.tableData)
-            console.log(this.locationlist)
-            console.log(this.devIdlist)
             this.midData = this.tableData
-            // 清空搜索框内容
-            this.selection.name = ''
-            this.selection.type = ''
+            // 清空搜索框
+            this.productName = ''
+            this.selected = ''
           }
         } else {
           this.tableData = []
-          this.locationlist = []
           this.devIdlist = []
         }
       }.bind(this))
@@ -413,6 +395,8 @@ export default {
       sessionSetStore('backName', '新增纸巾')
       back.addPaper(this.param).then(function (response) {
         console.log(response)
+        this.param.name = ''
+        this.param.type = ''
         this.backQuePaperPage()
       }.bind(this))
         .catch(function (error) {
@@ -424,6 +408,8 @@ export default {
       sessionSetStore('backName', '修改纸巾')
       back.updatePaper(this.param).then(function (response) {
         console.log(response)
+        this.param.name = ''
+        this.param.type = ''
         this.backQuePaperPage()
       }.bind(this))
         .catch(function (error) {
@@ -459,6 +445,27 @@ export default {
       back.delPaper(this.param).then(function (response) {
         console.log(response)
         this.backQuePaperPage()
+      }.bind(this))
+        .catch(function (error) {
+          console.log(error)
+        })
+    },
+    // 获取纸巾分类
+    backpaperType: function () {
+      this.param.name = ''
+      sessionSetStore('backName', '获取纸巾分类')
+      back.paperType(this.param).then(function (response) {
+        console.log(response)
+        if (response.code === 0) {
+          for (var i = 0; i < response.data.length; i++) {
+            let obj = {}
+            obj.value = response.data[i].id
+            obj.label = response.data[i].name
+            this.options.push(obj)
+            this.option.push(obj)
+            console.log(this.options)
+          }
+        }
       }.bind(this))
         .catch(function (error) {
           console.log(error)
@@ -504,10 +511,6 @@ export default {
 </script>
 
 <style scoped>
-.productmanagePage {
-  padding: 20px;
-  background-color: white;
-}
 .box {
   display: -webkit-flex; /* Safari */
   display: flex;

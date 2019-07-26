@@ -234,7 +234,23 @@ export default {
         xdata: ['江泰国际广场1楼', '江泰国际广场2楼', '江泰国际广场3楼', '江泰国际广场4楼', '江泰国际广场5楼', '丽水金汇广场1楼', '丽水金汇广场2楼', '丽水金汇广场3楼', '丽水金汇广场4楼', '丽水金汇广场5楼'],
         ydata: [36, 25, 24, 22, 20, 20, 18, 16, 15, 12]
       },
-      paperStatisListResult: []
+      paperStatisListResult: [],
+      screenHeight: document.body.clientHeight // 监听变化辅助用，一定要设初始值
+    }
+  },
+  watch: {
+    // 监听屏幕高度改变表格高度
+    screenHeight (val) {
+      /* 触发dom操作，考虑到函数节流，避免window.onresize()方法频繁触发
+      强调一点，window.onresize()方法频繁触发也无所谓，前提是在不操作dom的情况下 */
+      if (!this.onresizeTimer) {
+        this.chartsInit()
+        this.onresizeTimer = true
+        const that = this
+        setTimeout(function () {
+          that.onresizeTimer = false
+        }, 0)
+      }
     }
   },
   created: function () {
@@ -242,39 +258,43 @@ export default {
     this.backQueConsoleStatis()
   },
   mounted: function () {
-    var windowHeight = $(window).height()
-    var mainHeight = windowHeight - 40 - 20 - 40
-    $('.overviewPage').height(mainHeight)
-    $('.left').height(mainHeight)
-    $('.right').height(mainHeight)
     // 柱状图 折线图高宽自适应
     this.chartsInit()
+    // 监听屏幕高度
+    this.screenOnresizeFun()
   },
   // 注销window.onresize事件
   destroyed () {
     window.onresize = null
   },
   methods: {
+    // 表格容器高度随窗口视口变化函数
+    tableContainerHeightSet: function () {
+      var windowHeight = $(window).height()
+      var mainHeight = windowHeight - 40 - 60 - 40
+      $('.overviewPage').height(mainHeight - 20)
+      $('.left').height(mainHeight - 20)
+      $('.right').height(mainHeight - 20)
+    },
     // 柱状图 折线图高宽自适应
     chartsInit: function () {
       // 1.页面刷新调整高宽
       let barChartBox = document.getElementById('diagram_left')
       let lineChartBox = document.getElementById('diagram_right')
       let resizeBoxFun = function (boxName) {
-        boxName.style.height = document.body.clientHeight * 0.5 + 'px'
+        boxName.style.height = ($(window).height() - 40) * 0.75 * 0.7 + 'px'
       }
       resizeBoxFun(barChartBox)
       resizeBoxFun(lineChartBox)
-      // 2.页面缩放调整高宽
-      // let barChartInstance = echarts.init(barChartBox)
-      // let lineChartInstance = echarts.init(lineChartBox)
-      // window.onresize = function () {
-      //   alert('resize') // 为啥执行了两次呢？
-      //   resizeBoxFun(barChartBox)
-      //   resizeBoxFun(lineChartBox)
-      //   barChartInstance.resize()
-      //   lineChartInstance.resize()
-      // }
+    },
+    // 监听屏幕高度
+    screenOnresizeFun: function () {
+      const that = this
+      window.onresize = () => {
+        return (() => {
+          that.screenHeight = document.body.clientHeight
+        })()
+      }
     },
     fullscreen: function () {
       this.ismask = true
@@ -341,8 +361,6 @@ export default {
     },
     // 加载图表 饼图
     loadIncomePie: function (id) {
-      console.log('aaaaaaaaaaaaa')
-      console.log(this.topData)
       var diagramContainer = document.getElementById(id)
       var incomePie = echarts.init(diagramContainer)
       var option = {
@@ -353,7 +371,7 @@ export default {
           y: 'center',
           top: '40%',
           textStyle: {
-            fontSize: 16,
+            fontSize: 13,
             fontWeight: 700
           },
           subtextStyle: {
@@ -376,6 +394,7 @@ export default {
           name: '收益分布',
           type: 'pie',
           radius: ['90%', '75%'],
+          center: ['50%', '50%'],
           data: [{
             value: this.topData.onlineIncome, name: '在线支付'
           }, {
@@ -437,10 +456,10 @@ export default {
       }
       // 使用刚指定的配置项和数据显示图表。
       myChart.setOption(option, true)
-      // window.onresize = function () {
-      //   console.log('chartresize')
-      //   myChart.resize()
-      // }
+      window.onresize = function () {
+        console.log('chartresize')
+        myChart.resize()
+      }
     },
     // 折线图图例
     legend: function (value) {
@@ -539,10 +558,10 @@ export default {
       }
       // 使用刚指定的配置项和数据显示图表。
       myChartBar.setOption(option, true)
-      // window.onresize = function () {
-      //   console.log('chartresize bar')
-      //   myChartBar.resize()
-      // }
+      window.onresize = function () {
+        console.log('chartresize bar')
+        myChartBar.resize()
+      }
     },
     // 加载图表 饼图 右下角
     loadIncomePie_right: function () {
@@ -740,9 +759,9 @@ export default {
 
 <style scoped>
 .overviewPage {
-  min-width: 1200px;
+  max-width: 100%;
   height: 100%;
-  padding: 20px;
+  /* padding: 20px; */
   background-color: white;
   display: -webkit-flex;
   display: flex;
@@ -753,7 +772,7 @@ export default {
 .left {
   width:62.5%;
   min-width: 600px;
-  height: 800px;
+  height: 100%;
   box-sizing: border-box;
   /* padding/margin效果都一样,因为box-sizing: border-box; */
   padding-right: 15px;
@@ -762,14 +781,14 @@ export default {
   border: 1px solid #eee;
   border-radius: 10px;
   width: 100%;
-  height: 25%;
-  margin-bottom: 15px;
+  height: 23%;
+  margin-bottom: 2%;
   display: -webkit-flex;
   display: flex;
   flex-wrap: nowrap;
 }
 .left_top_left {
-  margin-left: 5vw;
+  margin-left: 2.5vw;
   position: relative;
   width: 70%;
   height: 100%;
@@ -780,24 +799,23 @@ export default {
   cursor: pointer;
 }
 #incomePie {
-  width: 155px;
+  width: 30%;
   height: 95%;
-  margin: 0 20px 0 20px;
   cursor: pointer!important;
 }
 .incomePieTable {
   color:#606266;
   letter-spacing:3px;
-  width: 480px;
+  width: 69%;
   height: 95%;
-  margin: 30px 0 0 3vw;
+  margin: 9% 0 0 6%;
 }
 .incomePieTable tr th {
   /* padding: 0 20px 20px 20px; */
-  padding: 0 1vw 1vw 1vw;
+  padding: 0 0.1vw 1vh 0.1vw;
 }
 .incomePieTable tr td {
-  padding: 0 1vw 1vw 1vw;
+  padding: 0 1vw 1vh 1vw;
 }
 .tdDiv {
   display: -webkit-flex;
@@ -811,7 +829,7 @@ export default {
   min-width: 140px;
 }
 .left_top_right .title, .right_top_left .title{
-  margin: 4vh 0;
+  margin: 3vh 0;
 }
 .general {
   display: -webkit-flex;
@@ -829,7 +847,7 @@ export default {
   border-radius: 10px;
   border: 1px solid #eee;
   width: 100%;
-  height: 75%;
+  height: 70%;
 }
 .left_bottom >>> .el-button {
   margin: 0 10px;
@@ -846,14 +864,14 @@ export default {
 .right {
   width: 37.5%;
   min-width:530px;
-  height: 200px;
+  height: 100%;
 }
 .right_top {
   border: 1px solid #eee;
   border-radius: 10px;
   width: 100%;
-  height: 25%;
-  margin-bottom: 15px;
+  height: 23%;
+  margin-bottom: 2%;
   display: -webkit-flex;
   display: flex;
   flex-wrap: nowrap;
@@ -867,10 +885,10 @@ export default {
 .right_top_right {
   width: 70%;
   height: 100%;
-  padding: 3vh 1vw 0 1vw;
+  padding: 2.2vh 1vw 0 1vw;
 }
 .right_top_right_div {
-  margin-bottom: 2.2vh;
+  margin-bottom: 1.5vh;
   display: -webkit-flex;
   display: flex;
   flex-wrap: nowrap;
@@ -901,8 +919,8 @@ export default {
 .right_bottom {
   border-radius: 10px;
   border: 1px solid #eee;
-  width: 100%;
-  height: 75%;
+  /* width: 100%; */
+  height: 70%;
 }
 #diagram_right {
   padding-top: 10px;

@@ -385,6 +385,43 @@ export const back = {
         return Promise.reject(error)
       })
   },
+  // 远程启动
+  devStartup (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/device/startup?id=${param.id}&siteId=${param.siteId}&paperId=${param.paperId}&type=${param.type}&num=${param.num}`,
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+        'managerId': param.managerId
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // 设备远程启动记录分页查询
+  devStartupPage (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/device/pageStart?pageNo=${param.pageNo}&pageSize=${param.pageSize}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
   // 库存告警分页查询
   stockAlarm (param) {
     return axios({
@@ -425,6 +462,120 @@ export const back = {
         return Promise.reject(error)
       })
   },
+  /*   
+  ***********纸巾分类模块*********
+  */
+  // 纸巾分类查询
+  paperType (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/paperType/list?name=${param.name}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // 纸巾分类分页查询
+  paperTypePage (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/paperType/page?name=${param.name}&pageNo=${param.pageNo}&pageSize=${param.pageSize}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // 新增纸巾分类
+  addPaperType (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/paperType/add`,
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+        name: param.name
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // 修改纸巾分类
+  changePaperType (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/paperType/update`,
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+        name: param.name,
+        id: param.id
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // 查询纸巾分类详情
+  paperTypeDetail (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/paperType/show?id=${param.id}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // 删除纸巾分类
+  delPaperType (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/paperType/delete?id=${param.id}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
   /*
   ********* 4 纸巾模块 *********
   */
@@ -447,8 +598,27 @@ export const back = {
         return Promise.reject(error)
       })
   },
+  // 4.1.1 纸巾分页查询
+  PaperPage (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/paper/page?pageNo=${param.pageNo}&pageSize=${param.pageSize}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        'managerId': param.managerId
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
   // 4.2 纸巾查询
-  // quePaperList (param) {
+  // quePaperList () {
   //   return axios({
   //     url: `${url.backbasurl}/api/v1/paper/lsit`,
   //     method: 'get',
@@ -799,6 +969,25 @@ export const back = {
       })
   },
   // 7.3 交易统计
+  tradeStatis (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/statis/transaction?pageNo=${param.currentPage}&pageSize=${param.pagesize}&type=${param.type}&queryType=${param.queryType}&beginDate=${param.beginDate}&endDate=${param.endDate}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        managerId: param.managerId,
+        roleId: param.roleId
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
   // 7.3 设备统计
   queDeviceStatis (param) {
     return axios({
@@ -828,6 +1017,244 @@ export const back = {
         'Content-Type': 'application/json',
         managerId: param.managerId,
         roleId: param.roleId
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  /*
+  ********* x 角色模块 *********
+  */
+  // x.1 角色分页查询
+  queRolePage (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/role/page?pageNo=${param.currentPage}&pageSize=${param.pagesize}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // x.1.1 角色查询
+  queRoleList (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/role/list`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // x.2 新增角色
+  addRole (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/role/add`,
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+        name: param.name,
+        menuIds: param.menuIds
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // x.3 修改角色
+  updateRole (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/role/update`,
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+        id: param.id,
+        name: param.name,
+        menuIds: param.menuIds
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // x.4 查看角色详情
+  queRoleInfo (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/role/show?id=${param.id}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // x.5 删除角色
+  delRole (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/role/delete?id=${param.id}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // x.6 菜单查询
+  queMenuList (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/menu/list`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  /*
+  ********* xx 子账号模块 *********
+  */
+  // xx.1 子账号分页查询
+  queChildAccountPage (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/manager/pageSub?pageNo=${param.currentPage}&pageSize=${param.pagesize}&username=${param.username}&nickname=${param.nickname}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // xx.2 新增子账号
+  addChildAccount (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/manager/addSub`,
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+        username: param.username,
+        nickname: param.nickname,
+        password: param.password,
+        roleType: param.roleType,
+        siteIds: param.siteIds
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // x.3 修改子账号
+  updateChildAccount (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/manager/updateSub`,
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+        id: param.id,
+        username: param.username,
+        nickname: param.nickname,
+        password: param.password,
+        roleType: param.roleType,
+        siteIds: param.siteIds
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // x.4 查看子账号详情
+  queChildAccountInfo (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/manager/showSub?id=${param.id}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // x.5 删除子账号
+  delChildAccount (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/manager/deleteSub?id=${param.id}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
       },
       data: {
       }
