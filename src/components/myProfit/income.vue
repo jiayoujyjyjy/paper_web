@@ -32,7 +32,6 @@
 import { back } from 'api'
 import Routers from '@/router'
 import { sessionGetStore, sessionSetStore } from '@/components/config/Utils'
-import $ from 'jquery'
 export default {
   data () {
     return {

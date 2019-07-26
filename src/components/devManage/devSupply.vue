@@ -254,8 +254,9 @@ export default {
     },
     // 跳转到备货单列表
     toStockup: function () {
-      this.shortage = false
-      this.stockup = true
+      // this.shortage = false
+      // this.stockup = true
+      this.$message.error('该功能待开发！')
     },
     // 根据条件查找设备
     searchDev: function () {

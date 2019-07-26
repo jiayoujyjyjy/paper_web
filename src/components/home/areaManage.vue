@@ -10,14 +10,14 @@
       <el-button type="primary" size="small" @click="searchBt">搜索</el-button>
       <el-button type="primary" size="small" @click="addBt">添加场地</el-button>
     </div>
-    <div class="tableDiv">
+    <div class="tableDiv" style="margin-top: 20px;">
       <el-table
         :header-cell-style="{'font-size':'12px'}"
         :data="tableData"
         stripe
         border
         :max-height="tableMaxHeght"
-        style="margin-top: 2%;font-size:12px;">
+        style="font-size:12px;">
         <el-table-column
           align="center"
           prop="id"
@@ -189,7 +189,7 @@ export default {
         name: '',
         address: ''
       },
-      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 25 - 53, // ===tableDiv的高度
+      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 27 - 53, // ===tableDiv的高度
       screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
       onresizeTimer: false // 屏幕高度变化定时器，避免频繁调用window.onresize()方法
     }
@@ -226,8 +226,8 @@ export default {
     tableContainerHeightSet: function () {
       var windowHeight = $(window).height()
       var mainHeight = windowHeight - 40 - 40 - 40
-      $('.tableDiv').height(mainHeight - 40 - 24 - 53)
-      this.tableMaxHeght = mainHeight - 40 - 24 - 53
+      $('.tableDiv').height(mainHeight - 40 - 27 - 53)
+      this.tableMaxHeght = mainHeight - 40 - 27 - 53
     },
     // 监听屏幕高度
     screenOnresizeFun: function () {

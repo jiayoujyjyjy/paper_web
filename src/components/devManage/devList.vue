@@ -254,7 +254,12 @@ export default {
       // 表格数据
       tableData: [],
       unbindId: '',
-      selectData: [], // 下拉选择框
+      selectData: [
+        {
+          value: '',
+          label: '全部'
+        }
+      ], // 下拉选择框
       selected: '',
       transferform: {
         deviceId: '139761',
@@ -272,7 +277,7 @@ export default {
         group: '',
         msg: ''
       },
-      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 42 - 53, // ===tableDiv的高度
+      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 40 - 62, // ===tableDiv的高度
       screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
       onresizeTimer: false // 屏幕高度变化定时器，避免频繁调用window.onresize()方法
     }
@@ -317,8 +322,8 @@ export default {
     tableContainerHeightSet: function () {
       var windowHeight = $(window).height()
       var mainHeight = windowHeight - 40 - 40 - 40
-      $('.tableDiv').height(mainHeight - 40 - 42 - 53)
-      this.tableMaxHeght = mainHeight - 40 - 42 - 53
+      $('.tableDiv').height(mainHeight - 40 - 40 - 62)
+      this.tableMaxHeght = mainHeight - 40 - 40 - 62
     },
     // 监听屏幕高度
     screenOnresizeFun: function () {

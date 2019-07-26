@@ -14,42 +14,20 @@
         stripe
         border
         :max-height="tableMaxHeght"
-        style="margin-top: 20px; font-size:12px;"
-        @selection-change="handleSelectionChange">
+        style="margin-top: 20px; font-size:12px;">
         <el-table-column
           align="center"
-          prop="deviceId"
-          label="产品编码"
-          min-width="10%">
+          prop="id"
+          label="纸巾分类编码">
         </el-table-column>
         <el-table-column
           align="center"
-          prop="productName"
-          label="产品名称"
-          min-width="20%">
+          prop="name"
+          label="纸巾分类名称">
         </el-table-column>
         <el-table-column
           align="center"
-          prop="productType"
-          label="产品类型"
-          min-width="20%">
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="price"
-          label="单价"
-          min-width="10%">
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="num"
-          label="库存"
-          min-width="10%">
-        </el-table-column>
-        <el-table-column
-          label="操作"
-          align="center"
-          min-width="20%">
+          label="操作">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="editBt(scope.$index, scope.row)">编辑</el-button>
             <span style="margin: auto 10%">|</span>
@@ -73,33 +51,18 @@
       :visible.sync="dialogEditVisible"
       width="20%"
       center>
-      <el-form :model="editform" label-width="100px" :rules="rulesLogin" ref="editform">
-        <el-form-item label="产品编码" v-show="isProductIdShowDia">
-          <el-input v-model="editform.deviceId" :disabled="isedit"></el-input>
+      <el-form :model="editform" label-width="100px">
+        <el-form-item label="纸巾分类编码" v-show="isProductIdShowDia">
+          <el-input v-model="editform.id" :disabled="isedit"></el-input>
         </el-form-item>
-        <el-form-item label="产品名称" prop="productName">
-          <el-input v-model="editform.productName" placeholder="请填写产品名称"></el-input>
-        </el-form-item>
-        <el-form-item label="产品类型" prop="productType">
-          <el-select v-model="editform.productType" placeholder="请选择产品类型">
-            <el-option v-for="item in option"
-              :key="item.id"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="产品库存" prop="num">
-          <el-input v-model="editform.num" placeholder="请填写产品库存"></el-input>
-        </el-form-item>
-        <el-form-item label="产品单价" prop="price">
-          <el-input v-model="editform.price" placeholder="请填写产品单价"></el-input>
+        <el-form-item label="纸巾分类名称" prop="productName">
+          <el-input v-model="editform.name" placeholder="请填写纸巾分类名称"></el-input>
         </el-form-item>
       </el-form>
 
       <span slot="footer">
         <el-button @click="dialogEditVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editConfirm('editform')">确 定</el-button>
+        <el-button type="primary" @click="editConfirm">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -112,54 +75,13 @@ import { sessionGetStore, sessionSetStore } from '@/components/config/Utils'
 import $ from 'jquery'
 export default {
   data () {
-    // 校验产品名
-    var checkProductName = (rule, value, callback) => {
-      if (value === '') {
-        return callback(new Error('产品名称不能为空'))
-      } else if (value.length > 20) {
-        callback(new Error('产品名称长度不超过20位'))
-      } else {
-        callback()
-      }
-    }
-    // 校验库存
-    var checkStock = (rule, value, callback) => {
-      let numReg = /^[0-9]*$/
-      if (value === '') {
-        return callback(new Error('库存不能为空'))
-      } else if (!numReg.test(value)) {
-        callback(new Error('库存只能为数字'))
-      } else {
-        callback()
-      }
-    }
-    // 校验价格
-    var checkPrice = (rule, value, callback) => {
-      let numReg = /^[0-9]*$/
-      if (value === '') {
-        callback(new Error('单价不能为空'))
-      } else if (!numReg.test(value)) {
-        callback(new Error('单价只能为数字'))
-      } else {
-        callback()
-      }
-    }
-    // 校验产品类型
-    var checkProductType = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('产品类型不能为空'))
-      } else {
-        callback()
-      }
-    }
     return {
       param: {
         'currentPage': 1,
         'pagesize': 8,
         'currentPage_DiaDev': 1,
         'pagesize_DiaDev': 8,
-        name: '',
-        type: ''
+        name: ''
       },
       currentPage: 1,
       pagesize: 10,
@@ -170,39 +92,13 @@ export default {
       multipleSelection: [],
       isedit: false,
       productName: '',
-      options: [
-        {
-          value: '',
-          label: '全部'
-        }
-      ],  // 用于搜索,要显示'全部'
-      option: [], // 编辑时,不能出现'全部'
-      selected: '全部',
       editform: {
-        deviceId: '139761',
-        productName: '纸巾',
-        productType: '抽纸',
-        num: '10', // 没有预置项则表单不能同步显示，大坑啊,而且要注意字符数字格式转化
-        price: '100'
+        id: '139761',
+        name: '纸巾'
       },
       isProductIdShowDia: false,
       tableData: [],
-      // 表单校验
-      rulesLogin: {
-        productName: [
-          { required: true, validator: checkProductName, trigger: 'blur' }
-        ],
-        productType: [
-          { required: true, validator: checkProductType, trigger: 'blur' }
-        ],
-        num: [
-          { required: true, validator: checkStock, trigger: 'blur' }
-        ],
-        price: [
-          { required: true, validator: checkPrice, trigger: 'blur' }
-        ]
-      },
-      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 27 - 45, // ===tableDiv的高度
+      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 35 - 45, // ===tableDiv的高度
       screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
       onresizeTimer: false // 屏幕高度变化定时器，避免频繁调用window.onresize()方法
     }
@@ -225,9 +121,7 @@ export default {
   created: function () {
     // session获取登录者关键参数
     this.param.id = sessionGetStore('managerId')
-    this.backQuePaperPage()
-    // 获取纸巾分类
-    this.backpaperType()
+    this.backPaperTypePage()
   },
   mounted: function () {
     this.tableContainerHeightSet()
@@ -239,8 +133,8 @@ export default {
     tableContainerHeightSet: function () {
       var windowHeight = $(window).height()
       var mainHeight = windowHeight - 40 - 40 - 40
-      $('.tableDiv').height(mainHeight - 40 - 27 - 45)
-      this.tableMaxHeght = mainHeight - 40 - 27 - 45
+      $('.tableDiv').height(mainHeight - 40 - 35 - 45)
+      this.tableMaxHeght = mainHeight - 40 - 35 - 45
     },
     // 监听屏幕高度
     screenOnresizeFun: function () {
@@ -259,8 +153,8 @@ export default {
       this.isEditOrAdd = 0
       this.isProductIdShowDia = true
       this.isedit = true
-      this.param.id = row.deviceId
-      this.backQuePaperInfo()
+      this.param.id = row.id
+      this.backPaperTypeDetail()
       this.dialogEditVisible = true
     },
     // 新增产品按钮
@@ -270,47 +164,22 @@ export default {
       this.isEditOrAdd = 1
       this.isProductIdShowDia = false
       this.isedit = false
-      // // 这种对象初始化方式不够灵活
-      // this.editform = {
-      //   deviceId: '',
-      //   productName: '',
-      //   productType: ''
-      // }
-      this.editform.deviceId = ''
-      this.editform.productName = ''
-      this.editform.productType = ''
-      this.editform.num = ''
-      this.editform.price = ''
+      this.editform.id = ''
+      this.editform.name = ''
       this.dialogEditVisible = true
     },
     // 对话框修改确认
     editConfirm: function (formName) {
-      console.log(formName)
-      console.log(this.$refs[formName])
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          console.log('正确提交')
-          console.log(this.editform)
-          this.param.id = this.editform.deviceId
-          this.param.name = this.editform.productName
-          this.param.type = Number(this.editform.productType)
-          this.param.num = Number(this.editform.num)
-          this.param.price = Number(this.editform.price)
-          if (this.isEditOrAdd === 0) {
-            this.backUpdatePaper()
-          } else {
-            // 表单验证
-            this.backAddPaper()
-          }
-          this.dialogEditVisible = false
-        } else {
-          console.log('错误提交')
-        }
-      })
-    },
-    // 查看操作记录，库存增减记录
-    showRecordBt: function () {
-      console.log('查看操作记录')
+      if (this.isEditOrAdd === 0) {
+        this.param.id = this.editform.id
+        this.param.name = this.editform.name
+        this.backChangePaperType()
+      } else {
+        this.param.id = this.editform.id
+        // 表单验证
+        this.backAddPaperType()
+      }
+      this.dialogEditVisible = false
     },
     // 删除产品对话框
     delBt: function (index, row) {
@@ -321,20 +190,15 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.param.id = row.deviceId
-        this.backdelPaper()
+        this.param.id = row.id
+        this.backDelPaperType()
       }).catch(() => {
       })
     },
     // 搜索按钮
     searchBt: function () {
       this.param.name = this.productName
-      this.param.type = this.selected
-      this.backQuePaperPage()
-    },
-    handleSelectionChange: function (val) {
-      this.multipleSelection = val
-      console.log(this.multipleSelection)
+      this.backPaperTypePage()
     },
     // 每次切换页码之前清空table数据
     handlePaginationChange: function (value) {
@@ -342,39 +206,34 @@ export default {
       this.param.currentPage = value
       // 分页查询请求可选项置空函数
       this.pageQueSelInit()
-      this.backQuePaperPage()
+      this.backPaperTypePage()
     },
     /*
       *
       *******************   API调用   *********************
       *
     */
-    // 纸巾分页查询
-    backQuePaperPage: function () {
-      sessionSetStore('backName', '纸巾分页查询')
-      back.quePaperPage(this.param).then(function (response) {
+    // 纸巾分类分页查询
+    backPaperTypePage: function () {
+      sessionSetStore('backName', '纸巾分类分页查询')
+      this.param.pageNo = this.param.currentPage
+      this.param.pageSize = this.pagesize
+      back.paperTypePage(this.param).then(function (response) {
         console.log(response)
         this.eltotal = response.data.total
         if (response.data.records) {
           this.tableData = []
           for (let i = 0; i < response.data.records.length; i++) {
             let obj = {}
-            obj.deviceId = response.data.records[i].id
-            obj.productName = response.data.records[i].name
-            obj.productTypeNum = response.data.records[i].type
-            obj.productType = response.data.records[i].type === 1 ? '小包纸' : '卷纸'
-            obj.num = response.data.records[i].num
-            obj.price = response.data.records[i].price
+            obj.id = response.data.records[i].id
+            obj.name = response.data.records[i].name
             this.tableData.push(obj) // 或用this.tableData[i] = obj亦可
             console.log(this.tableData)
-            this.midData = this.tableData
             // 清空搜索框
             this.productName = ''
-            this.selected = ''
           }
         } else {
           this.tableData = []
-          this.devIdlist = []
         }
       }.bind(this))
         .catch(function (error) {
@@ -382,44 +241,40 @@ export default {
         })
     },
     // 新增纸巾
-    backAddPaper: function () {
+    backAddPaperType: function () {
       sessionSetStore('backName', '新增纸巾')
-      back.addPaper(this.param).then(function (response) {
+      back.addPaperType(this.param).then(function (response) {
         console.log(response)
         this.param.name = ''
         this.param.type = ''
-        this.backQuePaperPage()
+        this.backPaperTypePage()
       }.bind(this))
         .catch(function (error) {
           console.log(error)
         })
     },
-    // 修改纸巾
-    backUpdatePaper: function () {
+    // 编辑纸巾分类
+    backChangePaperType: function () {
       sessionSetStore('backName', '修改纸巾')
-      back.updatePaper(this.param).then(function (response) {
+      back.changePaperType(this.param).then(function (response) {
         console.log(response)
         this.param.name = ''
-        this.param.type = ''
-        this.backQuePaperPage()
+        this.backPaperTypePage()
       }.bind(this))
         .catch(function (error) {
           console.log(error)
         })
     },
-    // 查看纸巾详情
-    backQuePaperInfo: function () {
+    // 查看纸巾分类详情
+    backPaperTypeDetail: function () {
       return new Promise(function (resolve, reject) {
         sessionSetStore('backName', '查看纸巾详情')
-        back.quePaperInfo(this.param).then(function (response) {
+        back.paperTypeDetail(this.param).then(function (response) {
           console.log(response)
           let obj = {}
           if (response.data !== undefined) {
-            obj.deviceId = response.data.id
-            obj.productName = response.data.name
-            obj.productType = response.data.type
-            obj.num = response.data.num
-            obj.price = response.data.price
+            obj.id = response.data.id
+            obj.name = response.data.name
           }
           this.editform = obj
           resolve()
@@ -430,12 +285,12 @@ export default {
           })
       }.bind(this))
     },
-    // 删除纸巾
-    backdelPaper: function () {
+    // 删除纸巾分类
+    backDelPaperType: function () {
       sessionSetStore('backName', '删除纸巾')
-      back.delPaper(this.param).then(function (response) {
+      back.delPaperType(this.param).then(function (response) {
         console.log(response)
-        this.backQuePaperPage()
+        this.backPaperTypePage()
       }.bind(this))
         .catch(function (error) {
           console.log(error)
@@ -478,16 +333,8 @@ export default {
     */
     // 分页查询请求可选项置空函数
     pageQueSelInit: function () {
-      this.param.devId = ''
-      this.param.operationType = '2'
-      this.param.deviceId = ''
-      this.param.siteId = ''
-      this.param.managerId = ''
-      this.param.userId = ''
-      this.param.state = ''
-      this.param.site = ''
       this.param.id = ''
-      this.param.paperId = ''
+      this.param.name = ''
     },
     // 可关闭式通知提示，titlePara为标题，messagePara为通知内容
     notificationInfo: function (titlePara, messagePara) {

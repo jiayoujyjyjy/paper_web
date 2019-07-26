@@ -21,7 +21,7 @@
         <el-table-column align="center" prop="name" :label="nameType"></el-table-column>
         <el-table-column align="center" prop="totalIncome" label="总交易额"></el-table-column>
         <el-table-column align="center" prop="orderNum" label="交易笔数"></el-table-column>
-        <el-table-column align="center" prop="averageIncome" label="平均交易数"></el-table-column>
+        <el-table-column align="center" prop="averageIncome" label="平均交易额"></el-table-column>
       </el-table>
     </div>
     <el-pagination

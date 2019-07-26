@@ -504,8 +504,47 @@ export const back = {
   // 新增纸巾分类
   addPaperType (param) {
     return axios({
-      url: `${url.backbasurl}/api/v1/paperType/add?name=${param.name}`,
+      url: `${url.backbasurl}/api/v1/paperType/add`,
       method: 'post',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+        name: param.name
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // 修改纸巾分类
+  changePaperType (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/paperType/update`,
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+        name: param.name,
+        id: param.id
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // 查询纸巾分类详情
+  paperTypeDetail (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/paperType/show?id=${param.id}`,
+      method: 'get',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -519,24 +558,24 @@ export const back = {
         return Promise.reject(error)
       })
   },
-  // // 修改纸巾分类
-  // changePaperType (param) {
-  //   return axios({
-  //     url: `${url.backbasurl}/api/v1/paperType/update?name=${param.name}&id=`,
-  //     method: 'get',
-  //     headers: {
-  //       'Content-Type': 'application/json'
-  //     },
-  //     data: {
-  //     }
-  //   })
-  //     .then((response) => {
-  //       return response.data
-  //     })
-  //     .catch((error) => {
-  //       return Promise.reject(error)
-  //     })
-  // },
+  // 删除纸巾分类
+  delPaperType (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/paperType/delete?id=${param.id}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
   /*
   ********* 4 纸巾模块 *********
   */
@@ -559,8 +598,27 @@ export const back = {
         return Promise.reject(error)
       })
   },
+  // 4.1.1 纸巾分页查询
+  PaperPage (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/paper/page?pageNo=${param.pageNo}&pageSize=${param.pageSize}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        'managerId': param.managerId
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
   // 4.2 纸巾查询
-  // quePaperList (param) {
+  // quePaperList () {
   //   return axios({
   //     url: `${url.backbasurl}/api/v1/paper/lsit`,
   //     method: 'get',
