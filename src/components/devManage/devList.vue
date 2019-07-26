@@ -62,12 +62,12 @@
           align="center"
           prop="site"
           label="场地"
-          min-width="30%">
+          min-width="20%">
         </el-table-column>
         <el-table-column
           label="操作"
           align="center"
-          min-width="10%">
+          min-width="15%">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="editBt(scope.$index, scope.row)">编辑</el-button>
             <span style="margin: auto 10%">|</span>

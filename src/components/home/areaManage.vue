@@ -21,13 +21,27 @@
         <el-table-column
           align="center"
           prop="id"
-          label="场地编码"
-          min-width="100%">
+          label="场地编码">
         </el-table-column>
         <el-table-column
           align="center"
           prop="name"
           label="场地名称">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="province"
+          label="省份">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="city"
+          label="地市">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="address"
+          label="区县">
         </el-table-column>
         <el-table-column
           align="center"
@@ -69,7 +83,7 @@
       :title="dialogTitle"
       :visible.sync="dialogEditVisible"
       :before-close="handleClose"
-      width="25%"
+      width="40%"
       center>
       <!-- 当点击详情时，:disabled=true；其他为false (true为禁用）-->
       <el-form :model="detailForm" label-width="100px">
@@ -79,7 +93,10 @@
         <el-form-item label="场地名称">
           <el-input v-model="detailForm.name" placeholder="请填写场地名称" :disabled="unchange"></el-input>
         </el-form-item>
-        <el-form-item label="省份">
+        <el-form-item label="地区">
+        <v-distpicker :province="select.province" :city="select.city" :area="select.area" @selected="onSelected"></v-distpicker>
+        </el-form-item>
+        <!-- <el-form-item label="省份">
           <el-input v-model="detailForm.province" placeholder="请填写省份" :disabled="unchange"></el-input>
         </el-form-item>
         <el-form-item label="城市">
@@ -87,7 +104,7 @@
         </el-form-item>
         <el-form-item label="地区">
           <el-input v-model="detailForm.area" placeholder="请填写地区" :disabled="unchange"></el-input>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="详细地址">
           <el-input v-model="detailForm.address" placeholder="请填写详细地址" :disabled="unchange"></el-input>
         </el-form-item>
@@ -141,11 +158,16 @@
 </template>
 
 <script>
+// 引入第三方插件
+import VDistpicker from 'v-distpicker'
 import { back } from 'api'
 import { sessionGetStore, sessionSetStore } from '@/components/config/Utils'
 import $ from 'jquery'
 export default {
   name: 'areaManagePage',
+  components: {
+    VDistpicker
+  },
   data () {
     return {
       param: {
@@ -153,6 +175,11 @@ export default {
         'pagesize': 8,
         'currentPage_DiaDev': 1,
         'pagesize_DiaDev': 8
+      },
+      select: {
+        province: '浙江省',
+        city: '杭州市',
+        area: '江干区'
       },
       // midData: [],
       editShow: false,
@@ -239,6 +266,12 @@ export default {
         })() // 不加最后()会报错，并没有立即执行,立即执行函数
       }
     },
+    // 选择省市区
+    onSelected: function (data) {
+      this.select.province = data.province.value
+      this.select.city = data.city.value
+      this.select.area = data.area.value
+    },
     // 弹窗取消按钮
     handleClose: function () {
       this.dialogEditVisible = false
@@ -271,12 +304,13 @@ export default {
         this.detailForm.name === '' ||
         this.detailForm.address === '' ||
         this.detailForm.isDefault === '' ||
-        this.detailForm.province === '' ||
-        this.detailForm.city === '' ||
-        this.detailForm.area === '' ||
+        this.select.province === '' ||
+        this.select.city === '' ||
+        this.select.area === '' ||
         this.detailForm.type === '') {
         this.notificationInfo('错误！', '所有项目必须填完！')        
       } else {
+        console.log(this.select)
         this.addShow = false
         this.dialogEditVisible = false
         this.backAddArea()
@@ -298,6 +332,7 @@ export default {
       this.deleId = this.tableData[index].id
       this.dialogTitle = '修改场地'
       this.dialogEditVisible = true
+      this.unchange = false
       this.editShow = true
       this.backShowArea()
     },
@@ -309,9 +344,9 @@ export default {
         this.detailForm.name === '' ||
         this.detailForm.address === '' ||
         this.detailForm.isDefault === '' ||
-        this.detailForm.province === '' ||
-        this.detailForm.city === '' ||
-        this.detailForm.area === '' ||
+        this.select.province === '' ||
+        this.select.city === '' ||
+        this.select.area === '' ||
         this.detailForm.type === '') {
         this.notificationInfo('错误！', '所有项目必须填完！')        
       } else {
@@ -374,6 +409,9 @@ export default {
             obj.address = response.data.records[i].address
             obj.isDefault = response.data.records[i].isDefault === 1 ? '是' : '否'
             obj.deviceNum = response.data.records[i].deviceNum
+            obj.province = response.data.records[i].province
+            obj.city = response.data.records[i].city
+            obj.area = response.data.records[i].area
             this.tableData.push(obj) // 或用this.tableData[i] = obj亦可
             console.log(this.tableData)
             // 中间变量midData：用于搜索
@@ -415,9 +453,9 @@ export default {
         name: this.detailForm.name,
         address: this.detailForm.address,
         isDefault: this.detailForm.isDefault,
-        province: this.detailForm.province,
-        city: this.detailForm.city,
-        area: this.detailForm.area,
+        province: this.select.province,
+        city: this.select.city,
+        area: this.select.area,
         type: this.detailForm.type
       }
       sessionSetStore('backName', '修改场地')
@@ -436,9 +474,9 @@ export default {
         name: this.detailForm.name,
         address: this.detailForm.address,
         isDefault: this.detailForm.isDefault,
-        province: this.detailForm.province,
-        city: this.detailForm.city,
-        area: this.detailForm.area,
+        province: this.select.province,
+        city: this.select.city,
+        area: this.select.area,
         type: this.detailForm.type
       }
       sessionSetStore('backName', '添加场地')
@@ -473,7 +511,20 @@ export default {
       sessionSetStore('backName', '查看场地详情')
       back.showArea(paramObj).then(function (response) {
         console.log(response)
-        this.detailForm = response.data
+        this.detailForm.id = response.data.id
+        this.detailForm.name = response.data.name
+        this.select.province = response.data.province
+        this.select.city = response.data.city
+        this.select.area = response.data.area
+        this.detailForm.address = response.data.address
+        if (response.data.type === 1) {
+          this.detailForm.type = '写字楼'
+        } else if (response.data.type === 2) {
+          this.detailForm.type = '教学楼'
+        } else if (response.data.type === 3) {
+          this.detailForm.type = '商场'
+        }
+        this.detailForm.isDefault = response.data.isDefault 
         this.backQueEnum()
       }.bind(this))
         .catch((error) => {
@@ -489,6 +540,7 @@ export default {
       back.queEnum(paramObj).then(function (response) {
         console.log(response)
         let arr = {}
+        this.options = []
         for (var i = 0; i < response.data.length; i++) {
           arr.value = response.data[i].enumKey
           arr.label = response.data[i].enumValue
