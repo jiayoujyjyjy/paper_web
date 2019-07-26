@@ -836,6 +836,25 @@ export const back = {
       })
   },
   // 7.3 交易统计
+  tradeStatis (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/statis/transaction?pageNo=${param.currentPage}&pageSize=${param.pagesize}&type=${param.type}&queryType=${param.queryType}&beginDate=${param.beginDate}&endDate=${param.endDate}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        managerId: param.managerId,
+        roleId: param.roleId
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
   // 7.3 设备统计
   queDeviceStatis (param) {
     return axios({

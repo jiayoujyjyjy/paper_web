@@ -19,7 +19,7 @@
         </el-option>
       </el-select>
       <el-button size="small" type="primary" style="margin-left:10%;" @click="searchDev">搜 索</el-button>
-      <el-button type="primary" size="small">生成备货单</el-button>
+      <!-- <el-button type="primary" size="small">生成备货单</el-button> -->
     </div>
 
     <!-- 备货单列表 -->

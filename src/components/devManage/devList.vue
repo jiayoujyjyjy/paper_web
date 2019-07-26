@@ -239,7 +239,12 @@ export default {
       // 表格数据
       tableData: [],
       unbindId: '',
-      selectData: [], // 下拉选择框
+      selectData: [
+        {
+          value: '',
+          label: '全部'
+        }
+      ], // 下拉选择框
       selected: '',
       transferform: {
         deviceId: '139761',
@@ -543,6 +548,7 @@ export default {
       sessionSetStore('bacName', '解绑设备')
       back.unbindDev(this.param).then(function (response) {
         if (response.code === 0) {
+          this.param.id = ''
           this.backQueDevPage()
         } else {
           this.$message.error('解绑错误')

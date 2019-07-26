@@ -439,6 +439,8 @@ export default {
       sessionSetStore('backName', '新增纸巾')
       back.addPaper(this.param).then(function (response) {
         console.log(response)
+        this.param.name = ''
+        this.param.type = ''
         this.backQuePaperPage()
       }.bind(this))
         .catch(function (error) {
