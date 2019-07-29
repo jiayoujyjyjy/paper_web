@@ -2,9 +2,9 @@
 <template>
   <div class="productmanagePage">
         <div class="select">
-        <span style="margin: auto 1%;">产品名称</span>
+        <span style="margin: auto 1%;">商品名称</span>
         <el-input size="small" v-model="productName" placeholder="请输入产品名称"></el-input>
-        <span style="margin: auto 1%">产品类型</span>
+        <span style="margin: auto 1%">商品类型</span>
       <el-select v-model="selected" placeholder="请选择">
         <el-option
           v-for="item in options"
@@ -26,21 +26,27 @@
         style="margin-top: 20px; font-size:12px;"
         @selection-change="handleSelectionChange">
         <el-table-column
+          label="序号"
+          width="50"
+          align="center"
+          type="index">
+        </el-table-column>
+        <el-table-column
           align="center"
           prop="deviceId"
-          label="产品编码"
+          label="商品ID"
           min-width="10%">
         </el-table-column>
         <el-table-column
           align="center"
           prop="productName"
-          label="产品名称"
+          label="商品名称"
           min-width="20%">
         </el-table-column>
         <el-table-column
           align="center"
           prop="productType"
-          label="产品类型"
+          label="商品类型"
           min-width="20%">
         </el-table-column>
         <el-table-column
@@ -83,14 +89,14 @@
       width="20%"
       center>
       <el-form :model="editform" label-width="100px" :rules="rulesLogin" ref="editform">
-        <el-form-item label="产品编码" v-show="isProductIdShowDia">
+        <el-form-item label="商品ID" v-show="isProductIdShowDia">
           <el-input v-model="editform.deviceId" :disabled="isedit"></el-input>
         </el-form-item>
-        <el-form-item label="产品名称" prop="productName">
-          <el-input v-model="editform.productName" placeholder="请填写产品名称"></el-input>
+        <el-form-item label="商品名称" prop="productName">
+          <el-input v-model="editform.productName" placeholder="请填写商品名称"></el-input>
         </el-form-item>
-        <el-form-item label="产品类型" prop="productType">
-          <el-select v-model="editform.productType" placeholder="请选择产品类型">
+        <el-form-item label="商品类型" prop="productType">
+          <el-select v-model="editform.productType" placeholder="请选择商品类型">
             <el-option v-for="item in option"
               :key="item.id"
               :label="item.label"
@@ -98,11 +104,11 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="产品库存" prop="num">
-          <el-input v-model="editform.num" placeholder="请填写产品库存"></el-input>
+        <el-form-item label="商品库存" prop="num">
+          <el-input v-model="editform.num" placeholder="请填写商品库存"></el-input>
         </el-form-item>
-        <el-form-item label="产品单价" prop="price">
-          <el-input v-model="editform.price" placeholder="请填写产品单价"></el-input>
+        <el-form-item label="商品单价" prop="price">
+          <el-input v-model="editform.price" placeholder="请填写商品单价"></el-input>
         </el-form-item>
       </el-form>
 
@@ -124,9 +130,9 @@ export default {
     // 校验产品名
     var checkProductName = (rule, value, callback) => {
       if (value === '') {
-        return callback(new Error('产品名称不能为空'))
+        return callback(new Error('商品名称不能为空'))
       } else if (value.length > 20) {
-        callback(new Error('产品名称长度不超过20位'))
+        callback(new Error('商品名称长度不超过20位'))
       } else {
         callback()
       }
@@ -156,7 +162,7 @@ export default {
     // 校验产品类型
     var checkProductType = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error('产品类型不能为空'))
+        callback(new Error('商品类型不能为空'))
       } else {
         callback()
       }
@@ -189,7 +195,7 @@ export default {
       selected: '全部',
       editform: {
         deviceId: '139761',
-        productName: '纸巾',
+        productName: '商品',
         productType: '抽纸',
         num: '10', // 没有预置项则表单不能同步显示，大坑啊,而且要注意字符数字格式转化
         price: '100'
@@ -235,7 +241,7 @@ export default {
     // session获取登录者关键参数
     this.param.id = sessionGetStore('managerId')
     this.backQuePaperPage()
-    // 获取纸巾分类
+    // 获取商品分类
     this.backpaperType()
   },
   mounted: function () {
@@ -325,7 +331,7 @@ export default {
     delBt: function (index, row) {
       console.log(index)
       console.log(row)
-      this.$confirm('确定删除该产品吗?', '删除该产品', {
+      this.$confirm('确定删除该商品吗?', '删除该商品', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -358,9 +364,9 @@ export default {
       *******************   API调用   *********************
       *
     */
-    // 纸巾分页查询
+    // 商品分页查询
     backQuePaperPage: function () {
-      sessionSetStore('backName', '纸巾分页查询')
+      sessionSetStore('backName', '商品分页查询')
       back.quePaperPage(this.param).then(function (response) {
         console.log(response)
         this.eltotal = response.data.total
@@ -390,9 +396,9 @@ export default {
           console.log(error)
         })
     },
-    // 新增纸巾
+    // 新增商品
     backAddPaper: function () {
-      sessionSetStore('backName', '新增纸巾')
+      sessionSetStore('backName', '新增商品')
       back.addPaper(this.param).then(function (response) {
         console.log(response)
         this.param.name = ''
@@ -403,9 +409,9 @@ export default {
           console.log(error)
         })
     },
-    // 修改纸巾
+    // 修改商品
     backUpdatePaper: function () {
-      sessionSetStore('backName', '修改纸巾')
+      sessionSetStore('backName', '修改商品')
       back.updatePaper(this.param).then(function (response) {
         console.log(response)
         this.param.name = ''
@@ -416,10 +422,10 @@ export default {
           console.log(error)
         })
     },
-    // 查看纸巾详情
+    // 查看商品详情
     backQuePaperInfo: function () {
       return new Promise(function (resolve, reject) {
-        sessionSetStore('backName', '查看纸巾详情')
+        sessionSetStore('backName', '查看商品详情')
         back.quePaperInfo(this.param).then(function (response) {
           console.log(response)
           let obj = {}
@@ -439,9 +445,9 @@ export default {
           })
       }.bind(this))
     },
-    // 删除纸巾
+    // 删除商品
     backdelPaper: function () {
-      sessionSetStore('backName', '删除纸巾')
+      sessionSetStore('backName', '删除商品')
       back.delPaper(this.param).then(function (response) {
         console.log(response)
         this.backQuePaperPage()
@@ -450,10 +456,10 @@ export default {
           console.log(error)
         })
     },
-    // 获取纸巾分类
+    // 获取商品分类
     backpaperType: function () {
       this.param.name = ''
-      sessionSetStore('backName', '获取纸巾分类')
+      sessionSetStore('backName', '获取商品分类')
       back.paperType(this.param).then(function (response) {
         console.log(response)
         if (response.code === 0) {
@@ -471,7 +477,7 @@ export default {
           console.log(error)
         })
     },
-    // // 纸巾查询
+    // // 商品查询
     // backQuePaperList: function () {
     //   back.quePaperList().then(function (response) {
     //     console.log(response)

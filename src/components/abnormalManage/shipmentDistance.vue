@@ -13,63 +13,53 @@
         :max-height="tableMaxHeght">
         <el-table-column
           align="center"
-          prop="id"
-          label="记录编码"
-          min-width="5%">
+          type="index"
+          label="序号">
         </el-table-column>
         <el-table-column
           align="center"
           prop="site"
-          label="场地名称"
-          min-width="15%">
+          label="场地名称">
         </el-table-column>
         <el-table-column
           align="center"
           prop="address"
-          label="详细地址"
-          min-width="15%">
+          label="详细地址">
         </el-table-column>
         <el-table-column
           align="center"
           prop="deviceId"
-          label="设备编码"
-          min-width="10%">
+          label="设备编码">
         </el-table-column>
         <el-table-column
           align="center"
           prop="device"
-          label="设备名称"
-          min-width="10%">
+          label="设备名称">
         </el-table-column>
         <el-table-column
           align="center"
-          prop="device"
-          label="操作人名称"
-          min-width="5%">
+          prop="manager"
+          label="操作人名称">
         </el-table-column>
         <el-table-column
           align="center"
           prop="paper"
-          label="纸巾名称"
-          min-width="5%">
+          label="纸巾名称">
         </el-table-column>
         <el-table-column
           align="center"
           prop="type"
-          label="纸巾类型"
-          min-width="5%">
+          label="纸巾类型">
         </el-table-column>
         <el-table-column
           align="center"
           prop="num"
-          label="数量"
-          min-width="5%">
+          label="数量">
         </el-table-column>
         <el-table-column
           align="center"
           prop="createTime"
-          label="创建时间"
-          min-width="15%">
+          label="创建时间">
         </el-table-column>
       </el-table>
     </div>
@@ -89,19 +79,8 @@
       center>
 
       <el-form :model="editform" label-width="100px">
-        <el-form-item label="场地类型" prop="siteType">
-          <!-- <el-select v-model="editform.siteId" placeholder="请选择场地类型" style="width: 70%" @change="selectCode"> -->
-          <el-select v-model="editform.siteId" placeholder="请选择场地类型" style="width: 70%">
-            <el-option v-for="item in siteTypeOptions"
-              :key="item.id"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="场地编码" prop="siteCode">
-          <el-select v-model="editform.id" placeholder="请选择场地编码" style="width: 70%">
+        <el-form-item label="场地编码">
+          <el-select v-model="editform.id" placeholder="请选择场地" style="width: 70%" @change="selectCode">
             <el-option v-for="item in siteCodeOptions"
               :key="item.id"
               :label="item.label"
@@ -109,18 +88,17 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="纸巾类型" prop="paperType">
-          <el-select v-model="editform.type" placeholder="请选择纸巾类型" style="width: 70%">
-            <el-option v-for="item in paperTypeOptions"
+        <el-form-item label="设备编码">
+          <el-select v-model="editform.devId" placeholder="请选择设备" style="width: 70%">
+            <el-option v-for="item in devCodeOptions"
               :key="item.id"
               :label="item.label"
               :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
-
-        <el-form-item label="纸巾编码" prop="paperCode">
-          <el-select v-model="editform.paperId" placeholder="请选择纸巾编码" style="width: 70%">
+        <el-form-item label="纸巾编码">
+          <el-select v-model="editform.paperId" placeholder="请选择纸巾" style="width: 70%" @change="selectType">
             <el-option v-for="item in paperCodeOptions"
               :key="item.id"
               :label="item.label"
@@ -148,44 +126,10 @@ import { sessionGetStore, sessionSetStore } from '@/components/config/Utils'
 import $ from 'jquery'
 export default {
   data () {
-    // 场地类型
-    // var siteType1 = (rule, value, callback) => {
-    //   if (value === '') {
-    //     return callback(new Error('场地类型不能为空'))
-    //   } else {
-    //     this.siteCodeShow = true
-    //     callback()
-    //   }
-    // }
-    // // 场地编码
-    // var siteCode1 = (rule, value, callback) => {
-    //   if (value === '') {
-    //     return callback(new Error('场地编码不能为空'))
-    //   } else {
-    //     callback()
-    //   }
-    // }
-    // // 纸巾类型
-    // var paperType1 = (rule, value, callback) => {
-    //   if (value === '') {
-    //     callback(new Error('场地类型不能为空'))
-    //   } else {
-    //     this.paperCodeShow = true
-    //     callback()
-    //   }
-    // }
-    // // 纸巾编码
-    // var paperCode1 = (rule, value, callback) => {
-    //   if (value === '') {
-    //     callback(new Error('场地编码不能为空'))
-    //   } else {
-    //     callback()
-    //   }
-    // }
     return {
       param: {
         'currentPage': 1,
-        'pagesize': 8,
+        'pagesize': 6,
         'currentPage_DiaDev': 1,
         'pagesize_DiaDev': 8,
         groupId: '',
@@ -196,26 +140,22 @@ export default {
       input_product: '', // 输入出货商品
       currentPage: 1,
       dialogEditVisible: false,
-      editform: {},
-      pagesize: 9,
+      editform: {
+        id: '',
+        devId: '',
+        paperId: '',
+        num: ''
+      },
+      pagesize: 6,
       eltotal: 20,
       // 表格数据
       tableData: [],
       tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 40 - 51, // ===tableDiv的高度
       screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
       onresizeTimer: false, // 屏幕高度变化定时器，避免频繁调用window.onresize()方法
-      siteTypeOptions: [], // 场地类型选项
       siteCodeOptions: [], // 场地编码选项
-      siteCode: [],
-      paperTypeOptions: [
-        {
-          value: 1,
-          label: '小包纸'
-        }, {
-          value: 2,
-          label: '卷纸'
-        }
-      ], // 纸巾类型选项
+      devCodeOptions: [], // 设备编码选项
+      devCodeOptionsMid: [], // 设备编码选项中间量，用于二级联动
       paperCodeOptions: [] // 纸巾编码选项
     }
   },
@@ -241,10 +181,10 @@ export default {
     this.param.siteId = ''
     this.param.id = ''
     this.backDevStartupPage()
-    // 获取场地类型
-    this.backQueEnum()
     // 获取场地编码
     this.backQueArea()
+    // 获取设备编码
+    this.backQueDevPage()
     // 获取纸巾编码
     this.BackPaperPage()
   },
@@ -272,18 +212,35 @@ export default {
       }
     },
     // 场地类型选择之后触发，显示相应场地类型下的场地编码
-    // selectCode: function (val) {
-    //   console.log(val)
-    //   if (val === '') {
-    //     this.siteCodeOptions = []
-    //   } else {
-    //     for (var i = 0; i < this.siteCode.length; i++) {
-    //       if (this.siteCode[i].type === val) {
-    //         this.siteCodeOptions.push(this.siteCode[i])
-    //       }
-    //     }
-    //   }
-    // },
+    selectCode: function (value) {
+      console.log(value)
+      this.devCodeOptions = []
+      // this.editform.devId = ''
+      if (value === '') {
+        this.devCodeOptions = []
+      } else {
+        for (var i = 0; i < this.devCodeOptionsMid.length; i++) {
+          if (this.devCodeOptionsMid[i].siteId === value) {
+            this.devCodeOptions[i] = this.devCodeOptionsMid[i]
+          }
+        }
+      }
+    },
+    // 选择纸巾编码后，返回纸巾类型
+    selectType: function (value) {
+      console.log(value)
+      if (value === '') {
+        this.$message.error('纸巾不能为空！')
+      } else {
+        for (var i = 0; i < this.paperCodeOptions.length; i++) {
+          if (value === this.paperCodeOptions[i].value) {
+            this.param.type = this.paperCodeOptions[i].type
+            console.log(this.param.type)
+          }
+        }
+      }
+      console.log(this.paperCodeOptions)
+    },
     // 远程启动
     start: function () {
       this.dialogEditVisible = true
@@ -291,10 +248,11 @@ export default {
     },
     // 确定远程启动
     startConfirm: function () {
-      this.param.siteId = this.editform.siteId
-      this.param.id = this.editform.id
-      this.param.type = this.editform.type
+      this.dialogEditVisible = false
+      this.param.id = this.editform.devId
+      this.param.siteId = this.editform.id
       this.param.paperId = this.editform.paperId
+      this.param.num = this.editform.num === undefined ? 1 : this.editform.num
       this.backDevStartup()
     },
     // 每次切换页码之前清空table数据
@@ -335,6 +293,13 @@ export default {
             obj.type = response.data.records[i].type === 1 ? '小包纸' : '卷纸'
             this.tableData.push(obj)
           }
+          // 清空表单数据
+          this.editform = {
+            id: '',
+            devId: '',
+            paperId: '',
+            num: ''
+          }
         } else {
           this.tableData = []
         }
@@ -352,28 +317,6 @@ export default {
           this.backDevStartupPage()
         } else {
           this.notificationInfo('error', '远程启动失败')
-        }
-      }.bind(this))
-        .catch(function (error) {
-          console.log(error)
-        })
-    },
-    // 获取场地类型
-    backQueEnum: function () {
-      sessionSetStore('backName', '获取场地类型')
-      this.param.type = 'SITE_TYPE'
-      back.queEnum(this.param).then(function (response) {
-        console.log(response)
-        this.siteTypeOptions = []
-        if (response.code === 0) {
-          for (var i = 0; i < response.data.length; i++) {
-            let obj = {}
-            obj.value = response.data[i].enumKey
-            obj.label = response.data[i].enumValue
-            this.siteTypeOptions.push(obj)
-          }
-        } else {
-          this.notificationInfo('error', '获取类型失败')
         }
       }.bind(this))
         .catch(function (error) {
@@ -399,16 +342,38 @@ export default {
             obj.label = response.data[i].name
             this.siteCodeOptions.push(obj)
           }
-          // this.siteCode = []
-          // for (var i = 0; i < response.data.length; i++) {
-          //   let obj = {}
-          //   obj.value = response.data[i].id
-          //   obj.label = response.data[i].value
-          //   obj.type = response.data[i].type
-          //   this.siteCode.push(obj)
-          // }
         } else {
           this.notificationInfo('error', '场地编码获取失败')
+        }
+      }.bind(this))
+        .catch(function (error) {
+          console.log(error)
+        })
+    },
+    // 获取设备编码
+    backQueDevPage: function () {
+      sessionSetStore('backName', '获取设备编码')
+      let paramObj = {
+        currentPage: '1',
+        pagesize: '1000',
+        id: '',
+        state: '',
+        siteId: ''
+      }
+      back.queDevPage(paramObj).then(function (response) {
+        console.log(response)
+        if (response.code === 0) {
+          this.devCodeOptionsMid = []
+          // this.siteCode = []
+          for (var i = 0; i < response.data.records.length; i++) {
+            let obj = {}
+            obj.value = response.data.records[i].id
+            obj.label = response.data.records[i].name
+            obj.siteId = response.data.records[i].siteId
+            this.devCodeOptionsMid.push(obj)
+          }
+        } else {
+          this.notificationInfo('error', '设备编码获取失败')
         }
       }.bind(this))
         .catch(function (error) {
@@ -431,6 +396,7 @@ export default {
             let obj = {}
             obj.value = response.data.records[i].id
             obj.label = response.data.records[i].name
+            obj.type = response.data.records[i].type
             this.paperCodeOptions.push(obj)
           }
           console.log(this.paperCodeOptions)

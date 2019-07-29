@@ -39,6 +39,13 @@
           label="收益">
         </el-table-column>
       </el-table>
+      <el-pagination
+        @current-change="handlePaginationChange"
+        :current-page="param.pageNo"
+        :page-size="param.pageSize"
+        layout="total, prev, pager, next, jumper"
+        :total="eltotal">
+      </el-pagination>
     </div>
   </div>
 </template>
@@ -51,9 +58,12 @@ export default {
   data () {
     return {
       param: {
+        pageNo: 1,
+        pageSize: 6,
         beginDate: '',
         endDate: ''
       },
+      eltotal: 20,
       tableData: [],
       // 日期选择器
       pickerOptions: {
@@ -84,7 +94,7 @@ export default {
         }]
       },
       dateValue: '',
-      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 150 - 60 - 50, // ===tableDiv的高度
+      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 150 - 60 - 103, // ===tableDiv的高度
       screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
       onresizeTimer: false // 屏幕高度变化定时器，避免频繁调用window.onresize()方法
 
@@ -108,6 +118,8 @@ export default {
   created: function () {
     // session获取登录者关键参数
     this.param.id = sessionGetStore('managerId')
+    // this.param.beginDate = ''
+    // this.param.endDate = ''
     // 分页查询请求可选项置空函数
     this.backMyIncome()
   },
@@ -121,8 +133,8 @@ export default {
     tableContainerHeightSet: function () {
       var windowHeight = $(window).height()
       var mainHeight = windowHeight - 40 - 40 - 40
-      $('.tableDiv').height(mainHeight - 150 - 60 - 50)
-      this.tableMaxHeght = mainHeight - 150 - 60 - 50
+      $('.tableDiv').height(mainHeight - 150 - 60 - 103)
+      this.tableMaxHeght = mainHeight - 150 - 60 - 103
     },
     // 监听屏幕高度
     screenOnresizeFun: function () {
@@ -136,28 +148,23 @@ export default {
     },
     // 搜索按钮
     searchBt: function () {
-      this.param.beginDate = this.dateValue[0]
-      this.param.endDate = this.dateValue[1]
-      this.backMyIncome()
-    },
-    // 时间格式化为 yyyy-MM-dd
-    getDay (day) {
-      var today = new Date()
-      var targetdayMilliseconds = today.getTime() + 1000 * 60 * 60 * 24 * day
-      today.setTime(targetdayMilliseconds) // 注意，这行是关键代码
-      var tYear = today.getFullYear()
-      var tMonth = today.getMonth()
-      var tDate = today.getDate()
-      tMonth = this.doHandleMonth(tMonth + 1)
-      tDate = this.doHandleMonth(tDate)
-      return tYear + '-' + tMonth + '-' + tDate
-    },
-    doHandleMonth (month) {
-      var m = month
-      if (month.toString().length === 1) {
-        m = '0' + month
+      if (this.dateValue) {
+        this.param.beginDate = this.dateValue[0]
+        this.param.endDate = this.dateValue[1]
+        this.backMyIncomeDate()
+      } else {
+        this.backMyIncome()
       }
-      return m
+    },
+    // 每次切换页码之前清空table数据
+    handlePaginationChange: function (value) {
+      console.log(value)
+      this.param.pageNo = value
+      if (this.param.beginDate && this.param.endDate) {
+        this.backMyIncomeDate()
+      } else {
+        this.backMyIncome()
+      }
     },
     /*
       *
@@ -165,20 +172,40 @@ export default {
       *
     */
     // 收益查询
+    backMyIncomeDate: function () {
+      sessionSetStore('backName', '收益查询')
+      console.log(this.param)
+      back.myIncomeDate(this.param).then(function (response) {
+        console.log(response)
+        if (response.code === 0) {
+          this.tableData = []
+          this.eltotal = response.data.incomeList.total
+          for (var i = 0; i < response.data.incomeList.records.length; i++) {
+            let arr = {}
+            arr.date = response.data.incomeList.records[i].date
+            arr.income = response.data.incomeList.records[i].income
+            this.tableData.push(arr)
+          }
+        } else {
+          this.notificationInfo('error', '收益获取失败！')
+        }
+      }.bind(this))
+        .catch((error) => {
+          console.log(error)
+        })
+    },
     backMyIncome: function () {
       sessionSetStore('backName', '收益查询')
-      this.param.beginDate = this.getDay(-30)
-      this.param.endDate = this.getDay(0)
-      console.log(this.param)
       back.myIncome(this.param).then(function (response) {
         console.log(response)
         if (response.code === 0) {
-          let arr = {}
-          for (var i = 0; i < response.data.incomeList.length; i++) {
-            arr.date = response.data.incomeList[i].date
-            arr.income = response.data.incomeList[i].income
+          this.tableData = []
+          this.eltotal = response.data.incomeList.total
+          for (var i = 0; i < response.data.incomeList.records.length; i++) {
+            let arr = {}
+            arr.date = response.data.incomeList.records[i].date
+            arr.income = response.data.incomeList.records[i].income
             this.tableData.push(arr)
-            arr = {}
           }
         } else {
           this.notificationInfo('error', '收益获取失败！')

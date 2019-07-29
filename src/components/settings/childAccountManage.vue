@@ -145,10 +145,11 @@ import $ from 'jquery'
 export default {
   data () {
     var checkAccount = (rule, value, callback) => {
+      let numReg = /^(13[0-9]|14[5|7]|15[0|1|2|3|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d{8}$/
       if (value === '') {
         return callback(new Error('账号不能为空'))
-      } else if (value.length > 20) {
-        callback(new Error('账号长度不超过20位'))
+      } else if (!numReg.test(value)) {
+        callback(new Error('账号必须为手机号'))
       } else {
         callback()
       }

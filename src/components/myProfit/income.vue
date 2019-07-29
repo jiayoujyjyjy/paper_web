@@ -120,6 +120,8 @@ export default {
     */
     // 收益查询
     backMyIncome: function () {
+      this.param.pageSize = 10
+      this.param.pageNo = 1
       sessionSetStore('backName', '交易查询')
       back.myIncome(this.param).then(function (response) {
         console.log(response)

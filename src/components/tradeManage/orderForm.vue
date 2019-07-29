@@ -47,67 +47,56 @@
         <el-table-column
           align="center"
           prop="orderId"
-          label="订单编码"
-          min-width="20%">
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="device"
-          min-width="17%"
-          label="设备名称">
+          label="订单编码">
         </el-table-column>
         <el-table-column
           align="center"
           prop="createTime"
-          min-width="17%"
           label=下单时间>
         </el-table-column>
         <el-table-column
           align="center"
+          prop="device"
+          label="设备名称">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="deviceId"
+          label="设备编码">
+        </el-table-column>
+        <el-table-column
+          align="center"
           prop="site"
-          min-width="20%"
           label="场地名称">
         </el-table-column>
         <el-table-column
           align="center"
           prop="manager"
-          min-width="10%"
           label="管理员名称">
         </el-table-column>
         <el-table-column
           align="center"
           prop="user"
-          min-width="10%"
           label="用户名称">
         </el-table-column>
         <el-table-column
           align="center"
-          prop="deviceId"
-          label="设备编码"
-          min-width="12%">
-        </el-table-column>
-        <el-table-column
-          align="center"
           prop="money"
-          min-width="7%"
           label="订单金额">
         </el-table-column>
         <el-table-column
           align="center"
           prop="state"
-          min-width="10%"
           label="订单状态">
         </el-table-column>
         <el-table-column
           align="center"
           prop="isFree"
-          min-width="8%"
           label="是否免费">
         </el-table-column>
         <el-table-column
           align="center"
           prop="paper"
-          min-width="10%"
           label="纸巾名称">
         </el-table-column>
       </el-table>
@@ -287,8 +276,13 @@ export default {
       this.param.id = this.selection.orderId
       this.param.deviceId = this.selection.deviceId
       this.param.site = this.selection.site
-      this.param.beginDate = this.dateValue[0]
-      this.param.endDate = this.dateValue[1]
+      if (this.dateValue[0] === undefined || this.dateValue[1] === undefined) {
+        this.param.beginDate = ''
+        this.param.endDate = ''
+      } else {
+        this.param.beginDate = this.dateValue[0]
+        this.param.endDate = this.dateValue[1]
+      }
       console.log(this.dateValue)
       this.backQueOrderPage()
     },

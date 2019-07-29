@@ -388,13 +388,18 @@ export const back = {
   // 远程启动
   devStartup (param) {
     return axios({
-      url: `${url.backbasurl}/api/v1/device/startup?id=${param.id}&siteId=${param.siteId}&paperId=${param.paperId}&type=${param.type}&num=${param.num}`,
+      url: `${url.backbasurl}/api/v1/device/startup`,
       method: 'post',
       headers: {
         'Content-Type': 'application/json',
         'managerId': param.managerId
       },
       data: {
+        id: param.id,
+        siteId: param.siteId,
+        paperId: param.paperId,
+        type: param.type,
+        num: param.num
       }
     })
       .then((response) => {
@@ -510,7 +515,8 @@ export const back = {
         'Content-Type': 'application/json'
       },
       data: {
-        name: param.name
+        name: param.name,
+        remark: param.remark
       }
     })
       .then((response) => {
@@ -949,10 +955,29 @@ export const back = {
         return Promise.reject(error)
       })
   },
-  // 7.2 我的收益
+  // 7.2.1 我的收益
   myIncome (param) {
     return axios({
-      url: `${url.backbasurl}/api/v1/statis/myIncome?beginDate=${param.beginDate}&endDate=${param.endDate}`,
+      url: `${url.backbasurl}/api/v1/statis/myIncome?pageNo=${param.pageNo}&pageSize=${param.pageSize}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        managerId: param.managerId
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // 7.2.2 我的收益
+  myIncomeDate (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/statis/myIncome?beginDate=${param.beginDate}&endDate=${param.endDate}&pageNo=${param.pageNo}&pageSize=${param.pageSize}`,
       method: 'get',
       headers: {
         'Content-Type': 'application/json',
@@ -1252,6 +1277,27 @@ export const back = {
   delChildAccount (param) {
     return axios({
       url: `${url.backbasurl}/api/v1/manager/deleteSub?id=${param.id}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  /*
+   ************用户模块****************
+  */
+  // 用户分页查询
+  userPage (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/user/page?id=${param.id}&name=${param.name}&phone=${param.phone}&pageNo=${param.pageNo}&pageSize=${param.pageSize}`,
       method: 'get',
       headers: {
         'Content-Type': 'application/json'

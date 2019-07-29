@@ -341,8 +341,8 @@ export default {
       if (value === '7-1') {
         sessionSetStore('menuActive', '7-1')
         // sessionSetStore('usermanage_activeName', 'first')
-        this.$message.error('该功能待开发！')
-        // Routers.push({ path: '/home/userList' })
+        // this.$message.error('该功能待开发！')
+        Routers.push({ path: '/home/userList' })
         this.changeMenuImg(false)
       }
       if (value === '8-1') {

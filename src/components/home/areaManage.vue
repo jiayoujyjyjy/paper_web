@@ -40,7 +40,7 @@
         </el-table-column>
         <el-table-column
           align="center"
-          prop="address"
+          prop="area"
           label="区县">
         </el-table-column>
         <el-table-column
@@ -57,6 +57,11 @@
           align="center"
           prop="deviceNum"
           label="设备数量">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="createTime"
+          label="创建时间">
         </el-table-column>
         <el-table-column
           label="操作"
@@ -172,7 +177,7 @@ export default {
     return {
       param: {
         'currentPage': 1,
-        'pagesize': 8,
+        'pagesize': 6,
         'currentPage_DiaDev': 1,
         'pagesize_DiaDev': 8
       },
@@ -187,7 +192,7 @@ export default {
       delShow: false,
       unchange: false,
       currentPage: 1,
-      pagesize: 10,
+      pagesize: 6,
       eltotal: 20,
       options: [],
       siteList: [{
@@ -291,6 +296,11 @@ export default {
         city: '',
         area: '',
         type: ''
+      }
+      this.select = {
+        province: '浙江省',
+        city: '杭州市',
+        area: '江干区'
       }
       this.dialogTitle = '添加场地'
       this.dialogEditVisible = true
@@ -412,6 +422,7 @@ export default {
             obj.province = response.data.records[i].province
             obj.city = response.data.records[i].city
             obj.area = response.data.records[i].area
+            obj.createTime = response.data.records[i].createTime
             this.tableData.push(obj) // 或用this.tableData[i] = obj亦可
             console.log(this.tableData)
             // 中间变量midData：用于搜索

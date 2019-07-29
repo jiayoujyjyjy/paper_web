@@ -35,10 +35,10 @@
         style="margin-top: 20px;font-size:12px;"
         :max-height="tableMaxHeght">
         <el-table-column
+          label="序号"
+          width="50"
           align="center"
-          prop="id"
-          label="补货记录编码"
-          min-width="20%">
+          type="index">
         </el-table-column>
         <el-table-column
           align="center"

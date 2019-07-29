@@ -28,6 +28,7 @@
     </div>
     <div class="tableDiv">
       <el-table
+        :span-method="objectSpanMethod"
         ref="multipleTable"
         :header-cell-style="{'font-size':'14px'}"
         :data="tableData"
@@ -37,40 +38,63 @@
         <el-table-column
           align="center"
           prop="id"
-          label="设备编号"
-          min-width="20%">
+          label="设备编号">
         </el-table-column>
         <el-table-column
           align="center"
           prop="name"
-          label="设备名称"
-          min-width="30%">
+          label="设备名称">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="province"
+          label="省份">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="city"
+          label="地市">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="area"
+          label="区域">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="address"
+          label="详细地址">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="typeName"
+          label="场地类型">
         </el-table-column>
         <el-table-column
           align="center"
           prop="state"
-          label="状态"
-          min-width="10%">
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="num"
-          label="库存数量"
-          min-width="20%">
+          label="状态">
         </el-table-column>
         <el-table-column
           align="center"
           prop="site"
-          label="场地"
-          min-width="20%">
+          label="场地">
         </el-table-column>
+          <el-table-column align="center" prop="paper" label="纸巾"></el-table-column>
+          <el-table-column align="center" prop="num" label="数量"></el-table-column>
+          <el-table-column align="center" prop="price" label="单价"></el-table-column>
+          <el-table-column
+            label="编辑"
+            align="center">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="editKuCun(scope.$index, scope.row)">编辑</el-button>
+          </template>
+          </el-table-column>
         <el-table-column
           label="操作"
-          align="center"
-          min-width="15%">
+          align="center">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="editBt(scope.$index, scope.row)">编辑</el-button>
-            <span style="margin: auto 10%">|</span>
             <el-button type="text" size="small" @click="unbind(scope.$index, scope.row)">解绑</el-button>
           </template>
         </el-table-column>
@@ -129,11 +153,6 @@
         </el-form-item>
         <!-- 分组这里最终提交的时候要考虑分组是新建的情况 -->
         <el-form-item label="设备转移" v-show="isadd">
-          <!-- <el-cascader
-            :options="devSiteOptions"
-            v-model="selectedSite"
-            @change="siteChangeHandle">
-          </el-cascader> -->
           <el-select v-model="editform.formselected" placeholder="请选择">
             <el-option
               v-for="item in formselectData"
@@ -143,6 +162,9 @@
             </el-option>
           </el-select>
         </el-form-item>
+        <!-- <el-form-item label="库存">
+          <el-input v-model="editform.num"></el-input>
+        </el-form-item> -->
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="editDialogVisible = false">取 消</el-button>
@@ -163,6 +185,26 @@
       </span>
     </el-dialog>
 
+    <!-- 编辑库存弹窗 -->
+    <el-dialog title="编辑库存" :visible.sync="edikucun" width="30%" center>
+      <el-form :model="kucun" label-width="100px">
+        <el-form-item label="单价">
+          <el-input v-model="kucun.name"></el-input>
+        </el-form-item>
+        <el-form-item label="单价">
+          <el-input v-model="kucun.price"></el-input>
+        </el-form-item>
+        <el-form-item label="库存">
+          <el-input v-model="kucun.num"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="edikucun = false">取 消</el-button>
+        <el-button type="primary" @click="editKuCunConfirm">确 定</el-button>
+      </span>
+
+    </el-dialog>
+
   </div>
 </template>
 
@@ -173,6 +215,7 @@ import $ from 'jquery'
 export default {
   data () {
     return {
+      spanArr: [], // pos是spanArr地索引，用于存放每一行记录的合并数如果是第一条记录（索引为０），向数组中加入１，并设置索引位置；如果不是第一条记录，则判断它与前一条记录是否相等，如果相等，则向spanArr中添入元素０，并将前一位元素＋１，表示合并行数＋１，以此往复，得到所有行的合并数，０即表示该行不显示
       param: {
         'currentPage': 1,
         'pagesize': 8,
@@ -190,66 +233,17 @@ export default {
       transferDialogVisible: false,
       editDialogTitle: '',
       editDialogVisible: false,
+      edikucun: false,
       isedit: true,
       isadd: false,
       unbindShow: false,
       timer: 0,
-      locationlist: [{
-        value: '江泰国际广场1楼'
-      }, {
-        value: '江泰国际广场2楼'
-      }, {
-        value: '江泰国际广场3楼'
-      }, {
-        value: '江泰国际广场4楼'
-      }],
-      grouplist: [{
-        value: '江泰国际广场'
-      }, {
-        value: '丽水金汇广场'
-      }],
+      locationlist: [],
+      grouplist: [],
       selectedSite: [],
       // 设备转移场地
-      devSiteOptions: [{
-        label: '孵化器',
-        value: 'fuhuaqi',
-        children: [{
-          label: '1幢',
-          value: 'buildingOne'
-        }, {
-          label: '2幢',
-          value: 'buildingTwo'
-        }]
-      }, {
-        label: '杭电',
-        value: 'hdu',
-        children: [{
-          label: '11号楼',
-          value: '11lou'
-        }, {
-          label: '22号楼',
-          value: '22lou'
-        }]
-      }],
-      devDeviceIdList: [{
-        value: '139761',
-        label: '139761'
-      }, {
-        value: '139762',
-        label: '139762'
-      }, {
-        value: '139763',
-        label: '139763'
-      }, {
-        value: '139764',
-        label: '139764'
-      }, {
-        value: '139765',
-        label: '139765'
-      }, {
-        value: '139766',
-        label: '139766'
-      }],
+      devSiteOptions: [],
+      devDeviceIdList: [],
       formselectData: [],
       // 表格数据
       tableData: [],
@@ -277,6 +271,7 @@ export default {
         group: '',
         msg: ''
       },
+      kucun: [],  // 库存编辑弹窗
       tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 40 - 55, // ===tableDiv的高度
       screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
       onresizeTimer: false // 屏幕高度变化定时器，避免频繁调用window.onresize()方法
@@ -335,6 +330,47 @@ export default {
         })() // 不加最后()会报错，并没有立即执行,立即执行函数
       }
     },
+    // 合并单元格，必须在tableData加载出来之后才能调用
+    getSpanArr: function (data) {
+      // 清空spanArr的缓存，每次刷新列表时，spanArr总从0开始
+      this.spanArr = []
+      let contactDot = 0
+      this.tableData.forEach((item, index) => {
+        item.index = index
+        if (index === 0) {
+          this.spanArr.push(1)
+        } else {
+          if (item.id === this.tableData[index - 1].id) {
+            this.spanArr[contactDot] += 1
+          } else {
+            this.spanArr.push(1)
+            contactDot = index
+          }
+        }
+      })
+    },
+    // 合并单元格
+    objectSpanMethod: function ({row, column, rowIndex, columnIndex}) {
+      // columnIndex表示要合并第几列，从0开始
+      for (var i = 0; i < 9; i++) {
+        if (columnIndex === i) {
+          const _row = this.spanArr[rowIndex]
+          const _col = _row > 0 ? 1 : 0
+          return {
+            rowspan: _row,
+            colspan: _col
+          }
+        }
+      }
+      if (columnIndex === 13) {
+        const _row = this.spanArr[rowIndex]
+        const _col = _row > 0 ? 1 : 0
+        return {
+          rowspan: _row,
+          colspan: _col
+        }
+      }
+    },
     // 开启定时器，定时查询设备在线状态
     queryLoop: function () {
       window.clearInterval(this.timer)
@@ -387,12 +423,28 @@ export default {
     },
     upload: function () {
     },
+    // 编辑库存
+    editKuCun: function (index, row) {
+      this.kucun.name = this.tableData[index].paper
+      this.kucun.price = this.tableData[index].price
+      this.kucun.num = this.tableData[index].num
+      this.kucun.deviceId = this.tableData[index].id
+      this.kucun.paperId = this.tableData[index].paperId
+      this.edikucun = true
+    },
+    // 确定编辑库存
+    editKuCunConfirm: function () {
+      this.edikucun = false
+      this.backUpdateDevPaper()
+    },
     // 编辑设备按钮
     editBt: function (index, row) {
       this.editDialogTitle = '设备信息'
       this.isedit = true
       this.isadd = true
       this.param.deviceId = this.tableData[index].id
+      this.editform.deviceId = this.tableData[index].id
+      console.log(this.param.deviceId)
       // 查看设备详情
       this.backQueDevInfo()
       this.editDialogVisible = true
@@ -402,21 +454,6 @@ export default {
       console.log(value)
       console.log(this.selectedSite)
     },
-    // // 新增设备按钮
-    // addBt: function () {
-    //   this.editDialogTitle = '新增设备'
-    //   this.isedit = false
-    //   this.isadd = true
-    //   this.editform = {
-    //     deviceId: '',
-    //     location: '',
-    //     locaDetail: '',
-    //     state: 0,
-    //     group: '',
-    //     msg: ''
-    //   }
-    //   this.editDialogVisible = true
-    // },
     sendOrder: function (index, row) {
     },
     changeswitch: function (index, row) {
@@ -471,6 +508,7 @@ export default {
         this.param.deviceId = this.editform.deviceId
         this.param.deviceName = this.editform.devName
         this.param.siteId = this.selectedSite[1]
+        console.log(this.deviceId)
         this.backUpdateDevice()
         this.editDialogVisible = false
       }
@@ -492,23 +530,32 @@ export default {
         if (response.data.records) {
           this.tableData = []
           for (let i = 0; i < response.data.records.length; i++) {
-            let obj = {}
-            obj.id = response.data.records[i].id
-            obj.name = response.data.records[i].name
-            obj.site = response.data.records[i].site
-            obj.state = response.data.records[i].state ? '在线' : '离线'
-            let num = ''
             for (let j = 0; j < response.data.records[i].paperList.length; j++) {
-              num += response.data.records[i].paperList[j].paper + ':' + response.data.records[i].paperList[j].num + ' '
+              let obj = {}
+              obj.id = response.data.records[i].id
+              obj.name = response.data.records[i].name
+              obj.site = response.data.records[i].site
+              obj.province = response.data.records[i].province
+              obj.city = response.data.records[i].city
+              obj.area = response.data.records[i].area
+              obj.address = response.data.records[i].address
+              obj.typeName = response.data.records[i].typeName
+              obj.state = response.data.records[i].state ? '在线' : '离线'
+              obj.paper = response.data.records[i].paperList[j].paper
+              obj.num = response.data.records[i].paperList[j].num
+              obj.price =  response.data.records[i].paperList[j].price
+              obj.paperId =  response.data.records[i].paperList[j].paperId
+              this.tableData.push(obj)
             }
-            obj.num = num
-            if (obj.stateNum === 0) {
-              obj.state = '离线'
-            } else if (obj.stateNum === 1) {
-              obj.state = '在线'
-            }
-            this.tableData.push(obj)
           }
+          // 清空编辑库存表单
+          this.kucun = {
+            name: null,
+            price: null,
+            num: null
+          }
+          console.log(this.tableData)
+          this.getSpanArr()
         } else {
           this.tableData = []
         }
@@ -517,43 +564,6 @@ export default {
           console.log(error)
         })
     },
-    // // 查看设备详情
-    // backQueDevInfo: function () {
-    //   sessionSetStore('backName', '查看设备详情')
-    //   back.queDevInfo(this.param).then(function (response) {
-    //     console.log(response)
-    //     this.editform.deviceId = response.data.id
-    //     this.editform.devName = response.data.name
-    //     let groupList = []
-    //     this.devSiteOptions = [] // 初始化
-    //     if (response.data.groupList) {
-    //       for (let i = 0; i < response.data.groupList.length; i++) {
-    //         let groupObj = {}
-    //         groupObj.value = response.data.groupList[i].id
-    //         groupObj.label = response.data.groupList[i].name
-    //         let siteList = []
-    //         if (response.data.groupList[i].siteList === undefined) {
-    //           siteList[0] = {}
-    //           groupObj.children = siteList
-    //           groupList[i] = groupObj
-    //           continue
-    //         }
-    //         for (let j = 0; j < response.data.groupList[i].siteList.length; j++) {
-    //           let siteObj = {}
-    //           siteObj.value = response.data.groupList[i].siteList[j].id
-    //           siteObj.label = response.data.groupList[i].siteList[j].name
-    //           siteList[j] = siteObj
-    //         }
-    //         groupObj.children = siteList
-    //         groupList[i] = groupObj
-    //       }
-    //     }
-    //     this.devSiteOptions = groupList
-    //   }.bind(this))
-    //     .catch(function (error) {
-    //       console.log(error)
-    //     })
-    // },
     // 查看设备详情
     backQueDevInfo: function () {
       sessionSetStore('backName', '查看设备详情')
@@ -624,6 +634,28 @@ export default {
           console.log(this.selectData)
         } else {
           this.$message.error('场地获取错误')
+        }
+      }.bind(this))
+        .catch(function (error) {
+          console.log(error)
+        })
+    },
+    // 修改设备纸巾库存
+    backUpdateDevPaper: function () {
+      let paramObj = {
+        deviceId: this.kucun.deviceId,
+        paperId: this.kucun.paperId,
+        num: this.kucun.num,
+        price: Number(this.kucun.price)
+      }
+      sessionSetStore('bacName', '修改设备纸巾库存')
+      console.log(this.param)
+      back.updateDevPaper(paramObj).then(function (response) {
+        console.log('bianjikucun')
+        if (response.code === 0) {
+          this.backQueDevPage()
+        } else {
+          this.$message.error('修改设备纸巾库存')
         }
       }.bind(this))
         .catch(function (error) {

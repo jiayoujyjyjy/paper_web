@@ -17,7 +17,7 @@
         <el-table-column
           align="center"
           prop="username"
-          label="用户"
+          label="用户名"
           min-width="15%">
         </el-table-column>
         <el-table-column
@@ -76,7 +76,7 @@
       width="20%"
       center>
       <el-form :model="editform" class="form" label-width="80px" :rules="rulesLogin" ref="editform">
-        <el-form-item label="用户" prop="username">
+        <el-form-item label="用户名" prop="username">
           <el-input v-model="editform.username" placeholder="请填写用户名"></el-input>
         </el-form-item>
         <el-form-item label="昵称" prop="nickname">
@@ -114,10 +114,13 @@ export default {
   data () {
     // 校验用户
     var checkUsername = (rule, value, callback) => {
+      let word = /^[\u4e00-\u9fa5]{0,}$/
       if (value === '') {
         return callback(new Error('用户名不能为空'))
       } else if (value.length > 20) {
         callback(new Error('用户名长度不超过20位'))
+      } else if (word.test(value)) {
+        callback(new Error('用户名不能为汉字'))
       } else {
         callback()
       }
@@ -134,10 +137,13 @@ export default {
     }
     // 校验手机号
     var checkPhone = (rule, value, callback) => {
+      let numReg = /^[0-9]*$/
       if (value === '') {
         callback(new Error('手机号不能为空'))
       } else if (value.length !== 11) {
         callback(new Error('请输入11位手机号'))
+      } else if (!numReg.test(value)) {
+        callback(new Error('账号必须为数字'))
       } else {
         callback()
       }

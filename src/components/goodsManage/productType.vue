@@ -18,12 +18,22 @@
         <el-table-column
           align="center"
           prop="id"
-          label="纸巾分类编码">
+          label="商品分类编码">
         </el-table-column>
         <el-table-column
           align="center"
           prop="name"
-          label="纸巾分类名称">
+          label="商品分类名称">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="createTime"
+          label="创建时间">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="remark"
+          label="备注">
         </el-table-column>
         <el-table-column
           align="center"
@@ -52,11 +62,14 @@
       width="20%"
       center>
       <el-form :model="editform" label-width="100px">
-        <el-form-item label="纸巾分类编码" v-show="isProductIdShowDia">
+        <el-form-item label="商品分类编码" v-show="isProductIdShowDia">
           <el-input v-model="editform.id" :disabled="isedit"></el-input>
         </el-form-item>
-        <el-form-item label="纸巾分类名称" prop="productName">
-          <el-input v-model="editform.name" placeholder="请填写纸巾分类名称"></el-input>
+        <el-form-item label="商品分类名称" prop="productName">
+          <el-input v-model="editform.name" placeholder="请填写商品分类名称"></el-input>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="editform.remark" placeholder="请填写备注"></el-input>
         </el-form-item>
       </el-form>
 
@@ -94,7 +107,7 @@ export default {
       productName: '',
       editform: {
         id: '139761',
-        name: '纸巾'
+        name: '商品'
       },
       isProductIdShowDia: false,
       tableData: [],
@@ -146,7 +159,7 @@ export default {
         })() // 不加最后()会报错，并没有立即执行,立即执行函数
       }
     },
-    // 编辑产品信息按钮
+    // 编辑商品信息按钮
     editBt: function (index, row) {
       console.log(row)
       this.dialogTitle = '编辑'
@@ -157,7 +170,7 @@ export default {
       this.backPaperTypeDetail()
       this.dialogEditVisible = true
     },
-    // 新增产品按钮
+    // 新增商品按钮
     addBt: function () {
       console.log(this.tableData)
       this.dialogTitle = '新增'
@@ -166,6 +179,7 @@ export default {
       this.isedit = false
       this.editform.id = ''
       this.editform.name = ''
+      this.editform.remark = ''
       this.dialogEditVisible = true
     },
     // 对话框修改确认
@@ -173,19 +187,21 @@ export default {
       if (this.isEditOrAdd === 0) {
         this.param.id = this.editform.id
         this.param.name = this.editform.name
+        this.param.remark = this.editform.remark
         this.backChangePaperType()
       } else {
+        this.param.remark = this.editform.remark
         this.param.id = this.editform.id
         // 表单验证
         this.backAddPaperType()
       }
       this.dialogEditVisible = false
     },
-    // 删除产品对话框
+    // 删除商品对话框
     delBt: function (index, row) {
       console.log(index)
       console.log(row)
-      this.$confirm('确定删除该产品吗?', '删除该产品', {
+      this.$confirm('确定删除该商品吗?', '删除该商品', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -213,9 +229,9 @@ export default {
       *******************   API调用   *********************
       *
     */
-    // 纸巾分类分页查询
+    // 商品分类分页查询
     backPaperTypePage: function () {
-      sessionSetStore('backName', '纸巾分类分页查询')
+      sessionSetStore('backName', '商品分类分页查询')
       this.param.pageNo = this.param.currentPage
       this.param.pageSize = this.pagesize
       back.paperTypePage(this.param).then(function (response) {
@@ -227,6 +243,8 @@ export default {
             let obj = {}
             obj.id = response.data.records[i].id
             obj.name = response.data.records[i].name
+            obj.remark = response.data.records[i].remark
+            obj.createTime = response.data.records[i].createTime
             this.tableData.push(obj) // 或用this.tableData[i] = obj亦可
             console.log(this.tableData)
             // 清空搜索框
@@ -240,9 +258,9 @@ export default {
           console.log(error)
         })
     },
-    // 新增纸巾
+    // 新增商品
     backAddPaperType: function () {
-      sessionSetStore('backName', '新增纸巾')
+      sessionSetStore('backName', '新增商品')
       back.addPaperType(this.param).then(function (response) {
         console.log(response)
         this.param.name = ''
@@ -253,9 +271,9 @@ export default {
           console.log(error)
         })
     },
-    // 编辑纸巾分类
+    // 编辑商品分类
     backChangePaperType: function () {
-      sessionSetStore('backName', '修改纸巾')
+      sessionSetStore('backName', '修改商品')
       back.changePaperType(this.param).then(function (response) {
         console.log(response)
         this.param.name = ''
@@ -265,16 +283,17 @@ export default {
           console.log(error)
         })
     },
-    // 查看纸巾分类详情
+    // 查看商品分类详情
     backPaperTypeDetail: function () {
       return new Promise(function (resolve, reject) {
-        sessionSetStore('backName', '查看纸巾详情')
+        sessionSetStore('backName', '查看商品详情')
         back.paperTypeDetail(this.param).then(function (response) {
           console.log(response)
           let obj = {}
           if (response.data !== undefined) {
             obj.id = response.data.id
             obj.name = response.data.name
+            obj.remark = response.data.remark
           }
           this.editform = obj
           resolve()
@@ -285,9 +304,9 @@ export default {
           })
       }.bind(this))
     },
-    // 删除纸巾分类
+    // 删除商品分类
     backDelPaperType: function () {
-      sessionSetStore('backName', '删除纸巾')
+      sessionSetStore('backName', '删除商品')
       back.delPaperType(this.param).then(function (response) {
         console.log(response)
         this.backPaperTypePage()
@@ -296,10 +315,10 @@ export default {
           console.log(error)
         })
     },
-    // 获取纸巾分类
+    // 获取商品分类
     backpaperType: function () {
       this.param.name = ''
-      sessionSetStore('backName', '获取纸巾分类')
+      sessionSetStore('backName', '获取商品分类')
       back.paperType(this.param).then(function (response) {
         console.log(response)
         if (response.code === 0) {
@@ -317,7 +336,7 @@ export default {
           console.log(error)
         })
     },
-    // // 纸巾查询
+    // // 商品查询
     // backQuePaperList: function () {
     //   back.quePaperList().then(function (response) {
     //     console.log(response)
