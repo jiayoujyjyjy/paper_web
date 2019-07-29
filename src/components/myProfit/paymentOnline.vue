@@ -121,7 +121,7 @@ export default {
     // this.param.beginDate = ''
     // this.param.endDate = ''
     // 分页查询请求可选项置空函数
-    this.backMyIncome()
+    this.backMyIncomeDate()
   },
   mounted: function () {
     this.tableContainerHeightSet()
@@ -148,23 +148,17 @@ export default {
     },
     // 搜索按钮
     searchBt: function () {
-      if (this.dateValue) {
-        this.param.beginDate = this.dateValue[0]
-        this.param.endDate = this.dateValue[1]
-        this.backMyIncomeDate()
-      } else {
-        this.backMyIncome()
-      }
+      this.param.beginDate = this.dateValue[0]
+      this.param.endDate = this.dateValue[1]
+      this.param.pageNo = 1
+      this.param.page = 6
+      this.backMyIncomeDate()
     },
     // 每次切换页码之前清空table数据
     handlePaginationChange: function (value) {
       console.log(value)
       this.param.pageNo = value
-      if (this.param.beginDate && this.param.endDate) {
-        this.backMyIncomeDate()
-      } else {
-        this.backMyIncome()
-      }
+      this.backMyIncomeDate()
     },
     /*
       *
@@ -176,27 +170,6 @@ export default {
       sessionSetStore('backName', '收益查询')
       console.log(this.param)
       back.myIncomeDate(this.param).then(function (response) {
-        console.log(response)
-        if (response.code === 0) {
-          this.tableData = []
-          this.eltotal = response.data.incomeList.total
-          for (var i = 0; i < response.data.incomeList.records.length; i++) {
-            let arr = {}
-            arr.date = response.data.incomeList.records[i].date
-            arr.income = response.data.incomeList.records[i].income
-            this.tableData.push(arr)
-          }
-        } else {
-          this.notificationInfo('error', '收益获取失败！')
-        }
-      }.bind(this))
-        .catch((error) => {
-          console.log(error)
-        })
-    },
-    backMyIncome: function () {
-      sessionSetStore('backName', '收益查询')
-      back.myIncome(this.param).then(function (response) {
         console.log(response)
         if (response.code === 0) {
           this.tableData = []

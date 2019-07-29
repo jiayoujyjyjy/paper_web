@@ -70,7 +70,7 @@ export default {
     this.param.id = sessionGetStore('managerId')
     this.usermanage_activeName = sessionGetStore('usermanage_activeName')
     // 获取收益
-    this.backMyIncome()
+    this.myIncomeDate()
   },
   mounted: function () {
     // 表格容器高度初始化
@@ -119,11 +119,11 @@ export default {
       *
     */
     // 收益查询
-    backMyIncome: function () {
+    myIncomeDate: function () {
       this.param.pageSize = 10
       this.param.pageNo = 1
       sessionSetStore('backName', '交易查询')
-      back.myIncome(this.param).then(function (response) {
+      back.myIncomeDate(this.param).then(function (response) {
         console.log(response)
         if (response.code === 0) {
           this.userName = response.data.username

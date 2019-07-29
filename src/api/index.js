@@ -955,26 +955,7 @@ export const back = {
         return Promise.reject(error)
       })
   },
-  // 7.2.1 我的收益
-  myIncome (param) {
-    return axios({
-      url: `${url.backbasurl}/api/v1/statis/myIncome?pageNo=${param.pageNo}&pageSize=${param.pageSize}`,
-      method: 'get',
-      headers: {
-        'Content-Type': 'application/json',
-        managerId: param.managerId
-      },
-      data: {
-      }
-    })
-      .then((response) => {
-        return response.data
-      })
-      .catch((error) => {
-        return Promise.reject(error)
-      })
-  },
-  // 7.2.2 我的收益
+  // 7.2 我的收益
   myIncomeDate (param) {
     return axios({
       url: `${url.backbasurl}/api/v1/statis/myIncome?beginDate=${param.beginDate}&endDate=${param.endDate}&pageNo=${param.pageNo}&pageSize=${param.pageSize}`,
