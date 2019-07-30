@@ -423,6 +423,14 @@ export default {
     editConfirm: function () {
       console.log('详情对话框确定按键')
       console.log(this.detailForm)
+      if (typeof this.detailForm.type === 'string') {
+        for (var i = 0; i < this.options.length; i++) {
+          if (this.detailForm.type === this.options[i].label) {
+            this.detailForm.type = this.options[i].value
+          }
+        }
+      }
+      console.log(this.detailForm.type)
       this.dialogEditVisible = false
       this.editShow = false
       this.backUpdateArea()
