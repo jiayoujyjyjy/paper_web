@@ -76,13 +76,13 @@
         <el-row>
           <el-col :span="8">
             <el-form-item label="账号" prop="account">
-              <el-input v-model="form.account"></el-input>
+              <el-input v-model="form.account" clearable></el-input>
             </el-form-item>
             <el-form-item label="密码" prop="password">
-              <el-input v-model="form.password"></el-input>
+              <el-input v-model="form.password" clearable></el-input>
             </el-form-item>
             <el-form-item label="使用人姓名" prop="nickname">
-              <el-input v-model="form.nickname"></el-input>
+              <el-input v-model="form.nickname" clearable></el-input>
             </el-form-item>
             <el-form-item label="岗位角色" prop="roleType">
               <el-select v-model="form.roleType" placeholder="请选择">

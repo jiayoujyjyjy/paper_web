@@ -79,7 +79,7 @@
       center>
 
       <el-form :model="editform" label-width="100px">
-        <el-form-item label="场地编码">
+        <el-form-item label="场地" required>
           <el-select v-model="editform.id" placeholder="请选择场地" style="width: 70%" @change="selectCode">
             <el-option v-for="item in siteCodeOptions"
               :key="item.id"
@@ -88,7 +88,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="设备编码">
+        <el-form-item label="设备" required>
           <el-select v-model="editform.devId" placeholder="请选择设备" style="width: 70%">
             <el-option v-for="item in devCodeOptions"
               :key="item.id"
@@ -97,7 +97,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="纸巾编码">
+        <el-form-item label="纸巾" required>
           <el-select v-model="editform.paperId" placeholder="请选择纸巾" style="width: 70%" @change="selectType">
             <el-option v-for="item in paperCodeOptions"
               :key="item.id"
@@ -106,8 +106,8 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="数量" prop="paperNum">
-          <el-input v-model="editform.num" placeholder="请填写出货数量 (默认为1)" style="width: 70%"></el-input>
+        <el-form-item label="数量">
+          <el-input v-model="editform.num" placeholder="请填写出货数量 (默认为1)" style="width: 70%" clearable></el-input>
         </el-form-item>
       </el-form>
 
@@ -215,7 +215,6 @@ export default {
     selectCode: function (value) {
       console.log(value)
       this.devCodeOptions = []
-      // this.editform.devId = ''
       if (value === '') {
         this.devCodeOptions = []
       } else {
@@ -253,6 +252,7 @@ export default {
       this.param.siteId = this.editform.id
       this.param.paperId = this.editform.paperId
       this.param.num = this.editform.num === undefined ? 1 : this.editform.num
+      this.param.currentPage = 1
       this.backDevStartup()
     },
     // 每次切换页码之前清空table数据

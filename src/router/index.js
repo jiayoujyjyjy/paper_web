@@ -114,8 +114,8 @@ const router = new Router({
   ]
 })
 router.beforeEach((to, from, next) => {
-  console.log(from.name) // 上边的组件配置项一定要写name字段
-  console.log(to.name)
+  // console.log(from.name) // 上边的组件配置项一定要写name字段
+  // console.log(to.name)
   if (to.name === 'blank') {
     if (from.name === 'device') {
       store.commit('setResetPage', 'device')

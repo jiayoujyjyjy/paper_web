@@ -2,8 +2,8 @@
 <template>
   <div class="productType">
         <div class="select">
-        <span style="margin: auto 1%;">分类名称</span>
-        <el-input size="small" v-model="productName" placeholder="请输入分类名称"></el-input>
+        <span style="margin: auto 1%;">商品分类名称</span>
+        <el-input size="small" v-model="productName" placeholder="请输入商品分类名称" clearable></el-input>
         <el-button type="primary" size="small" style="margin: auto 1%" @click="searchBt">搜索</el-button>
         <el-button type="primary" size="small" style="margin: auto 1%" @click="addBt">添加分类</el-button>
       </div>
@@ -59,17 +59,17 @@
     <el-dialog
       :title="dialogTitle"
       :visible.sync="dialogEditVisible"
-      width="20%"
+      width="30%"
       center>
-      <el-form :model="editform" label-width="100px">
-        <el-form-item label="商品分类编码" v-show="isProductIdShowDia">
-          <el-input v-model="editform.id" :disabled="isedit"></el-input>
+      <el-form :model="editform" label-width="150px">
+        <el-form-item label="商品分类编码" v-show="isProductIdShowDia" required>
+          <el-input v-model="editform.id" :disabled="isedit" clearable></el-input>
         </el-form-item>
-        <el-form-item label="商品分类名称" prop="productName">
-          <el-input v-model="editform.name" placeholder="请填写商品分类名称"></el-input>
+        <el-form-item label="商品分类名称" prop="productName" required>
+          <el-input v-model="editform.name" placeholder="请填写商品分类名称" clearable></el-input>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="editform.remark" placeholder="请填写备注"></el-input>
+          <el-input v-model="editform.remark" placeholder="请填写备注" clearable></el-input>
         </el-form-item>
       </el-form>
 

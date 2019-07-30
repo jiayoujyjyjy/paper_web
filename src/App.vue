@@ -10,6 +10,9 @@
 export default {
   name: 'App',
   created: function () {
+    console.log = function () {
+
+    }
   },
   mounted: function () {
     // console.log = function () {}

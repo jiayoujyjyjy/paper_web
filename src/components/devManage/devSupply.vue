@@ -8,7 +8,7 @@
     <!-- 缺货备货 -->
     <div class="select search" v-show="shortage">
       <span style="margin: auto 1%">设备编号:</span>
-      <el-input v-model="input_devMac" placeholder="请输入设备编号"></el-input>
+      <el-input v-model="input_devMac" placeholder="请输入设备编号" clearable></el-input>
       <span style="margin: auto 1%">场地:</span>
       <el-select v-model="selected" placeholder="请选择">
         <el-option

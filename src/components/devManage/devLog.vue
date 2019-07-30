@@ -3,7 +3,7 @@
   <div class="devLog">
     <div class="select">
       <span style="margin: auto 1%">设备编码:</span>
-      <el-input v-model="input_devMac" placeholder="请输入设备编码"></el-input>
+      <el-input v-model="input_devMac" placeholder="请输入设备编码" clearable></el-input>
       <span style="margin: auto 1%">场地名称:</span>
       <el-select v-model="selected" placeholder="请选择">
         <el-option

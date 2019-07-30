@@ -9,15 +9,15 @@
       <!-- 模糊搜索 -->
       <div class="box">
         <span style="width:80px;margin-top:6px">订单编码</span>
-        <el-input size="small" v-model="selection.orderId" placeholder="请输入交易/商户订单号"></el-input>
+        <el-input size="small" v-model="selection.orderId" placeholder="请输入交易/商户订单号" clearable></el-input>
       </div>
       <div class="box">
         <span style="width:80px;margin-top:6px">设备编码</span>
-        <el-input size="small" v-model="selection.deviceId" placeholder="请输入设备编码"></el-input>
+        <el-input size="small" v-model="selection.deviceId" placeholder="请输入设备编码" clearable></el-input>
       </div>
       <div class="box">
         <span style="width:80px;margin-top:6px">场地名称</span>
-        <el-input size="small" v-model="selection.site" placeholder="请输入场地名称"></el-input>
+        <el-input size="small" v-model="selection.site" placeholder="请输入场地名称" clearable></el-input>
       </div>
       <div class="box">
         <span style="width:80px;margin-top:6px">日期</span>
@@ -110,7 +110,7 @@
       :total="eltotal">
     </el-pagination>
 
-    <!--查看对话框-->
+    <!-- 查看对话框
     <el-dialog
       :title="dialogTitle"
       :visible.sync="dialogEditVisible"
@@ -118,16 +118,16 @@
       center>
       <el-form :model="detailForm" label-width="100px">
         <el-form-item label="产品名称">
-          <el-input v-model="detailForm.productName" :disabled="isedit"></el-input>
+          <el-input v-model="detailForm.productName" :disabled="isedit" clearable></el-input>
         </el-form-item>
         <el-form-item label="产品类型">
-          <el-input v-model="detailForm.productType" :disabled="isedit"></el-input>
+          <el-input v-model="detailForm.productType" :disabled="isedit" clearable></el-input>
         </el-form-item>
         <el-form-item label="数量">
-          <el-input v-model="detailForm.productNum" :disabled="isedit"></el-input>
+          <el-input v-model="detailForm.productNum" :disabled="isedit" clearable></el-input>
         </el-form-item>
         <el-form-item label="总价">
-          <el-input v-model="detailForm.productPrice" :disabled="isedit"></el-input>
+          <el-input v-model="detailForm.productPrice" :disabled="isedit" clearable></el-input>
         </el-form-item>
       </el-form>
 
@@ -135,7 +135,7 @@
         <el-button @click="dialogEditVisible = false">取 消</el-button>
         <el-button type="primary" @click="editConfirm">确 定</el-button>
       </span>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
@@ -157,15 +157,15 @@ export default {
       eltotal: 20,
       siteList: [],
       devIdlist: [],
-      isedit: false,
-      dialogTitle: '', // 详情对话框标题
-      detailForm: {
-        productName: '纸巾',
-        productType: '小包纸', // 小包纸/抽纸
-        productNum: 100,
-        productPrice: '2元'
-      },
-      dialogEditVisible: false,
+      // isedit: false,
+      // dialogTitle: '', // 详情对话框标题
+      // detailForm: {
+      //   productName: '纸巾',
+      //   productType: '小包纸', // 小包纸/抽纸
+      //   productNum: 100,
+      //   productPrice: '2元'
+      // },
+      // dialogEditVisible: false,
       tableData: [{
         orderId: '',
         refundReason: '',
@@ -259,17 +259,17 @@ export default {
         })() // 不加最后()会报错，并没有立即执行,立即执行函数
       }
     },
-    // 详情信息按钮
-    detailBt: function (index, row) {
-      this.dialogTitle = '详情'
-      this.isedit = true
-      this.dialogEditVisible = true
-    },
-    // 详情对话框确定按键
-    editConfirm: function () {
-      console.log('详情对话框确定按键')
-      this.dialogEditVisible = false
-    },
+    // // 详情信息按钮
+    // detailBt: function (index, row) {
+    //   this.dialogTitle = '详情'
+    //   this.isedit = true
+    //   this.dialogEditVisible = true
+    // },
+    // // 详情对话框确定按键
+    // editConfirm: function () {
+    //   console.log('详情对话框确定按键')
+    //   this.dialogEditVisible = false
+    // },
     // 搜索按钮
     searchBt: function () {
       console.log(this.selection)
@@ -335,40 +335,40 @@ export default {
           console.log(error)
         })
     },
-    // 修改订单
-    backUpdateOrder: function () {
-      sessionSetStore('backName', '修改订单')
-      back.updateOrder(this.param).then(function (response) {
-        console.log(response)
-        this.backQueOrderPage()
-      }.bind(this))
-        .catch((error) => {
-          console.log(error)
-        })
-    },
-    // 查看订单详情
-    backQueOrderInfo: function () {
-      return new Promise(function (resolve, reject) {
-        sessionSetStore('backName', '查看订单详情')
-        back.queOrderInfo(this.param).then(function (response) {
-          console.log(response)
-          let obj = {}
-          if (response.data !== undefined) {
-            obj.deviceId = response.data.id
-            obj.productName = response.data.name
-            obj.productType = response.data.type
-            obj.num = response.data.num
-            obj.price = response.data.price
-          }
-          this.editform = obj
-          resolve()
-        }.bind(this))
-          .catch(function (error) {
-            console.log(error)
-            reject()
-          })
-      }.bind(this))
-    },
+    // // 修改订单
+    // backUpdateOrder: function () {
+    //   sessionSetStore('backName', '修改订单')
+    //   back.updateOrder(this.param).then(function (response) {
+    //     console.log(response)
+    //     this.backQueOrderPage()
+    //   }.bind(this))
+    //     .catch((error) => {
+    //       console.log(error)
+    //     })
+    // },
+    // // 查看订单详情
+    // backQueOrderInfo: function () {
+    //   return new Promise(function (resolve, reject) {
+    //     sessionSetStore('backName', '查看订单详情')
+    //     back.queOrderInfo(this.param).then(function (response) {
+    //       console.log(response)
+    //       let obj = {}
+    //       if (response.data !== undefined) {
+    //         obj.deviceId = response.data.id
+    //         obj.productName = response.data.name
+    //         obj.productType = response.data.type
+    //         obj.num = response.data.num
+    //         obj.price = response.data.price
+    //       }
+    //       this.editform = obj
+    //       resolve()
+    //     }.bind(this))
+    //       .catch(function (error) {
+    //         console.log(error)
+    //         reject()
+    //       })
+    //   }.bind(this))
+    // },
     /*
       *
       *******************   辅助函数   *********************

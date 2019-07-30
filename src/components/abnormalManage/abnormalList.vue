@@ -3,7 +3,7 @@
   <div class="abnormalList">
         <div class="select">
         <span style="margin: auto 1%;">设备编号</span>
-        <el-input size="small" v-model="id" placeholder="请输入设备编号"></el-input>
+        <el-input size="small" v-model="id" placeholder="请输入设备编号" clearable></el-input>
         <!-- <span style="margin: auto 1%">异常类型</span>
         <el-select v-model="selected" placeholder="请选择">
             <el-option

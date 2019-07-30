@@ -77,13 +77,13 @@
       center>
       <el-form :model="editform" class="form" label-width="80px" :rules="rulesLogin" ref="editform">
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="editform.username" placeholder="请填写用户名"></el-input>
+          <el-input v-model="editform.username" placeholder="请填写用户名" clearable></el-input>
         </el-form-item>
         <el-form-item label="昵称" prop="nickname">
-          <el-input v-model="editform.nickname" placeholder="请填写昵称"></el-input>
+          <el-input v-model="editform.nickname" placeholder="请填写昵称" clearable></el-input>
         </el-form-item>
         <el-form-item label="手机" prop="phone">
-          <el-input v-model="editform.phone" placeholder="请填写手机号"></el-input>
+          <el-input v-model="editform.phone" placeholder="请填写手机号" clearable></el-input>
         </el-form-item>
         <el-form-item label="角色" prop="roleType">
           <el-select v-model="editform.roleType" placeholder="请选择角色类型">
@@ -92,7 +92,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input v-model="editform.password" placeholder="请填写密码"></el-input>
+          <el-input v-model="editform.password" placeholder="请填写密码" clearable></el-input>
         </el-form-item>
       </el-form>
 

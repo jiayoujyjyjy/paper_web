@@ -3,7 +3,7 @@
   <div class="productmanagePage">
         <div class="select">
         <span style="margin: auto 1%;">商品名称</span>
-        <el-input size="small" v-model="productName" placeholder="请输入产品名称"></el-input>
+        <el-input size="small" v-model="productName" placeholder="请输入商品名称" clearable></el-input>
         <span style="margin: auto 1%">商品类型</span>
       <el-select v-model="selected" placeholder="请选择">
         <el-option
@@ -93,7 +93,7 @@
           <el-input v-model="editform.deviceId" :disabled="isedit"></el-input>
         </el-form-item>
         <el-form-item label="商品名称" prop="productName">
-          <el-input v-model="editform.productName" placeholder="请填写商品名称"></el-input>
+          <el-input v-model="editform.productName" placeholder="请填写商品名称" clearable></el-input>
         </el-form-item>
         <el-form-item label="商品类型" prop="productType">
           <el-select v-model="editform.productType" placeholder="请选择商品类型">
@@ -105,10 +105,10 @@
           </el-select>
         </el-form-item>
         <el-form-item label="商品库存" prop="num">
-          <el-input v-model="editform.num" placeholder="请填写商品库存"></el-input>
+          <el-input v-model="editform.num" placeholder="请填写商品库存" clearable></el-input>
         </el-form-item>
         <el-form-item label="商品单价" prop="price">
-          <el-input v-model="editform.price" placeholder="请填写商品单价"></el-input>
+          <el-input v-model="editform.price" placeholder="请填写商品单价" clearable></el-input>
         </el-form-item>
       </el-form>
 

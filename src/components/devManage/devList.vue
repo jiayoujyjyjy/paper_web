@@ -3,7 +3,7 @@
   <div class="devListPage">
     <div class="select">
       <span style="margin: auto 1%">设备编号:</span>
-      <el-input v-model="input_devMac" placeholder="请输入设备编号"></el-input>
+      <el-input v-model="input_devMac" placeholder="请输入设备编号" clearable></el-input>
       <span style="margin: auto 1%">场地:</span>
       <el-select v-model="selected" placeholder="请选择">
         <el-option
@@ -80,16 +80,20 @@
           prop="site"
           label="场地">
         </el-table-column>
+        <el-table-column
+          align="center"
+          label="库存">
           <el-table-column align="center" prop="paper" label="纸巾"></el-table-column>
           <el-table-column align="center" prop="num" label="数量"></el-table-column>
           <el-table-column align="center" prop="price" label="单价"></el-table-column>
           <el-table-column
-            label="编辑"
+            label="修改"
             align="center">
           <template slot-scope="scope">
-            <el-button type="text" size="small" @click="editKuCun(scope.$index, scope.row)">编辑</el-button>
+            <el-button type="text" size="small" @click="editKuCun(scope.$index, scope.row)">修改</el-button>
           </template>
           </el-table-column>
+        </el-table-column>
         <el-table-column
           label="操作"
           align="center">
@@ -146,10 +150,10 @@
       center>
       <el-form :model="editform" label-width="100px">
         <el-form-item label="设备编号">
-          <el-input v-model="editform.deviceId" :disabled="isedit"></el-input>
+          <el-input v-model="editform.deviceId" :disabled="isedit" clearable></el-input>
         </el-form-item>
         <el-form-item label="设备名称">
-          <el-input v-model="editform.devName"></el-input>
+          <el-input v-model="editform.devName" clearable></el-input>
         </el-form-item>
         <!-- 分组这里最终提交的时候要考虑分组是新建的情况 -->
         <el-form-item label="设备转移" v-show="isadd">
@@ -188,14 +192,11 @@
     <!-- 编辑库存弹窗 -->
     <el-dialog title="编辑库存" :visible.sync="edikucun" width="30%" center>
       <el-form :model="kucun" label-width="100px">
-        <el-form-item label="单价">
-          <el-input v-model="kucun.name"></el-input>
-        </el-form-item>
-        <el-form-item label="单价">
-          <el-input v-model="kucun.price"></el-input>
+        <el-form-item label="纸巾">
+          <el-input v-model="kucun.name" clearable></el-input>
         </el-form-item>
         <el-form-item label="库存">
-          <el-input v-model="kucun.num"></el-input>
+          <el-input v-model="kucun.num" clearable></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -507,7 +508,8 @@ export default {
         console.log(this.editform)
         this.param.deviceId = this.editform.deviceId
         this.param.deviceName = this.editform.devName
-        this.param.siteId = this.selectedSite[1]
+        this.param.siteId = ''
+        // this.param.siteId = this.selectedSite[1]
         console.log(this.deviceId)
         this.backUpdateDevice()
         this.editDialogVisible = false

@@ -4,11 +4,11 @@
     <div class="select">
       <!-- 模糊搜索 -->
       <span style="width:80px;margin-top:6px">用户ID</span>
-      <el-input size="small" v-model="selection.id" placeholder="请输入用户ID"></el-input>
+      <el-input size="small" v-model="selection.id" placeholder="请输入用户ID" clearable></el-input>
       <span style="width:80px;margin-top:6px">用户昵称</span>
-      <el-input size="small" v-model="selection.name" placeholder="请输入用户昵称"></el-input>
+      <el-input size="small" v-model="selection.name" placeholder="请输入用户昵称" clearable></el-input>
       <span style="width:80px;margin-top:6px">手机号码</span>
-      <el-input size="small" v-model="selection.phone" placeholder="请输入手机号码"></el-input>
+      <el-input size="small" v-model="selection.phone" placeholder="请输入手机号码" clearable></el-input>
       <el-button type="primary" size="small" @click="searchBt">搜索</el-button>
     </div>
     <div class="tableDiv" style="margin-top: 20px;">
@@ -47,7 +47,7 @@
         <el-table-column
           align="center"
           prop="city"
-          label="详细地址">
+          label="城市">
         </el-table-column>
         <el-table-column
           align="center"
