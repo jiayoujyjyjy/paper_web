@@ -88,7 +88,7 @@
         <el-form-item label="角色" prop="roleType">
           <el-select v-model="editform.roleType" placeholder="请选择角色类型">
             <el-option label="管理员" value="0"></el-option>
-            <el-option label="业务员" value="1"></el-option>
+            <el-option label="代理" value="1"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="密码" prop="password">
@@ -107,6 +107,7 @@
 
 <script>
 import { back } from 'api'
+import Routers from '@/router'
 import { sessionGetStore, sessionSetStore } from '@/components/config/Utils'
 import $ from 'jquery'
 
@@ -233,6 +234,10 @@ export default {
   created: async function () {
     // session获取登录者关键参数
     this.param.id = sessionGetStore('managerId')
+    // 若roleType !== 0，则拦截强制跳转到login页面
+    if (sessionGetStore('roleId') !== '0') {
+      Routers.push({ path: '/login' })
+    }
     // await this.backQueManagerInfo()
     // this.param.nickname = this.editform.nickname
     // this.param.roleType = Number(this.editform.roleType)
@@ -408,7 +413,7 @@ export default {
             obj.username = response.data.records[i].username
             obj.nickname = response.data.records[i].nickname
             obj.phone = response.data.records[i].phone
-            obj.roleType = response.data.records[i].roleType === 0 ? '管理员' : '业务员'
+            obj.roleType = response.data.records[i].roleType === '0' ? '管理员' : '代理'
             obj.state = response.data.records[i].isValid !== 0 // 牛逼啊，state只能用true false来标识
             this.tableData.push(obj)
           }

@@ -191,6 +191,32 @@ export const back = {
       })
   },
   /*
+  ********* 2*1 场地分组模块 *********
+  */
+  //  分组查询
+  queGroupList (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/group/list`,
+      method: 'get',
+      headers: {
+        managerId: param.managerId,
+        roleId: param.roleId
+      },
+      data: {}
+    })
+      .then((response) => {
+        // degugger
+        return response.data // 跳到具体页面api请求.then()
+      })
+      .catch((error) => {
+        // degugger
+        // console.log(error)
+        return Promise.reject(error) // Promise.reject跳到具体页面api请求.catch()
+        // return error // 跳到具体页面api请求.then()
+        // 以上: 只有return Promise.reject(error)才会跳到.catch()其他再怎么return都会跳到.then()
+      })
+  },
+  /*
   ********* 3 设备模块 *********
   */
   // 3.1 设备分页查询
@@ -1018,6 +1044,66 @@ export const back = {
   queSiteStatis (param) {
     return axios({
       url: `${url.backbasurl}/api/v1/statis/site?siteId=${param.siteId}&beginDate=${param.beginDate}&endDate=${param.endDate}&queryType=${param.queryType}&pageNo=${param.pageNo}&pageSize=${param.pageSize}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        managerId: param.managerId,
+        roleId: param.roleId
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // 7.4 订单分析
+  queOrderAnalysis (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/statis/orderAnalysis?beginDate=${param.beginDate}&endDate=${param.endDate}&siteId=${param.siteId}&groupId=${param.groupId}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        managerId: param.managerId,
+        roleId: param.roleId
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // 7.5 商品分析
+  quePaperAnalysis (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/statis/paperAnalysis?beginDate=${param.beginDate}&endDate=${param.endDate}&siteId=${param.siteId}&groupId=${param.groupId}`,
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        managerId: param.managerId,
+        roleId: param.roleId
+      },
+      data: {
+      }
+    })
+      .then((response) => {
+        return response.data
+      })
+      .catch((error) => {
+        return Promise.reject(error)
+      })
+  },
+  // 7.6 点位分析
+  queSiteAnalysis (param) {
+    return axios({
+      url: `${url.backbasurl}/api/v1/statis/siteAnalysis?beginDate=${param.beginDate}&endDate=${param.endDate}`,
       method: 'get',
       headers: {
         'Content-Type': 'application/json',

@@ -188,6 +188,7 @@ export default {
             const end = new Date()
             const start = new Date()
             start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            console.log([start, end])
             picker.$emit('pick', [start, end])
           }
         }, {

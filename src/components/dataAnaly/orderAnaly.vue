@@ -1,176 +1,109 @@
-// 更改为3交易管理-> 3-1交易订单
+// 8数据分析  -> 8-1订单分析
 <template>
-  <div class="deviceInfoPage">
-    <div class="flexbox1">
-      <div>
-        <div>
-          <span style="margin-right:5px;">日期</span>
-          <el-date-picker
-            v-model="dateValue"
-            type="datetimerange"
-            size="small"
-            :picker-options="pickerOptions"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期">
-          </el-date-picker>
-        </div>
-        <p></p>
-      </div>
-      <div>
-      </div>
-      <div style="display: -webkit-flex;display: flex;flex-wrap: nowrap;margin-left:20px;">
-        <span style="display:block;margin-top:5px;width:80px;margin-right:5px;">设备编码</span>
-        <el-input v-model="input_devId" size="small" placeholder="请输入设备编码"></el-input>
-      </div>
-    </div>
+  <div class="orderAnalyPage">
     <div class="flexbox">
-      <div>展示
-        <el-radio-group v-model="isTable" size="small">
-          <el-radio-button :label="true">详情</el-radio-button>
-          <el-radio-button :label="false">趋势</el-radio-button>
-        </el-radio-group>
+      <div class="box box-one">
+        <h3>订单分析</h3>
       </div>
-      <div class="flexbox">
+      <!-- <div class="box box-two">
+        <el-select v-model="timeSelected" placeholder="请选择" @change="updataTime">
+          <el-option
+            v-for="item in timeSelectData"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </div> -->
+      <div class="box box-three">
+        <el-date-picker
+          v-model="dateValue"
+          type="daterange"
+          unlink-panels
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :picker-options="pickerOptions"
+          format="yyyy 年 MM 月 dd 日"
+          value-format="yyyy-MM-dd">
+        </el-date-picker>      
+      </div>
+      <div class="box box-four">
+        <el-select v-model="siteOrGroupTypeSelected" placeholder="请选择" @change="queTypeChange">
+          <el-option
+            v-for="item in siteOrGroupTypeSelectData"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </div>
+      <div class="box box-five">
+        <el-select v-model="siteOrGroupIdSelected" placeholder="请选择">
+          <el-option
+            v-for="item in siteOrGroupIdSelectData"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </div>
+      <div class="box box-six">
         <el-button type="primary" size="small" @click="searchBt">查询</el-button>
-        <el-button size="small" type="primary" style="margin-left:20px;" @click="resetBt">重置</el-button>
       </div>
     </div>
-    <div v-show="isTable">
-      <div class="tableDiv">
-        <el-table
-          :header-cell-style="{'font-size':'14px'}"
-          :data="tableData"
-          stripe
-          border
-          :max-height="tableMaxHeght"
-          size="small"
-          style="width: 100%;font-size:12px;">
-          <el-table-column
-            align="center"
-            prop="name"
-            label="名称">
-          </el-table-column>
-          <el-table-column
-            align="center"
-            prop="deviceId"
-            label="设备编码">
-          </el-table-column>
-          <el-table-column
-            align="center"
-            prop="location"
-            label="投放地址">
-          </el-table-column>
-          <el-table-column
-            align="center"
-            prop="state"
-            label="状态">
-            <template slot-scope="scope">
-              <el-tag
-                :type="scope.row.state === '在线' ? 'success' : 'danger'"
-                disable-transitions>{{scope.row.state}}</el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column
-            align="center"
-            prop="onlineIncome"
-            label="在线收益">
-          </el-table-column>
-          <el-table-column
-            align="center"
-            prop="tradNum"
-            label="交易笔数">
-          </el-table-column>
-          <el-table-column
-            align="center"
-            prop="adIncome"
-            label="广告收益">
-          </el-table-column>
-          <el-table-column
-            align="center"
-            prop="totalIncome"
-            label="总收益">
-          </el-table-column>
-        </el-table>
+
+    <div class="order-container">
+      <div class="order-amount-container">
+        <span class="little-title">订单数量和金额分析</span>
+        <div id="orderNumberChart" class="chart-container"></div>
       </div>
-      <el-pagination
-        @current-change="handlePaginationChange"
-        :current-page="param.currentPage"
-        :page-size="param.pagesize"
-        layout="total, prev, pager, next, jumper"
-        :total="eltotal">
-      </el-pagination>
+      <div class="order-time-container">
+        <span class="little-title">订单下单时间分布</span>
+        <div id="orderTimerChart" class="chart-container"></div>
+      </div>
     </div>
-
-    <div v-show="!isTable">
-      <div class="chartsRadio">
-        <el-radio-group v-model="isIncome" size="small" @change="changeRadio">
-          <el-radio-button :label="true">总收益</el-radio-button>
-          <el-radio-button :label="false">交易笔数</el-radio-button>
-        </el-radio-group>
-      </div>
-      <div id="diagram">charts</div>
-    </div>
-
-    <!--新增/编辑分组对话框-->
-    <el-dialog
-      :title="dialogTitle"
-      :visible.sync="dialogEditVisible"
-      width="25%"
-      center>
-      <div v-show="selectGroup">
-        <div style="padding:10px;border:1px solid #ebeef5;height:200px;">
-          <div v-for="item in locaGrouplist" :key="item.key" style="width:100%;" class="flexbox">
-            <span>{{item.value}}</span>
-            <div class="flexbox">
-              <el-button type="text" size="small" @click="diaEditBt(item.value)">编辑</el-button>
-              <span class="dividingLine">|</span>
-              <el-button type="text" size="small" @click="diaDelBt(item.value)">删除</el-button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div v-show="!selectGroup">
-        <span style="display:block;margin:15px 0 10px 0;">分组名称</span>
-        <el-input v-model="editform.groupName" size="small" placeholder="请输入场地分组名称"></el-input>
-        <span style="display:block;margin:15px 0 10px 0;">选择加入该组的场地</span>
-        <div style="padding:10px;border:1px solid #ebeef5;height:200px;">
-          <el-checkbox-group v-model="editform.checkList">
-            <el-checkbox v-for="item in locationlist" :key="item.key" style="width:100%" :label="item.value"></el-checkbox>
-          </el-checkbox-group>
-        </div>
-      </div>
-
-      <span slot="footer">
-        <el-button @click="dialogEditVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editConfirm">确 定</el-button>
-      </span>
-    </el-dialog>
 
   </div>
 </template>
 
 <script>
 import { back } from 'api'
-import { sessionSetStore } from '@/components/config/Utils'
+import { sessionGetStore, sessionSetStore } from '@/components/config/Utils'
+import { character } from '@/components/config/Character'
 import echarts from 'echarts'
 import $ from 'jquery'
-import Routers from '@/router'
 export default {
   data () {
     return {
       param: {
-        'currentPage': 1,
-        'pagesize': 8,
-        'currentPage_DiaDev': 1,
-        'pagesize_DiaDev': 8
+        'beginDate': '',
+        'endDate': '',
+        'siteId': '',
+        'groupId': '',
+        'address': '',
+        'name': ''
       },
-      currentPage: 1,
-      pagesize: 10,
-      eltotal: 20,
-      dialogEditVisible: false,
-      dialogTitle: '',
-      dateValue: '',
+      timeSelected: 'day',
+      timeSelectData: [
+        { value: 'day', label: '最近一天' },
+        { value: 'week', label: '最近一周' },
+        { value: 'month', label: '最近一月' },
+        { value: 'custom', label: '自定义' }
+      ],
+      siteOrGroupTypeSelected: 'site',
+      siteOrGroupTypeSelectData: [
+        { value: 'site', label: '按场地' },
+        { value: 'group', label: '按分组' }
+      ],
+      siteOrGroupIdSelected: 'all',
+      siteOrGroupIdSelectData: [
+        { value: 'one', label: '丽晶广场1' },
+        { value: 'two', label: '江泰广场2' }
+      ],
+      siteList: [{ value: 'all', label: '全部' }],
+      groupList: [{ value: 'all', label: '全部' }],
+      // 日期选择器
       pickerOptions: {
         shortcuts: [{
           text: '最近一天',
@@ -189,7 +122,7 @@ export default {
             picker.$emit('pick', [start, end])
           }
         }, {
-          text: '最近一月',
+          text: '最近一个月',
           onClick (picker) {
             const end = new Date()
             const start = new Date()
@@ -198,66 +131,11 @@ export default {
           }
         }]
       },
-      popoverInput: '',
-      poploca: '全部',
-      checkedAll_loca: true,
-      checkedAll_locaGroup: true,
-      checkList_loca: [],
-      checkList_locaGroup: [],
-      input_devId: '',
-      isTable: true,
-      isIncome: true,
-      selectGroup: false,
-      locationlist: [{
-        key: '江泰国际广场1楼',
-        value: '江泰国际广场1楼'
-      }, {
-        key: '江泰国际广场2楼',
-        value: '江泰国际广场2楼'
-      }, {
-        key: '江泰国际广场3楼',
-        value: '江泰国际广场3楼'
-      }, {
-        key: '江泰国际广场4楼',
-        value: '江泰国际广场4楼'
-      }, {
-        key: '丽水金汇广场4楼',
-        value: '丽水金汇广场4楼'
-      }],
-      locaGrouplist: [{
-        key: '江泰',
-        value: '江泰'
-      }, {
-        key: '金汇',
-        value: '金汇'
-      }],
-      editform: {
-        groupName: '',
-        checkList: []
-      },
-      tableData: [{
-        name: '',
-        deviceId: '139761',
-        location: '江泰国际广场1楼',
-        state: '在线',
-        onlineIncome: '',
-        tradNum: 10,
-        adIncome: '',
-        totalIncome: ''
-      }, {
-        name: '',
-        deviceId: '139761',
-        location: '江泰国际广场1楼',
-        state: '离线',
-        onlineIncome: '',
-        tradNum: 10,
-        adIncome: '',
-        totalIncome: ''
-      }],
-      chartsDataResult: [],
-      deviceNameDataResult: [],
-      dateDataResult: [],
-      tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 42 - 10 - 52, // ===tableDiv的高度
+      orderList: [],
+      timeList: [],
+      totalOrderNum: null,
+      totalmoney: null,
+      dateValue: [],
       screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
       onresizeTimer: false // 屏幕高度变化定时器，避免频繁调用window.onresize()方法
     }
@@ -278,25 +156,29 @@ export default {
     }
   },
   created: function () {
+    // session获取登录者关键参数
+    this.param.id = sessionGetStore('managerId')
+    // 分页查询请求可选项置空函数
     this.pageQueSelInit()
-    this.backQueDeviceStatis()
+    this.backQueArea()
+    this.backQueGroupList()
+    // 默认查询一月范围
+    this.dateValueInit()
+    this.backQueOrderAnalysis()
   },
   mounted: function () {
-    this.tableContainerHeightSet()
-    // 监听屏幕高度
-    this.screenOnresizeFun()
-  },
-  // 注销window.onresize事件
-  destroyed () {
-    window.onresize = null
+    // // 初始化表格容器高度/最大高度
+    // this.tableContainerHeightSet()
+    // // 监听屏幕高度
+    // this.screenOnresizeFun('orderNumberChart')
   },
   methods: {
     // 表格容器高度随窗口视口变化函数
     tableContainerHeightSet: function () {
       var windowHeight = $(window).height()
       var mainHeight = windowHeight - 40 - 40 - 40
-      $('.tableDiv').height(mainHeight - 40 - 42 - 10 - 52)
-      this.tableMaxHeght = mainHeight - 40 - 42 - 20 - 52
+      $('.tableDiv').height(mainHeight - 62 - 53)
+      this.tableMaxHeght = windowHeight - 62 - 53 // header outerPadding interPadding searchDiv 分页Div 
     },
     // 监听屏幕高度
     screenOnresizeFun: function () {
@@ -308,153 +190,107 @@ export default {
         })() // 不加最后()会报错，并没有立即执行,立即执行函数
       }
     },
-    // 相关数据处理
-    dataprocessing: function () {
-      if (this.checkedAll_loca) {
-        this.checkList_loca = []
-        for (let i = 0; i < this.locationlist.length; i++) {
-          this.checkList_loca.push(this.locationlist[i].value)
-        }
-      }
-      if (this.checkedAll_locaGroup) {
-        this.checkList_locaGroup = []
-        for (let i = 0; i < this.locaGrouplist.length; i++) {
-          this.checkList_locaGroup.push(this.locaGrouplist[i].value)
-        }
-      }
-    },
-    // 时间格式转换
-    GMTToStr: function (time) {
-      let date = new Date(time)
-      console.log(date)
-      let Str = date.getFullYear() + '-' +
-      (date.getMonth() + 1) + '-' +
-      date.getDate() + ' ' +
-      date.getHours() + ':' +
-      date.getMinutes() + ':' +
-      date.getSeconds()
-      return Str
-    },
-    // popover输入搜索过滤
-    popInputChange: function () {
-      console.log('搜索过滤，popover视图改变')
-    },
-    changeCheck: function () {
-      this.dataprocessing()
-      if (this.checkedAll_loca) {
-        this.poploca = ''
-        for (let i = 0; i < this.locationlist.length; i++) {
-          this.poploca = this.poploca + '' + this.locationlist[i].value
-        }
-      } else {
-        this.poploca = ''
+    // 时间选择处理函数
+    updataTime: function () {
+      console.log(this.timeSelected)
+      const end = character.getCurrentTime()
+      const start = character.getCurrentTime()
+      switch (this.timeSelected) {
+        case 'day':
+          console.log(1)
+          character.getCurrentTime()
+          this.dateValue = [start, end]
+          this.param.beginDate = start
+          this.param.endDate = end
+          this.backQueOrderAnalysis()
+          break
+        case 'week':
+          console.log(2)
+          start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+          this.dateValue = [start, end]
+          this.param.beginDate = start
+          this.param.endDate = end
+          this.backQueOrderAnalysis()
+          break
+        case 'month':
+          console.log(3)
+          start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+          this.dateValue = [start, end]
+          this.param.beginDate = start
+          this.param.endDate = end
+          this.backQueOrderAnalysis()
+          break
+        case 'custom':
+          console.log(4)
+          this.customTime()
+          break
+        default:
+          console.log(5)
       }
     },
-    changeCheckGroup: function () {
-      if (this.checkList_loca.length !== this.locationlist.length) {
-        this.checkedAll_loca = false
-      }
-      if (this.checkList_locaGroup.length !== this.locaGrouplist.length) {
-        this.checkedAll_locaGroup = false
-      }
-      this.poploca = ''
-      for (let i = 0; i < this.checkList_loca.length; i++) {
-        this.poploca = this.poploca + '' + this.checkList_loca[i]
-      }
-    },
-    // 总收益、交易笔数图表切换
-    changeRadio: function () {
-      if (this.isIncome) {
-        console.log('收益')
-        this.chartsDataResult.forEach(item => {
-          item.data = item.incomeData
-        })
-        this.loaddiagram()
-      } else {
-        console.log('交易笔数')
-        this.chartsDataResult.forEach(item => {
-          item.data = item.orderData
-        })
-        this.loaddiagram()
-      }
-    },
-    searchBt: function () {
+    // 自定义时间
+    customTime: function () {
       console.log(this.dateValue)
-      if (this.dateValue) {
-        this.param.beginDate = this.GMTToStr(this.dateValue[0])
-        this.param.endDate = this.GMTToStr(this.dateValue[1])
+      this.param.beginDate = this.dateValue[0]
+      this.param.endDate = this.dateValue[1]
+      this.backQueOrderAnalysis()
+    },
+    // 默认查询时间范围处理函数
+    dateValueInit: function () {
+      let endTime = character.getCurrentTime(0)
+      let startTime = character.getCurrentTime(3600 * 1000 * 24 * 30)
+      console.log(endTime)
+      console.log(startTime)
+      this.dateValue = [startTime, endTime]
+      this.param.beginDate = startTime
+      this.param.endDate = endTime
+    },
+    // 查询类型改变事件
+    queTypeChange: function () {
+      console.log(this.siteOrGroupTypeSelected)
+      if (this.siteOrGroupTypeSelected === 'site') {
+        this.siteOrGroupIdSelectData = this.siteList
       } else {
-        this.pageQueSelInit()
+        this.siteOrGroupIdSelectData = this.groupList
       }
-      this.param.deviceId = this.input_devId
-      this.backQueDeviceStatis()
+      this.siteOrGroupIdSelected = this.siteOrGroupIdSelectData[0].value
     },
-    resetBt: function () {
-      Routers.push({ path: '/home/blank' })
-    },
-    // 编辑产品信息按钮
-    editGroup: function () {
-      this.dialogTitle = '编辑分组'
-      this.selectGroup = true
-      this.dialogEditVisible = true
-    },
-    // 新增产品按钮
-    addGroup: function () {
-      this.dialogTitle = '添加分组'
-      this.selectGroup = false
-      this.editform = {
-        groupName: '',
-        checklist: []
-      }
-      this.dialogEditVisible = true
-    },
-    // 编辑分组对话框，编辑按钮
-    diaEditBt: function (value) {
-      console.log(value)
-      this.editform = {
-        groupName: value,
-        checkList: ['江泰国际广场1楼', '江泰国际广场2楼', '江泰国际广场3楼', '江泰国际广场4楼']
-      }
-      this.selectGroup = false
-    },
-    // 编辑分组对话框，删除按钮
-    diaDelBt: function (value) {
-      this.$confirm('您确定删除该分组吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        // this.backDelGroup()
-      }).catch(() => {
-      })
-    },
-    // 对话框修改确认
-    editConfirm: function () {
-      console.log(this.editform)
-      if (this.dialogTitle === '添加分组') {
-        console.log('添加分组')
+    // 搜索按钮
+    searchBt: function () {
+      // 场地/分组区分
+      if (this.siteOrGroupTypeSelected === 'site') {
+        this.param.siteId = this.siteOrGroupIdSelected
+        this.param.groupId = ''
       } else {
-        console.log('修改')
+        this.param.siteId = ''
+        this.param.groupId = this.siteOrGroupIdSelected
       }
-    },
-    // 每次切换页码之前清空table数据
-    handlePaginationChange: function (value) {
-      console.log(value)
-      this.param.currentPage = value
-      // 分页查询请求可选项置空函数
-      this.pageQueSelInit()
-      this.backQueDeviceStatis()
+      // 全部/个别区分
+      if (this.siteOrGroupIdSelected === 'all') {
+        this.param.groupId = ''
+        this.param.siteId = ''
+      }
+      if (this.dateValue[0] === undefined || this.dateValue[1] === undefined) {
+        this.param.beginDate = ''
+        this.param.endDate = ''
+      } else {
+        this.param.beginDate = this.dateValue[0]
+        this.param.endDate = this.dateValue[1]
+      }
+      console.log(this.dateValue)
+      this.backQueOrderAnalysis()
     },
     // 加载图表
-    loaddiagram: function () {
-      console.log(123)
-      var diagramContainer = document.getElementById('diagram')
-      var myChart = echarts.init(diagramContainer)
-      console.log(this.deviceNameDataResult)
-      console.log(this.dateDataResult)
-      console.log(this.chartsDataResult)
-      // 指定图表的配置项和数据
-      // 折线图
+    loaddiagram: function (id, data) {
+      console.log('加载图表')
+      console.log(id)
+      console.log(data)
+      let xdata = []
+      data.forEach(item => {
+        xdata.push(item.date)
+      })
+      var diagramContainer = document.getElementById(id)
+      var myChartBar = echarts.init(diagramContainer)
       var option = {
         tooltip: {
           trigger: 'axis',
@@ -470,158 +306,239 @@ export default {
           }
         ],
         legend: {
-          left: 'left',
-          data: this.deviceNameDataResult
+          orient: 'horizontal',
+          y: 'bottom',
+          data: this.legend(id)
         },
         xAxis: {
-          data: this.dateDataResult
+          data: xdata
         },
         yAxis: {},
-        series: this.chartsDataResult
+        series: this.series(data, id)
       }
       // 使用刚指定的配置项和数据显示图表。
-      myChart.setOption(option)
+      myChartBar.setOption(option, true)
       window.onresize = function () {
-        console.log('chartresize')
-        myChart.resize()
+        console.log('chartresize bar')
+        myChartBar.resize()
       }
+    },
+    // 折线图图例
+    legend: function (value) {
+      let legend
+      if (value === 'orderNumberChart') {
+        legend = ['订单数', '金额']
+      } else if (value === 'orderTimerChart') {
+        legend = ['订单数量', '订单占比']
+      }
+      return legend
+    },
+    // 折线图的series
+    series: function (data, id) {
+      let series
+      if (id === 'orderNumberChart') {
+        let orderNumData = []
+        data.forEach(item => {
+          orderNumData.push(item.orderNum)
+        })
+        let moneyData = []
+        data.forEach(item => {
+          moneyData.push(item.money)
+        })
+        series = [{
+          name: '订单数',
+          type: 'line',
+          smooth: true,
+          data: orderNumData
+        }, {
+          name: '金额',
+          type: 'line',
+          smooth: true,
+          data: moneyData
+        }]
+      } else {
+        let orderNumData = []
+        data.forEach(item => {
+          orderNumData.push(item.orderNum)
+        })
+        let moneyData = []
+        let val
+        if (this.totalOrderNum === 0) {
+          val = '0%'
+          data.forEach(item => {
+            moneyData.push(val)
+          })
+        } else {
+          data.forEach(item => {
+            moneyData.push(Math.round(item.orderNum / this.totalOrderNum * 10000) / 100.00 + '%')
+          })
+        }
+        series = [{
+          name: '订单数量',
+          type: 'line',
+          smooth: true,
+          data: orderNumData
+        }, {
+          name: '订单占比',
+          type: 'line',
+          smooth: true,
+          data: moneyData
+        }]
+      }
+      return series
     },
     /*
       *
       *******************   API调用   *********************
       *
     */
-    // 设备统计
-    backQueDeviceStatis: function () {
-      sessionSetStore('backName', '设备统计')
-      back.queDeviceStatis(this.param).then(function (response) {
-        console.log(response)
-        // 设备详情数据存储
-        this.eltotal = response.data.total
-        let tableDataAlter = []
-        if (response.data.records) {
-          for (let i = 0; i < response.data.records.length; i++) {
-            let obj = {}
-            obj.name = response.data.records[i].deviceName
-            obj.deviceId = response.data.records[i].deviceId
-            obj.location = response.data.records[i].siteName
-            obj.onlineIncome = response.data.records[i].onlineIncome
-            obj.tradNum = response.data.records[i].orderNum
-            obj.adIncome = response.data.records[i].advertIncome
-            obj.totalIncome = response.data.records[i].totalIncome
-            obj.stateNum = response.data.records[i].state
-            if (obj.stateNum === 0) {
-              obj.state = '离线'
-            } else if (obj.stateNum === 1) {
-              obj.state = '在线'
-            }
-            tableDataAlter.push(obj)
-          }
-        }
-        this.tableData = tableDataAlter
-        // 设备图表数据存储
-        this.chartsDataResult = this.merge(response.deviceStatisTrendList)
-        this.chartsDataResult.forEach(item => {
-          this.deviceNameDataResult.push(item.name)
+    // 订单分析
+    backQueOrderAnalysis: function () {
+      sessionSetStore('backName', '订单分析')
+      back.queOrderAnalysis(this.param)
+        .then(function (res) {
+          console.log(res)
+          this.totalOrderNum = res.data.totalOrderNum
+          this.totalmoney = res.data.totalmoney
+          this.orderList = res.data.orderList
+          this.timeList = res.data.timeList
+          this.loaddiagram('orderNumberChart', res.data.orderList)
+          this.loaddiagram('orderTimerChart', res.data.timeList)
+        }.bind(this))
+        .catch(function (error) {
+          console.log(error)
         })
-        if (this.chartsDataResult) this.dateDataResult = this.chartsDataResult[0].date
-        this.loaddiagram() // 必须等待back数据获取后再加载图表
+    },
+    // 场地查询，用在显示场地搜索中，显示场地编码 siteId=id
+    backQueArea: function () {
+      sessionSetStore('bacName', '场地查询')
+      back.queArea(this.param).then(function (response) {
+        if (response.code === 0) {
+          console.log(response.data)
+          for (var i = 0; i < response.data.length; i++) {
+            let obj = {}
+            obj.value = response.data[i].id
+            obj.label = response.data[i].name
+            this.siteList.push(obj)
+          }
+          console.log(this.siteList)
+          // 默认查询场地的
+          this.siteOrGroupIdSelectData = this.siteList
+        } else {
+          this.$message.error('场地获取错误')
+        }
       }.bind(this))
         .catch(function (error) {
           console.log(error)
         })
     },
+    // 分组查询，用在显示场地搜索中，显示场地编码 siteId=id
+    backQueGroupList: function () {
+      sessionSetStore('bacName', '分组查询')
+      back.queGroupList(this.param).then(function (response) {
+        if (response.code === 0) {
+          console.log(response.data)
+          for (var i = 0; i < response.data.length; i++) {
+            let obj = {}
+            obj.value = response.data[i].id
+            obj.label = response.data[i].name
+            this.groupList.push(obj)
+          }
+          console.log(this.groupList)
+        } else {
+          this.$message.error('分组获取错误')
+        }
+      }.bind(this))
+        .catch(function (error) {
+          console.log(error)
+        })
+    },
+
+    /*
+      *
+      *******************   辅助函数   *********************
+      *
+    */
     // 分页查询请求可选项置空函数
     pageQueSelInit: function () {
       this.param.deviceId = ''
-      this.param.siteId = ''
-      this.param.beginDate = ''
-      this.param.endDate = ''
-      this.param.queryType = ''
+      this.param.groupId = ''
     },
-    backDelGroup: function () {
-      console.log('删除产品')
-    },
-    // 数组对象合并
-    merge: function (list) {
-      let idArr = []
-      for (let i = 0; i < list.length; i++) {
-        if (idArr.indexOf(list[i].deviceId) === -1) {
-          idArr.push(list[i].deviceId)
-        }
-      }
-      let result = []
-      for (let i = 0; i < idArr.length; i++) {
-        let obj = {}
-        let orderData = []
-        let incomeData = []
-        let deviceNameData = []
-        let dateData = []
-        for (let j = 0; j < list.length; j++) {
-          if (idArr[i] === list[j].deviceId) {
-            orderData.push(list[j].orderNum)
-            incomeData.push(list[j].totalIncome)
-            deviceNameData.push(list[j].deviceName)
-            dateData.push(list[j].date)
-          }
-        }
-        obj.deviceId = idArr[i]
-        obj.name = deviceNameData[i]
-        obj.type = 'line'
-        obj.smooth = true
-        obj.date = dateData
-        obj.orderData = orderData
-        obj.incomeData = incomeData
-        obj.data = incomeData // 默认显示incomeData
-        result.push(obj)
-      }
-      console.log(result)
-      return result
+    // 可关闭式通知提示，titlePara为标题，messagePara为通知内容
+    notificationInfo: function (titlePara, messagePara) {
+      const h = this.$createElement
+      this.$notify({
+        title: titlePara,
+        message: h('i', {style: 'color: teal'}, `${messagePara}`)
+      })
     }
   }
 }
 </script>
 
 <style scoped>
-.flexbox1 {
-  display: -webkit-flex; /* Safari */
-  display: flex;
-  flex-wrap: wrap;
-  height: 40px;
-}
-.flexbox1 > div {
+.orderAnalyPage {
   height: 100%;
 }
+.orderAnalyPage h3 {
+  display: inline-block;
+  font-size: 20px;
+  padding: 0 20px 0 10px;
+  border-left: 6px solid #2f75f5;
+  line-height: 22px;
+  margin: 10px 0;
+}
 .flexbox {
-  display: -webkit-flex;
+  /* margin: 20px 80px 20px 0; */
+  height: 40px;
+  margin: 20px 0;
+  margin-top: 0;
+  display: -webkit-flex; /* Safari */
   display: flex;
   flex-wrap: nowrap;
-  justify-content: space-between;
-  height: 30px;
-  margin: 6px 0 16px 0;
+  justify-content: space-around;
 }
-.popdiv {
-  border: 1px solid #ebeef5;
-  margin: 5px;
+.box {
+  display: -webkit-flex; /* Safari */
+  display: flex;
+  flex-wrap: nowrap;
+  /* justify-content: space-between; */
+  margin-right: 20px;
+  width:auto;
+  min-width: 116px;
 }
-.el-checkbox {
-  margin: 5px 0;
+.order-container {
+  text-align: left;
 }
-.dividingLine {
-  margin: 6px 10px 0 10px;
-  color: #409eff;
-}
-.chartsRadio {
+.little-title {
+  position: relative;
+  padding-left: 16px;
   margin: 20px 0;
+  font-weight: 700;
+  color: #353841;
+  text-align: left;
+  font-size: 16px;
 }
-#diagram {
-  margin: 0 auto;
-  width: 75vw;
-  height: 66vh;
-  border: 1px solid #ebeef5;
-  padding:10px;
+.little-title:after {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  left: 0;
+  top: 30%;
+  margin-top: -.05rem;
+  width: .6rem;
+  height: .6rem;
+  border-radius: 50%;
+  background-color: #2f75f5;
 }
-.deviceInfoPage >>> .el-dialog__header {
-  background-color: #f4f4f4;
+.order-container {
+  height: calc(100% - 60px);
+}
+.order-container > div {
+  height: 50%;
+}
+.chart-container {
+  /* height: 250px; */
+  height: 90%;
 }
 </style>

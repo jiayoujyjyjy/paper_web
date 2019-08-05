@@ -80,7 +80,7 @@
           <el-menu-item index="8-1">订单分析</el-menu-item>
           <el-menu-item index="8-2">商品分析</el-menu-item>
           <el-menu-item index="8-3">点位分析</el-menu-item>
-          <el-menu-item index="8-4">客户分析</el-menu-item>
+          <!-- <el-menu-item index="8-4">客户分析</el-menu-item> -->
         </el-submenu>
         <el-submenu index="9">
           <template slot="title">
@@ -97,7 +97,7 @@
           </template>
           <el-menu-item index="10-1">角色管理</el-menu-item>
           <el-menu-item index="10-2">子账号管理</el-menu-item>
-          <el-menu-item index="10-3">代理管理</el-menu-item>
+          <el-menu-item index="10-3" v-show="isRoleTye">代理管理</el-menu-item>
         </el-submenu>
       </el-menu>
     </el-aside>
@@ -201,6 +201,7 @@ export default {
         index: '10-3',
         value: '代理管理'
       }],
+      isRoleTye: false,
       userInfo: {}, // 管理员详情信息
       homeImgSrc: '/static/home_active.png',
       devImgSrc: '/static/devmanage.png',
@@ -240,6 +241,12 @@ export default {
     // session获取登录者关键参数
     this.param.id = sessionGetStore('managerId')
     this.backQueManagerInfo()
+    // 若roleType !== 0，则判断是否显示'代理管理'页面
+    if (sessionGetStore('roleId') !== '0') {
+      this.isRoleTye = false
+    } else {
+      this.isRoleTye = true
+    }
     // var username = sessionGetStore('username')
     // this.$store.commit('setUserName', username)
     // var userAuth = sessionGetStore('userAuth')
@@ -341,26 +348,25 @@ export default {
       if (value === '7-1') {
         sessionSetStore('menuActive', '7-1')
         // sessionSetStore('usermanage_activeName', 'first')
-        // this.$message.error('该功能待开发！')
         Routers.push({ path: '/home/userList' })
         this.changeMenuImg(false)
       }
       if (value === '8-1') {
         sessionSetStore('menuActive', '8-1')
-        this.$message.error('该功能待开发！')
-        // Routers.push({ path: '/home/orderAnaly' })
+        // this.$message.error('该功能待开发！')
+        Routers.push({ path: '/home/orderAnaly' })
         this.changeMenuImg(false)
       }
       if (value === '8-2') {
         sessionSetStore('menuActive', '8-2')
-        this.$message.error('该功能待开发！')
-        // Routers.push({ path: '/home/productAnaly/' })
+        // this.$message.error('该功能待开发！')
+        Routers.push({ path: '/home/productAnaly/' })
         this.changeMenuImg(false)
       }
       if (value === '8-3') {
         sessionSetStore('menuActive', '8-3')
-        this.$message.error('该功能待开发！')
-        // Routers.push({ path: '/home/areaAnaly' })
+        // this.$message.error('该功能待开发！')
+        Routers.push({ path: '/home/areaAnaly' })
         this.changeMenuImg(false)
       }
       if (value === '8-4') {

@@ -39,14 +39,14 @@
           label="收益">
         </el-table-column>
       </el-table>
-      <el-pagination
-        @current-change="handlePaginationChange"
-        :current-page="param.pageNo"
-        :page-size="param.pageSize"
-        layout="total, prev, pager, next, jumper"
-        :total="eltotal">
-      </el-pagination>
     </div>
+    <el-pagination
+      @current-change="handlePaginationChange"
+      :current-page="param.pageNo"
+      :page-size="param.pageSize"
+      layout="total, prev, pager, next, jumper"
+      :total="eltotal">
+    </el-pagination>
   </div>
 </template>
 

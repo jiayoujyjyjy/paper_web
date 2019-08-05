@@ -59,17 +59,39 @@ export const character = { // export加上可以被外部引用！！！！  暴
   /**
  * 获取当前时间 格式：yyyyMMddHHMMSS
  */
-  getCurrentTime () {
-    var date = new Date() // 当前时间
+  getCurrentTime (interval) {
+    var date = new Date()
+    console.log(date)
+    date = +date - interval
+    console.log(date)
+    date = new Date(date)
     var month = this.zeroFill(date.getMonth() + 1) // 月
     var day = this.zeroFill(date.getDate()) // 日
     var hour = this.zeroFill(date.getHours()) // 时
     var minute = this.zeroFill(date.getMinutes()) // 分
     var second = this.zeroFill(date.getSeconds()) // 秒
     // 当前时间
-    var curTime = date.getFullYear() + '' + month + '' + day +
-            '' + hour + '' + minute + '' + second
+    var curTime = date.getFullYear() + '-' + month + '-' + day +
+            ' ' + hour + ':' + minute + ':' + second
     return curTime
+  },
+  // 昨日
+  getDayTime () {
+    var day = new Date()
+    day.setDate(day.getDate() - 1)
+    return day
+  },
+  // 本周
+  getWeek () {
+    var day = new Date()
+    var num = day.getDay() - 1
+    day.setDate(day.getDate() - num)
+    day.setDate(day.getDate() + 6)
+    return day
+  },
+  // 本月
+  getMonth () {
+    
   },
   /**
   * 补零

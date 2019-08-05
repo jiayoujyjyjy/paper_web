@@ -18,7 +18,8 @@
       <el-button type="primary" size="small" plain @click="getAll">全部</el-button>
       <el-button type="primary" size="small" plain @click="getOnline">在线</el-button>
       <el-button type="primary" size="small" plain @click="getOutline">离线</el-button>
-      <el-button size="small" type="primary" style="margin-left:10%;" @click="searchDev">搜 索</el-button>
+      <el-button size="small" type="primary" style="margin-left:5%;" @click="searchDev">搜 索</el-button>
+      <el-button size="small" type="primary" style="margin-left:2%;" @click="exportBtn">导 出</el-button>
     </div>
     <div class="flexbox">
       <div class="box2">
@@ -89,9 +90,9 @@
           <el-table-column
             label="修改"
             align="center">
-          <template slot-scope="scope">
-            <el-button type="text" size="small" @click="editKuCun(scope.$index, scope.row)">修改</el-button>
-          </template>
+            <template slot-scope="scope">
+              <el-button type="text" size="small" @click="editKuCun(scope.$index, scope.row)">修改</el-button>
+            </template>
           </el-table-column>
         </el-table-column>
         <el-table-column
@@ -217,6 +218,7 @@ export default {
   data () {
     return {
       spanArr: [], // pos是spanArr地索引，用于存放每一行记录的合并数如果是第一条记录（索引为０），向数组中加入１，并设置索引位置；如果不是第一条记录，则判断它与前一条记录是否相等，如果相等，则向spanArr中添入元素０，并将前一位元素＋１，表示合并行数＋１，以此往复，得到所有行的合并数，０即表示该行不显示
+      pos: null,
       param: {
         'currentPage': 1,
         'pagesize': 8,
@@ -228,8 +230,6 @@ export default {
       input_areaName: '', // 输入场地名称
       total: 6,
       online: 3,
-      currentPage: 1,
-      pagesize: 10,
       eltotal: 20,
       transferDialogVisible: false,
       editDialogTitle: '',
@@ -272,6 +272,9 @@ export default {
         group: '',
         msg: ''
       },
+      loadingFlag: false,
+      Loading: null,
+      excelDataStr: '行号,设备编号,设备名称,省份,地市,区域,详细地址,场地类型,状态,场地,库存\n',    // excel表格数据存储，通过string字符串来存储
       kucun: [],  // 库存编辑弹窗
       tableMaxHeght: document.body.clientHeight - 40 - 40 - 40 - 40 - 40 - 55, // ===tableDiv的高度
       screenHeight: document.body.clientHeight, // 监听变化辅助用，一定要设初始值
@@ -335,31 +338,48 @@ export default {
     getSpanArr: function (data) {
       // 清空spanArr的缓存，每次刷新列表时，spanArr总从0开始
       this.spanArr = []
-      let contactDot = 0
-      this.tableData.forEach((item, index) => {
-        item.index = index
-        if (index === 0) {
+      this.pos = 0
+      for (let i = 0; i < data.length; i++) {
+        if (i === 0) {
+          // 若第一条记录则向数组+1，并设置索引位置
           this.spanArr.push(1)
+          this.pos = 0
         } else {
-          if (item.id === this.tableData[index - 1].id) {
-            this.spanArr[contactDot] += 1
+          // 判断当前元素与上一个元素是否相同
+          if (data[i].id === data[i - 1].id) {
+            this.spanArr[this.pos] += 1 
+            this.spanArr.push(0)
           } else {
             this.spanArr.push(1)
-            contactDot = index
+            this.pos = i
           }
         }
-      })
+      }
+      console.log(this.spanArr)
+      // data.forEach((item, index) => {
+      //   // item.index = index
+      //   if (index === 0) {
+      //     this.spanArr.push(1)
+      //   } else {
+      //     if (item.id === data[index - 1].id) {
+      //       this.spanArr[pos] += 1
+      //     } else {
+      //       this.spanArr.push(1)
+      //       pos = index
+      //     }
+      //   }
+      // })
     },
     // 合并单元格
     objectSpanMethod: function ({row, column, rowIndex, columnIndex}) {
-      // columnIndex表示要合并第几列，从0开始
-      for (var i = 0; i < 9; i++) {
-        if (columnIndex === i) {
+      // 合并前9行
+      for (let i = 0; i < 9; i++) {
+        if (columnIndex === i) { // 设置要合并的列
           const _row = this.spanArr[rowIndex]
           const _col = _row > 0 ? 1 : 0
           return {
-            rowspan: _row,
-            colspan: _col
+            rowspan: _row, // 合并行数
+            colspan: _col // 合并列数 0-不显示
           }
         }
       }
@@ -398,6 +418,23 @@ export default {
       this.param.id = this.input_devMac
       this.param.siteId = this.selected
       this.backQueDevPage()
+    },
+    // 导出表格
+    exportBtn: function () {
+      console.log('导出表格')
+      this.param.currentPage = 1
+      this.param.pagesize = 9999
+      this.loadingFlag = true
+      this.Loading = this.$loading({
+        lock: true,
+        text: 'Loading',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.5)'
+      })
+      this.backQueAllDevPage()
+      // param参数复位
+      this.param.currentPage = 1
+      this.param.pagesize = 8
     },
     // 解绑设备
     unbind: function (index, row) {
@@ -556,8 +593,7 @@ export default {
             price: null,
             num: null
           }
-          console.log(this.tableData)
-          this.getSpanArr()
+          this.getSpanArr(this.tableData)
         } else {
           this.tableData = []
         }
@@ -566,24 +602,63 @@ export default {
           console.log(error)
         })
     },
+    // 设备所有查询
+    backQueAllDevPage: function () {
+      sessionSetStore('backName', '设备所有查询')
+      back.queDevPage(this.param).then(function (res) {
+        console.log(res)
+        this.tableDataAll = []
+        if (res.data.records) {
+          for (let i = 0; i < res.data.records.length; i++) {
+            let obj = {}
+            obj.id = res.data.records[i].id
+            obj.name = res.data.records[i].name
+            obj.site = res.data.records[i].site
+            obj.province = res.data.records[i].province
+            obj.city = res.data.records[i].city
+            obj.area = res.data.records[i].area
+            obj.address = res.data.records[i].address
+            obj.typeName = res.data.records[i].typeName
+            obj.state = res.data.records[i].state ? '在线' : '离线'
+            let paperListInfo = ''
+            for (let j = 0; j < res.data.records[i].paperList.length; j++) {
+              paperListInfo = paperListInfo + res.data.records[i].paperList[j].paper + '的数量:' + 
+              res.data.records[i].paperList[j].num + '，' + '单价:' + res.data.records[i].paperList[j].price + '  '
+            }
+            obj.paperListInfo = paperListInfo
+            this.tableDataAll.push(obj)
+            // 表格字符串处理
+            this.excelDataStr += (i + 1).toString() + ',' + obj.id.toString() + ',' + obj.name + ',' + 
+            obj.province + ',' + obj.city + ',' + obj.area + ',' + 
+            obj.address + ',' + obj.typeName + ',' + obj.state + ',' + 
+            obj.site + ',' + obj.paperListInfo + '\n'
+          }
+        }
+        this.toLargerCSV()
+      }.bind(this))
+        .catch(function (error) {
+          console.log(error)
+        })
+    },
     // 查看设备详情
     backQueDevInfo: function () {
       sessionSetStore('backName', '查看设备详情')
-      back.queDevInfo(this.param).then(function (response) {
-        console.log(response)
-        this.editform.deviceId = response.data.id
-        this.editform.devName = response.data.name
-        this.editform.formselected = response.data.siteName
-        this.formselectData = [] // 初始化
-        if (response.data.siteList) {
-          for (let i = 0; i < response.data.siteList.length; i++) {
-            let obj = {}
-            obj.label = response.data.siteList[i].name
-            obj.value = response.data.siteList[i].id
-            this.formselectData.push(obj)
+      back.queDevInfo(this.param)
+        .then(function (response) {
+          console.log(response)
+          this.editform.deviceId = response.data.id
+          this.editform.devName = response.data.name
+          this.editform.formselected = response.data.siteName
+          this.formselectData = [] // 初始化
+          if (response.data.siteList) {
+            for (let i = 0; i < response.data.siteList.length; i++) {
+              let obj = {}
+              obj.label = response.data.siteList[i].name
+              obj.value = response.data.siteList[i].id
+              this.formselectData.push(obj)
+            }
           }
-        }
-      }.bind(this))
+        }.bind(this))
         .catch(function (error) {
           console.log(error)
         })
@@ -689,6 +764,26 @@ export default {
         title: titlePara,
         message: h('i', {style: 'color: teal'}, `${messagePara}`)
       })
+    },
+    // 支持大批量数据导出，目前测试15万行 30列通过，导出时间约为6秒
+    toLargerCSV: function () {
+      let blob
+      blob = new Blob([this.excelDataStr], {type: 'text/plain;charset=utf-8'})
+      // 解决中文乱码问题
+      blob =  new Blob([String.fromCharCode(0xFEFF), blob], {type: blob.type})  
+      let objectUrl = window.URL.createObjectURL(blob)
+      var link = document.createElement('a')
+      link.href = objectUrl
+      link.download = '设备列表数据.xlsx'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      // 每一次下载表格之后，对this.excelDataStr / this.isDownLoad复位操作
+      this.excelDataStr = '行号' + ',' + '设备编号' + ',' + '设备名称' + ',' + 
+      '省份' + ',' + '地市' + ',' + '区域' + '详细地址' + ',' + '场地类型' + ',' + 
+      '状态' + ',' + '场地' + ',' + '库存' + '\n'
+      this.loadingFlag = false
+      this.Loading.close()
     }
   }
 }

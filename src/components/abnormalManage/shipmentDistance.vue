@@ -11,11 +11,11 @@
         border
         style="margin-top: 2%;font-size:12px;"
         :max-height="tableMaxHeght">
-        <el-table-column
+        <!-- <el-table-column
           align="center"
           type="index"
           label="序号">
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column
           align="center"
           prop="site"
